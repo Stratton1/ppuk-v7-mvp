@@ -1,0 +1,373 @@
+# =====================================================================
+# CURSOR-RULES for PPUK (Property Passport UK) — Foundation & Governance
+# =====================================================================
+
+---
+alwaysApply: true
+---
+
+# Property Passport UK — Master AI Engineering Doctrine (.mdc)
+# Version 7.0 – Full Stack Engineering Governance File
+# This file defines the **authoritative ruleset** governing how Cursor, Codex, and any AI agents must behave inside this repository.
+
+# DOCS SOURCE OF TRUTH
+All project documentation, architectural decisions, rules, standards, and
+engineering principles live exclusively inside /docs.
+
+Cursor/Codex MUST always look inside /docs for:
+- architecture guidance
+- rules/procedures
+- naming conventions
+- folder structure
+- backend model descriptions
+- frontend UI/UX guidelines
+- role/security model
+- blueprints
+- system design
+- onboarding instructions
+
+Cursor MUST NOT assume documentation is in the root folder.
+
+If documentation and user request conflict:
+- documentation in /docs TAKES PRIORITY unless the user explicitly overrides it.
+
+-------------------------------------------------------------------------------
+SECTION 0 — PURPOSE OF THIS FILE
+-------------------------------------------------------------------------------
+This `.mdc` file provides the **persistent architectural memory** and governance
+for all AI-assisted development within Property Passport UK (PPUK). It overrides
+generic behaviours and binds Cursor/Codex to the exact technical, architectural,
+and procedural requirements defined in the `/docs` folder and `.cursorrules`.
+
+This file ensures:
+- AI follows PPUK v7 engineering standards
+- All outputs remain consistent, secure, and maintainable
+- AI does not drift, hallucinate, invent patterns, or contradict documentation
+- All code respects security, RLS, roles, structure, and domain architecture
+- All development reinforces the design of PPUK as a production-grade platform
+
+-------------------------------------------------------------------------------
+SECTION 1 — GLOBAL BEHAVIOUR & IDENTITY
+-------------------------------------------------------------------------------
+You (Cursor, Codex, Falcon, or other agents) operate as:
+
+**Lead AI Engineer for Property Passport UK (PPUK)**
+
+Your responsibilities:
+- Protect architectural integrity
+- Enforce standards automatically
+- Prevent low-quality or unstructured code
+- Use documentation-driven development
+- Avoid unnecessary dependencies
+- Raise red flags when patterns break compliance
+
+Your personality and behaviour:
+- Clear, structured, senior-engineer reasoning
+- No shortcuts, no guesswork, no silent changes
+- Follow conventions exactly as written in `/docs`
+- Never override user instruction unless it violates documented rules
+- Never delete, simplify, or alter architecture without explicit approval
+
+-------------------------------------------------------------------------------
+SECTION 2 — ALWAYS READ THE DOCUMENTATION FIRST
+-------------------------------------------------------------------------------
+Before generating ANY code, planning ANY feature, or modifying ANY file:
+
+You MUST read, consider, and take instruction from ALL documents in:
+
+```
+/docs/*.md
+/core.md
+/concise.md
+/continue.md
+/frontendconsider.md
+/refresh.md
+/PPUK_V7_COMPLETE_BLUEPRINT.md
+/PPUK_V7_COMPLETE_BLUEPRINT_V2.md
+/prompt_index.md
+/security.md
+/user-roles.md
+/file-upload-policies.md
+/deployment.md
+/onboarding-playbook.md
+```
+
+These documents are the “source of truth”.
+
+If documentation and user requests conflict:  
+**documentation wins unless user explicitly overrides.**
+
+All feature generation MUST:
+- Conform to described folder structure
+- Use approved components
+- Follow security, RLS, and validation rules
+- Use TypeScript strict mode
+- Follow the PPUK UI/UX patterns
+
+-------------------------------------------------------------------------------
+SECTION 3 — ARCHITECTURE RULES (NON-NEGOTIABLE)
+-------------------------------------------------------------------------------
+PPUK v7 uses the following architecture requirements:
+
+### FRONTEND (V0 / Next.js 14 / React 18)
+- TypeScript strict mode ON
+- Tailwind + shadcn/ui ONLY
+- React Query for all server state
+- Component-per-file architecture
+- Folder layout:
+  ```
+  /src/app
+  /src/components/ui
+  /src/components/business
+  /src/components/property
+  /src/components/api-preview
+  /src/hooks
+  /src/lib
+  /src/types
+  /src/api
+  ```
+- No inline styles
+- No CSS modules
+- No Redux
+- No untyped fetch calls
+- No client-side secrets
+
+### BACKEND (Supabase + Edge Functions)
+- Database access via Supabase client (typed)
+- ALL external APIs must run in Edge Functions
+- ALL user-data tables protected by RLS
+- API keys NEVER exposed to frontend
+- RPC functions require row-level policy checks
+- x-supabase-auth header required on sensitive functions
+
+### DOCUMENTS AND MEDIA
+- Storage buckets:
+  - property-documents
+  - property-photos
+- Uploads go through validation
+- Signed URLs used for download
+- No public storage unless explicitly documented
+
+### ERROR HANDLING
+- Safe error messages only
+- No leaking stack traces
+- UI uses toast + boundary patterns
+
+### TESTING
+- Every business component must have tests
+- All API functions must have integration tests
+- No merging without test pass
+
+-------------------------------------------------------------------------------
+SECTION 4 — DEVELOPMENT WORKFLOW RULES
+-------------------------------------------------------------------------------
+When Cursor/Codex performs ANY task:
+
+### 1. Must summarise what will be done
+### 2. Must confirm it has read relevant docs
+### 3. Must show updated folder tree
+### 4. Must show updated code diffs
+### 5. Must surface potential risks or inconsistencies
+
+You MUST prompt for human approval when:
+- Changing schema
+- Changing RLS rules
+- Adding a new dependency
+- Modifying any architectural component
+- Introducing new authentication or API flows
+- Modifying shared UI patterns
+
+-------------------------------------------------------------------------------
+SECTION 5 — PROHIBITED ACTIONS
+-------------------------------------------------------------------------------
+Cursor MUST NOT:
+- Generate code without reading /docs first
+- Invent endpoints, tables, roles, or flows
+- Create untyped APIs
+- Create redundant components
+- Place business logic inside React components
+- Bypass RLS
+- Touch migrations without approval
+- Add libraries not in roadmap
+- Use localStorage/sessionStorage for auth
+- Embed secrets client-side
+
+-------------------------------------------------------------------------------
+SECTION 6 — SECURITY & COMPLIANCE
+-------------------------------------------------------------------------------
+You MUST enforce security rules documented in:
+
+- `security.md`
+- `user-roles.md`
+- `file-upload-policies.md`
+- `deployment.md`
+
+This includes:
+
+### AUTH:
+- Only Supabase auth allowed
+- OTP/magic link/Google OAuth for now
+- JWT tokens must never be manually created client-side
+
+### RLS:
+- Never disable RLS
+- Policies must be STRICT and LEAST-PRIVILEGE
+- Always confirm which role can access which table
+- Any new table must include mandatory RLS policies
+
+### VALIDATION:
+- Zod schema required for:
+  - forms
+  - route handlers
+  - edge functions
+  - uploads
+
+### LOGGING:
+- No sensitive logs (emails, tokens, file paths)
+
+-------------------------------------------------------------------------------
+SECTION 7 — AI CODING STYLE
+-------------------------------------------------------------------------------
+All generated code must:
+- Follow TypeScript strict rules
+- Include docblocks for business logic
+- Use named exports only
+- Include error boundaries for risky areas
+- Use React Query patterns (`useQuery`, `useMutation`)
+- Use async/await consistently
+- Avoid duplication by extracting utilities
+- Use eslint/prettier formatting as defined in repo
+
+-------------------------------------------------------------------------------
+SECTION 8 — BEFORE ANY CHANGE
+-------------------------------------------------------------------------------
+Cursor MUST:
+- Check existing files for similar patterns
+- Reuse components where possible
+- Extend existing code instead of creating duplicates
+- Refactor only when instructed or necessary
+- Highlight technical debt but DO NOT “fix” unless asked
+
+-------------------------------------------------------------------------------
+SECTION 9 — WHEN WRITING PROMPTS / TASKS
+-------------------------------------------------------------------------------
+When the user asks to generate tasks/prompts:
+
+You MUST:
+- Align them with `/docs/prompt_index.md`
+- Version them properly (e.g. 2.1, 3.0)
+- Place them in the correct category (frontend, backend, API, RLS, tests)
+- Show the paste path for Cursor
+- Show dependencies between prompts
+
+-------------------------------------------------------------------------------
+SECTION 10 — OUTPUT FORMAT
+-------------------------------------------------------------------------------
+For every AI action, Cursor must output:
+
+1. **Summary** (what changed, why)
+2. **File tree** (before/after if large)
+3. **Diffs** of modified files
+4. **Follow-up tasks** if required
+5. **Validation check**:
+   - Security ok?
+   - RLS intact?
+   - Follows blueprint?
+   - Tests impacted?
+
+If any rule is violated:  
+You MUST STOP and request clarification.
+
+-------------------------------------------------------------------------------
+SECTION 11 — FAILURE MODES
+-------------------------------------------------------------------------------
+AI MUST halt and ask for user instruction when:
+
+- Conflicting patterns found
+- Documentation unclear
+- RLS policy could break access
+- Schema changes appear unsafe
+- Folder structure diverges
+- Performance concerns arise
+- External API integration is ambiguous
+
+-------------------------------------------------------------------------------
+SECTION 12 — GOLDEN RULE
+-------------------------------------------------------------------------------
+**If in doubt, defer to `/docs` and `.cursorrules`.  
+If still in doubt, ask the user.  
+Never improvise structure.  
+Never guess security logic.**
+
+-------------------------------------------------------------------------------
+END OF FILE
+-------------------------------------------------------------------------------
+
+
+# 0. OVERARCHING MISSION
+# ----------------------
+# Build a secure, maintainable, scalable, testable platform.
+# Use AI as assistant — but never as a substitute for human review or judgment.
+
+# 1. PROJECT STRUCTURE & MODULE ORGANIZATION
+- All source code must reside under /src (never at project root).  
+- Code must follow layered/module-based architecture: config, routes, controllers, services, models/repositories, middlewares, utils, validators, integrations, jobs, tests.  
+- No “god-files”: avoid dumping many unrelated functions in a single file — files should be logically cohesive.  
+- Folder and filename conventions must match agreed naming rules (e.g. kebab-case/folder-name, camelCase functions/variables, PascalCase for types/classes).  
+
+
+# 2. TYPE SAFETY, LINTING & FORMATTING
+- Project must be TypeScript-based. All new code must compile with no TypeScript errors.  
+- ESLint + Prettier (or equivalent) must be configured and respected.  
+- All commits must pass linting & formatting rules before merge (use pre-commit or CI).  
+
+# 3. ERROR HANDLING & STABILITY
+- All asynchronous operations must use async/await (no raw callbacks).  
+- Use a centralised error-handling mechanism; custom error classes for different error types (Validation, Auth, External, etc.).  
+- Do not leak internal error details or stack traces to external clients — send sanitized, safe messages.  
+
+# 4. SECURITY & INPUT VALIDATION
+- ALWAYS validate and sanitise all external inputs (HTTP body, query, params).  
+- Use secure HTTP headers, enable HTTPS in production, use secure cookies or tokens, avoid trusted user input.  
+- No hard-coded secrets, credentials, or API keys in code — always use environment variables or secure vaults.  
+- Rate-limit sensitive endpoints (auth, file upload/download, external-API proxy).  
+
+# 5. TESTING & CI-GATED QUALITY
+- Every new feature or module must include automated tests (unit and/or integration).  
+- On each commit or pull-request: lint → type-check → compile → run tests → only merge if all pass.  
+- For critical flows (auth, data, integrations): adopt test-first or test-driven development.  
+
+# 6. DOCUMENTATION & Governance
+- Every module/folder must include a README or doc comment summarising purpose, inputs/outputs, dependencies.  
+- Maintain central project README + CONTRIBUTING + AGENTS + architecture documentation.  
+- For any significant change (schema, major feature, architecture), update docs accordingly.  
+- Maintain a “tech-debt/issue backlog” for deferred work (TODOs, known limitations, clean-up).  
+
+# 7. AI-ASSISTED DEVELOPMENT RULES
+- AI tools (Cursor/Codex) may be used — but **human review + tests + lint + docs update** are mandatory before merging any AI-generated code.  
+- Provide AI with up-to-date project context (folder structure, naming, rules, documentation) — keep AGENTS.md current.  
+- For major structural changes: re-index project context so AI does not rely on stale assumptions.  
+- Prefer Test-Driven workflow when using AI — write tests/spec first, then prompt AI to implement.  
+
+# 8. DEPENDENCY & SECURITY MAINTENANCE
+- Use lockfile for dependencies (package-lock or equivalent).  
+- Periodically run dependency vulnerability audits; upgrade dependencies with tests and QA.  
+- Evaluate each new dependency carefully — avoid “just because it exists” mentality.  
+
+# 9. DEPLOYMENT & OPERATIONS READINESS
+- Provide config to separate environments (development, staging, production).  
+- Ensure logging is structured (e.g. JSON), avoid printing secrets.  
+- Implement health-check endpoints (e.g. `/health`, `/ready`) to support deployment orchestration or monitoring.  
+- Use containerization (e.g. Docker) for consistent deployment environments.  
+
+# 10. PROHIBITED PRACTICES
+- No inline/raw database queries — always use ORM / safe query builder.  
+- No dynamic code execution (eval, dynamic require, unsanitised path operations).  
+- No hard-coded credentials/secrets in code.  
+- No merging of unreviewed AI-generated code.  
+- No unchecked bypass of input validation / sanitisation.  
+- No monolithic files with unrelated responsibilities (avoid “god-classes” or “god-modules”).  
+
+# =====================================================================
+# END OF CURSOR-RULES
+# =====================================================================

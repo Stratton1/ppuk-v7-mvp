@@ -1,0 +1,35 @@
+{
+  "ppuk_context": {
+    "architecture": {
+      "backend": "Supabase backend with Postgres, RLS, Storage, Edge Functions (Deno). No standalone Node backend except temporary scaffolding.",
+      "frontend": "Vite + React + Tailwind + shadcn/ui with strict TypeScript.",
+      "integration_pattern": "All external APIs via Edge Functions; cache-first; strict validation using Zod.",
+      "security": "Strict RLS, least privilege, no bypasses, signed URLs only, no client-side secrets.",
+      "docs_source_of_truth": "/docs/*.md and .cursorrules and .cursor/rules/*.mdc"
+    },
+    "rules": {
+      "must_read_docs_first": true,
+      "never_invent_endpoints": true,
+      "never_bypass_rls": true,
+      "no_client_side_secrets": true,
+      "must_use_zod": true,
+      "frontend_folder_structure": "/src/app, /src/components, /src/hooks, /src/lib, /src/types, /src/api"
+    },
+    "behaviour": {
+      "role": "Lead AI Engineer for PPUK",
+      "style": "structured, senior engineering tone",
+      "validate_before_generating": true,
+      "ask_on_schema_or_rls_change": true
+    },
+    "project_folders": {
+      "docs": "/docs",
+      "source": "/src",
+      "root_config_files": [
+        ".cursorrules",
+        ".cursor/rules/*.mdc",
+        "tsconfig.json",
+        "package.json"
+      ]
+    }
+  }
+}

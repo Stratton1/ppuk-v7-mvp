@@ -1,0 +1,2 @@
+-- Seed data placeholder (non-sensitive, development-only).
+-- Include minimal reference data as needed (enums/lookups) once schema is defined.

@@ -1,0 +1,4 @@
+-- Placeholder for Supabase schema definitions.
+-- Follow blueprint: UPRN-centric properties, property_parties, documents, media, api_cache, audit_log, notifications, watchlist, notes, tasks, profiles.
+-- Include storage buckets: property-documents, property-photos (signed URLs only).
+-- Add constraints, enums, and indexes per domain needs.
