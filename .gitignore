@@ -8,7 +8,8 @@ pnpm-debug.log*
 .env.local
 .env.*.local
 coverage
-dist
+dist/
+src/
 build
 .DS_Store
 .tmp
