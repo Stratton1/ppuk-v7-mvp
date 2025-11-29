@@ -1,3 +1,0 @@
--- RLS policies placeholder. Do not add policies without explicit approval.
--- When approved, define per-table policies per role matrix in /docs/user-roles.md and blueprint.
--- Ensure least-privilege, no bypass, and test policies before deployment.

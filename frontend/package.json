@@ -9,7 +9,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"No frontend tests yet\""
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
