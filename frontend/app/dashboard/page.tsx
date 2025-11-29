@@ -19,7 +19,6 @@ async function getCompletion(supabase: ReturnType<typeof createServerSupabaseCli
     property_id: propertyId,
   };
   // Type assertion needed due to Supabase RPC type inference issue
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase.rpc as any)('calculate_property_completion', completionArgs);
   if (error || data === null) return 0;
   return data;
@@ -58,11 +57,8 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
 
   // Type assertions needed due to Supabase RPC type inference issues
   const [{ data: propertiesData }, { data: activityData }, { data: statsData }] = await Promise.all([
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_user_properties', userPropertiesArgs),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_recent_activity', recentActivityArgs),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_dashboard_stats', dashboardStatsArgs),
   ]);
 

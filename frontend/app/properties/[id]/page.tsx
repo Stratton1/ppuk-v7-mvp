@@ -48,7 +48,6 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
 
   // Type assertions needed due to Supabase RPC type inference issues
   const [{ data: featuredMedia }, { data: allMedia }, { data: tasks }, { data: notes }] = await Promise.all([
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_featured_media', featuredMediaArgs),
     supabase
       .from('property_media')
@@ -57,9 +56,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
       .eq('status', 'active')
       .is('deleted_at', null)
       .order('created_at', { ascending: true }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_property_tasks', propertyTasksArgs),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_property_notes', propertyNotesArgs),
   ]);
 

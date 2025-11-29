@@ -33,7 +33,6 @@ export async function PropertyHeader({ property, featuredMedia }: PropertyHeader
     allowed_roles: ['owner', 'admin'],
   };
   // Type assertion needed due to Supabase RPC type inference issue
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: canEdit } = await (supabase.rpc as any)('has_property_role', hasPropertyRoleArgs);
 
   // Generate signed URL for featured media

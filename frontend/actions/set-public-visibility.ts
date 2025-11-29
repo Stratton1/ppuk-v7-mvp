@@ -20,7 +20,6 @@ export async function setPublicVisibilityAction(formData: FormData): Promise<voi
   };
 
   // Type assertion needed due to Supabase RPC type inference issue
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error: visibilityError } = await (supabase.rpc as any)('set_public_visibility', visibilityArgs);
 
   if (visibilityError) {
@@ -32,7 +31,6 @@ export async function setPublicVisibilityAction(formData: FormData): Promise<voi
     const regenerateArgs: Database['public']['Functions']['regenerate_slug']['Args'] = {
       property_id: propertyId,
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.rpc as any)('regenerate_slug', regenerateArgs);
   }
 

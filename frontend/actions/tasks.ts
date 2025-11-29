@@ -17,7 +17,6 @@ export async function createTaskAction(
   };
 
   // Type assertion needed due to RLS type inference issue
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase.from('property_tasks').insert as any)(taskWithUser);
   if (error) throw error;
   revalidatePath(`/properties/${task.property_id}`);
@@ -36,7 +35,6 @@ export async function createNoteAction(
   };
 
   // Type assertion needed due to RLS type inference issue
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase.from('property_notes').insert as any)(noteWithUser);
   if (error) throw error;
   revalidatePath(`/properties/${note.property_id}`);

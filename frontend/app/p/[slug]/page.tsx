@@ -34,7 +34,6 @@ export default async function PublicPassportPage({ params }: { params: { slug: s
     slug: params.slug,
   };
   // Type assertion needed due to Supabase RPC type inference issue
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase.rpc as any)('get_public_property', publicPropertyArgs);
 
   if (error || !data || data.length === 0) {
