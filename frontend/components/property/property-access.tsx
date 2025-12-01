@@ -22,12 +22,11 @@ import {
 import { GrantAccessDialog } from './grant-access-dialog';
 import { RemoveAccessDialog } from './remove-access-dialog';
 
-type UserPropertyRole = Database['public']['Tables']['user_property_roles']['Row'];
-type UserExtended = Database['public']['Tables']['users_extended']['Row'];
+type StakeholderRole = Database['public']['Tables']['property_stakeholders']['Row'];
 
-interface RoleWithUser extends UserPropertyRole {
-  user?: Pick<UserExtended, 'full_name' | 'organisation' | 'primary_role'> | null;
-  grantedByUser?: Pick<UserExtended, 'full_name'> | null;
+interface RoleWithUser extends StakeholderRole {
+  user?: { full_name: string | null; organisation?: string | null; primary_role?: string | null } | null;
+  grantedByUser?: { full_name: string | null } | null;
 }
 
 interface PropertyAccessProps {
@@ -50,11 +49,11 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
   // Fetch all property roles
   // RLS will automatically filter based on user's permissions
   const { data: roles, error: rolesError } = await supabase
-    .from('user_property_roles')
+    .from('property_stakeholders')
     .select('*')
     .eq('property_id', propertyId)
     .is('deleted_at', null)
-    .order('created_at', { ascending: false});
+    .order('created_at', { ascending: false });
 
   // Handle error
   if (rolesError) {
@@ -84,18 +83,34 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
   ];
   const allUserIds = [...new Set([...userIds, ...grantedByIds])];
 
-  const { data: users } = await supabase
-    .from('users_extended')
-    .select('user_id, full_name, organisation, primary_role')
-    .in('user_id', allUserIds);
+  // Query users table (v7 schema) - full_name and organisation are in users table
+  const { data: users, error: usersError } = await supabase
+    .from('users')
+    .select('id, full_name, organisation')
+    .in('id', allUserIds);
 
-  // Create user lookup map
-  const userMap = new Map<string, Pick<UserExtended, 'full_name' | 'organisation' | 'primary_role'>>();
+  if (usersError) {
+    console.error('Failed to fetch users', usersError);
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Access & Roles</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+            Failed to load user information: {usersError.message}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Create user lookup map using id (v7 schema)
+  const userMap = new Map<string, { full_name: string | null; organisation: string | null }>();
   users?.forEach((u) => {
-    userMap.set(u.user_id, {
+    userMap.set(u.id, {
       full_name: u.full_name,
-      organisation: u.organisation,
-      primary_role: u.primary_role,
+      organisation: u.organisation ?? null,
     });
   });
 
@@ -161,7 +176,7 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
 
                   return (
                     <div
-                      key={roleAssignment.id}
+                      key={`${roleAssignment.user_id}-${roleAssignment.property_id}-${roleAssignment.role}`}
                       className="flex items-start justify-between gap-4 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                     >
                       {/* User Info */}
@@ -228,7 +243,7 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
                         {/* Remove button (only for non-owners and if user can manage) */}
                         {canManageRoles && roleAssignment.role !== 'owner' && (
                           <RemoveAccessDialog
-                            roleId={roleAssignment.id}
+                            roleId={`${roleAssignment.user_id}-${roleAssignment.property_id}-${roleAssignment.role}`}
                             propertyId={propertyId}
                             userName={roleAssignment.user?.full_name || 'Unknown User'}
                             userRole={roleAssignment.role}

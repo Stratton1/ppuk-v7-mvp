@@ -1,3 +1,6 @@
+/* NOTE SUBSYSTEM DISABLED — LEGACY v6 SCHEMA (property_notes) REMOVED IN v7 */
+
+/*
 'use client';
 
 import { useState } from 'react';
@@ -124,3 +127,7 @@ export const CreateNoteDialog = ({ propertyId, onSubmit }: CreateNoteDialogProps
     </div>
   );
 };
+*/
+
+// @deprecated Notes subsystem removed in v7 schema (property_notes dropped). Placeholder to satisfy imports.
+export const CreateNoteDialog = () => null;

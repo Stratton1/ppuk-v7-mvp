@@ -14,7 +14,7 @@ import { z } from 'zod';
 /**
  * Allowed roles that can be granted
  */
-const GRANTABLE_ROLES = ['agent', 'conveyancer', 'surveyor', 'buyer', 'tenant', 'viewer'] as const;
+const GRANTABLE_ROLES = ['agent', 'conveyancer', 'surveyor', 'buyer', 'viewer'] as const;
 
 /**
  * Grant result type
@@ -40,7 +40,7 @@ const GrantRoleSchema = z.object({
  * 1. Validate authentication
  * 2. Check user has permission to grant roles (owner or admin)
  * 3. Look up user by email
- * 4. Insert role into user_property_roles
+ * 4. Insert role into property_stakeholders
  * 5. Log role_granted event
  * 6. Revalidate property page
  * 
@@ -116,11 +116,11 @@ export async function grantPropertyRole(
     // This simplifies testing while maintaining security
     const targetUserId = validatedData.email;
 
-    // Verify user exists in users_extended
+    // Verify user exists in users
     const { data: targetUser, error: userError } = await supabase
-      .from('users_extended')
-      .select('user_id, full_name')
-      .eq('user_id', targetUserId)
+      .from('users')
+      .select('id, full_name')
+      .eq('id', targetUserId)
       .single();
 
     if (userError || !targetUser) {
@@ -134,7 +134,7 @@ export async function grantPropertyRole(
 
     // Check if user already has this role
     const { data: existingRole } = await supabase
-      .from('user_property_roles')
+      .from('property_stakeholders')
       .select('id')
       .eq('property_id', propertyId)
       .eq('user_id', targetUserId)
@@ -154,7 +154,7 @@ export async function grantPropertyRole(
 
     // Insert role
     const { error: insertError } = await supabase
-      .from('user_property_roles')
+      .from('property_stakeholders')
       .insert({
         property_id: propertyId,
         user_id: targetUserId,

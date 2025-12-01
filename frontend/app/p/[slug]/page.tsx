@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Database } from '@/types/supabase';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 import { PublicHero } from '@/components/public-passport/public-hero';
 import { PublicMetadata } from '@/components/public-passport/public-metadata';
 import { PublicGallery } from '@/components/public-passport/public-gallery';
@@ -18,7 +18,7 @@ type PublicProperty = {
 };
 
 async function getSignedUrl(
-  supabase: ReturnType<typeof createServerSupabaseClient>,
+  supabase: ReturnType<typeof createServerClient>,
   bucket: string,
   path: string | null | undefined
 ) {
@@ -29,7 +29,7 @@ async function getSignedUrl(
 }
 
 export default async function PublicPassportPage({ params }: { params: { slug: string } }) {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServerClient();
   const publicPropertyArgs: Database['public']['Functions']['get_public_property']['Args'] = {
     slug: params.slug,
   };

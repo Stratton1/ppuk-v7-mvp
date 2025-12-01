@@ -1,6 +1,8 @@
 # 🏠 Property Passport UK v7.0 - Complete Blueprint & Build Guide
 ## The Ultimate Implementation Guide for Cursor Agent & Codex Mode
 
+> Deprecated in favour of `PPUK_V7_COMPLETE_BLUEPRINT_V2.md`; kept for historical context.
+
 ---
 
 # 📑 Table of Contents

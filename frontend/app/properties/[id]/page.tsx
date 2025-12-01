@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 import { PropertyHeader } from '@/components/property/property-header';
 import { PropertyMeta } from '@/components/property/property-meta';
 import { PropertyGallery } from '@/components/property/property-gallery';
@@ -8,10 +8,8 @@ import { PropertyAccess } from '@/components/property/property-access';
 import { PropertyEvents } from '@/components/property/property-events';
 import { PropertyFlags } from '@/components/property/property-flags';
 import { TaskList } from '@/components/property/tasks/task-list';
-import { NoteList } from '@/components/property/notes/note-list';
 import { CreateTaskDialog } from '@/components/property/tasks/create-task-dialog';
-import { CreateNoteDialog } from '@/components/property/notes/create-note-dialog';
-import { createNoteAction, createTaskAction } from '@/actions/tasks';
+import { createTaskAction } from '@/actions/tasks';
 import type { Database } from '@/types/supabase';
 
 interface PropertyDetailPageProps {
@@ -21,7 +19,7 @@ interface PropertyDetailPageProps {
 }
 
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServerClient();
 
   const { data: property, error: propertyError } = await supabase
     .from('properties')
@@ -36,33 +34,25 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
   // Type assertion needed due to RLS type inference issue
   const propertyTyped = property as Database['public']['Tables']['properties']['Row'];
 
-  const featuredMediaArgs: Database['public']['Functions']['get_featured_media']['Args'] = {
-    property_id: propertyTyped.id,
-  };
-  const propertyTasksArgs: Database['public']['Functions']['get_property_tasks']['Args'] = {
-    property_id: propertyTyped.id,
-  };
-  const propertyNotesArgs: Database['public']['Functions']['get_property_notes']['Args'] = {
-    property_id: propertyTyped.id,
-  };
-
-  // Type assertions needed due to Supabase RPC type inference issues
-  const [{ data: featuredMedia }, { data: allMedia }, { data: tasks }, { data: notes }] = await Promise.all([
-    (supabase.rpc as any)('get_featured_media', featuredMediaArgs),
+  const [{ data: allMedia }, { data: tasks }] = await Promise.all([
     supabase
-      .from('property_media')
+      .from('media')
       .select('*')
       .eq('property_id', propertyTyped.id)
       .eq('status', 'active')
       .is('deleted_at', null)
       .order('created_at', { ascending: true }),
-    (supabase.rpc as any)('get_property_tasks', propertyTasksArgs),
-    (supabase.rpc as any)('get_property_notes', propertyNotesArgs),
+    supabase
+      .from('tasks')
+      .select('*')
+      .eq('property_id', propertyTyped.id)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false }),
   ]);
 
   return (
     <div className="container mx-auto space-y-8 py-8">
-      <PropertyHeader property={propertyTyped} featuredMedia={featuredMedia?.[0] || null} />
+      <PropertyHeader property={propertyTyped} featuredMedia={allMedia?.[0] || null} />
       <PropertyMeta property={propertyTyped} />
       <PropertyGallery propertyId={propertyTyped.id} media={allMedia || []} />
       <PropertyDocuments propertyId={propertyTyped.id} />
@@ -76,11 +66,12 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
         <TaskList tasks={tasks || []} />
       </div>
 
+      {/* TODO: Notes functionality removed in v7 schema migration */}
       {/* I. Notes */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <CreateNoteDialog propertyId={propertyTyped.id} onSubmit={createNoteAction} />
         <NoteList notes={notes || []} />
-      </div>
+      </div> */}
     </div>
   );
 }

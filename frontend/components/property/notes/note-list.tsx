@@ -1,3 +1,6 @@
+/* NOTE SUBSYSTEM DISABLED — LEGACY v6 SCHEMA (property_notes) REMOVED IN v7 */
+
+/*
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Database } from '@/types/supabase';
@@ -79,3 +82,7 @@ export const NoteList = ({ notes, onCreate }: NoteListProps) => {
     </div>
   );
 };
+*/
+
+// @deprecated Notes subsystem removed in v7 schema (property_notes dropped). Placeholder to satisfy imports.
+export const NoteList = () => null;

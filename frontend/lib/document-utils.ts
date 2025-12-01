@@ -5,7 +5,7 @@
 
 import { Database } from '@/types/supabase';
 
-type DocumentType = Database['public']['Tables']['property_documents']['Row']['document_type'];
+type DocumentType = Database['public']['Tables']['documents']['Row']['document_type'];
 
 /**
  * Document type configuration
@@ -129,4 +129,3 @@ export function formatMimeType(mimeType: string): string {
 
   return mimeMap[mimeType] || mimeType.split('/')[1]?.toUpperCase() || 'FILE';
 }
-

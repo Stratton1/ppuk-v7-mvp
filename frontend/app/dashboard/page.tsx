@@ -1,6 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createClient as createServerClient } from '@/lib/supabase/server';
+import { getServerUser } from '@/lib/auth/server-user';
 import { DashboardPropertyCard } from '@/components/dashboard/property-card';
 import { ActivityTimeline } from '@/components/dashboard/activity-timeline';
 import { KpiCard } from '@/components/dashboard/kpi-card';
@@ -14,7 +15,7 @@ type UserProperty = Database['public']['Functions']['get_user_properties']['Retu
 
 const FALLBACK_IMAGE = '/placeholder.svg';
 
-async function getCompletion(supabase: ReturnType<typeof createServerSupabaseClient>, propertyId: string) {
+async function getCompletion(supabase: ReturnType<typeof createServerClient>, propertyId: string) {
   const completionArgs: Database['public']['Functions']['calculate_property_completion']['Args'] = {
     property_id: propertyId,
   };
@@ -25,7 +26,7 @@ async function getCompletion(supabase: ReturnType<typeof createServerSupabaseCli
 }
 
 async function getSignedUrl(
-  supabase: ReturnType<typeof createServerSupabaseClient>,
+  supabase: ReturnType<typeof createServerClient>,
   bucket: string,
   path: string | null | undefined
 ) {
@@ -36,23 +37,21 @@ async function getSignedUrl(
 }
 
 export default async function DashboardPage(): Promise<React.ReactElement> {
-  const supabase = createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  const userSession = await getServerUser();
+  if (!userSession) {
     redirect('/auth/login');
   }
+  const supabase = createServerClient();
+  const userId = userSession.userId;
 
   const userPropertiesArgs: Database['public']['Functions']['get_user_properties']['Args'] = {
-    user_id: user.id,
+    user_id: userId,
   };
   const recentActivityArgs: Database['public']['Functions']['get_recent_activity']['Args'] = {
-    auth_uid: user.id,
+    auth_uid: userId,
   };
   const dashboardStatsArgs: Database['public']['Functions']['get_dashboard_stats']['Args'] = {
-    auth_uid: user.id,
+    auth_uid: userId,
   };
 
   // Type assertions needed due to Supabase RPC type inference issues
@@ -70,7 +69,7 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
   const { data: baseProperties } = propertyIds.length
     ? await supabase
         .from('properties')
-        .select('id, display_address, status, uprn, latitude, longitude, created_at, updated_at, deleted_at, created_by_user_id')
+        .select('id, display_address, status, uprn, latitude, longitude, created_at, updated_at, deleted_at, created_by_user_id, public_slug, public_visibility')
         .in('id', propertyIds)
     : { data: [] as Database['public']['Tables']['properties']['Row'][] | null };
 

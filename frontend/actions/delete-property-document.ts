@@ -25,7 +25,7 @@ export type DeleteDocumentResult =
  * 2. Check user has permission to delete (via RLS helper)
  * 3. Fetch document record to get storage details
  * 4. Delete from Supabase Storage
- * 5. Delete record from property_documents table
+ * 5. Delete record from documents table
  * 6. Log document_deleted event
  * 7. Revalidate property page
  * 
@@ -74,7 +74,7 @@ export async function deletePropertyDocument(
 
     // Fetch the document record to get storage details
     const { data: document, error: fetchError } = await supabase
-      .from('property_documents')
+      .from('documents')
       .select('storage_bucket, storage_path, document_type, title, mime_type, size_bytes')
       .eq('id', documentId)
       .single();
@@ -96,7 +96,7 @@ export async function deletePropertyDocument(
 
     // Delete from database
     const { error: deleteError } = await supabase
-      .from('property_documents')
+      .from('documents')
       .delete()
       .eq('id', documentId);
 

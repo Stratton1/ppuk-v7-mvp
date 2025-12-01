@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { GlobalSearch } from './global-search';
 
 export const Navbar = async () => {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

@@ -25,7 +25,7 @@ export type DeleteMediaResult =
  * 2. Check user has permission to delete (via RLS helper)
  * 3. Fetch media record to get storage details
  * 4. Delete from Supabase Storage
- * 5. Delete record from property_media table
+ * 5. Delete record from media table
  * 6. Log media_deleted event
  * 7. Revalidate property page
  * 
@@ -74,7 +74,7 @@ export async function deletePropertyMedia(
 
     // Fetch the media record to get storage details
     const { data: media, error: fetchError } = await supabase
-      .from('property_media')
+      .from('media')
       .select('storage_bucket, storage_path, media_type, title, mime_type')
       .eq('id', mediaId)
       .single();
@@ -96,7 +96,7 @@ export async function deletePropertyMedia(
 
     // Delete from database
     const { error: deleteError } = await supabase
-      .from('property_media')
+      .from('media')
       .delete()
       .eq('id', mediaId);
 

@@ -109,54 +109,29 @@ SECTION 3 — ARCHITECTURE RULES (NON-NEGOTIABLE)
 -------------------------------------------------------------------------------
 PPUK v7 uses the following architecture requirements:
 
-### FRONTEND (V0 / Next.js 14 / React 18)
-- TypeScript strict mode ON
-- Tailwind + shadcn/ui ONLY
-- React Query for all server state
-- Component-per-file architecture
-- Folder layout:
-  ```
-  /src/app
-  /src/components/ui
-  /src/components/business
-  /src/components/property
-  /src/components/api-preview
-  /src/hooks
-  /src/lib
-  /src/types
-  /src/api
-  ```
-- No inline styles
-- No CSS modules
-- No Redux
-- No untyped fetch calls
-- No client-side secrets
+### FRONTEND (Next.js App Router)
+- Next.js 16 (App Router), React 19, TypeScript strict, Tailwind + shadcn/ui.
+- Code lives under `frontend/` (app, components, actions, lib, hooks, providers, types).
+- Supabase access via @supabase/ssr clients in `frontend/lib/supabase`.
+- Prefer server components/server actions; React Query for server state when needed.
+- No inline styles or CSS modules; no Redux; no client-side secrets.
 
-### BACKEND (Supabase + Edge Functions)
-- Database access via Supabase client (typed)
-- ALL external APIs must run in Edge Functions
-- ALL user-data tables protected by RLS
-- API keys NEVER exposed to frontend
-- RPC functions require row-level policy checks
-- x-supabase-auth header required on sensitive functions
+### BACKEND (Supabase)
+- Database access via Supabase client (typed) with RLS enforced.
+- External APIs should be proxied through Supabase Edge Functions and must not expose secrets client-side.
+- API keys never exposed to frontend; RPCs and policies govern access.
 
 ### DOCUMENTS AND MEDIA
 - Storage buckets:
   - property-documents
   - property-photos
-- Uploads go through validation
-- Signed URLs used for download
-- No public storage unless explicitly documented
+- Use signed URLs; validate uploads; no public storage unless explicitly documented.
 
 ### ERROR HANDLING
-- Safe error messages only
-- No leaking stack traces
-- UI uses toast + boundary patterns
+- Safe error messages only; no leaking stack traces; UI uses toast + boundary patterns.
 
 ### TESTING
-- Every business component must have tests
-- All API functions must have integration tests
-- No merging without test pass
+- Business components and APIs should have automated tests; integrate lint/type/test gates in CI before merge.
 
 -------------------------------------------------------------------------------
 SECTION 4 — DEVELOPMENT WORKFLOW RULES

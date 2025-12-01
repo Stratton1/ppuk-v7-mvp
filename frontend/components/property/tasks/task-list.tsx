@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import type { Database } from '@/types/supabase';
 import { format } from 'date-fns';
 
-type Task = Database['public']['Tables']['property_tasks']['Row'];
+type Task = Database['public']['Tables']['tasks']['Row'];
 
 type TaskListProps = {
   tasks: Task[];

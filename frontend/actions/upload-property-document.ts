@@ -71,7 +71,7 @@ const UploadDocumentSchema = z.object({
  * 2. Validate form data
  * 3. Check user has permission to upload (via RLS helper)
  * 4. Upload file to Supabase Storage
- * 5. Insert record into property_documents table
+ * 5. Insert record into documents table
  * 6. Log document_uploaded event
  * 7. Revalidate property page
  * 
@@ -174,7 +174,7 @@ export async function uploadPropertyDocument(
 
     // Insert document record into database
     const { data: document, error: insertError } = await supabase
-      .from('property_documents')
+      .from('documents')
       .insert({
         property_id: propertyId,
         uploaded_by_user_id: user.id,

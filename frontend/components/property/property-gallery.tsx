@@ -11,7 +11,7 @@ import { GalleryImage } from './gallery-image';
 import { getFeaturedMediaUrl } from '@/lib/signed-url';
 import { UploadPhotoDialog } from './upload-photo-dialog';
 
-type PropertyMedia = Database['public']['Tables']['property_media']['Row'];
+type PropertyMedia = Database['public']['Tables']['media']['Row'];
 
 interface PropertyGalleryProps {
   propertyId: string;

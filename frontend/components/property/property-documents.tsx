@@ -14,8 +14,7 @@ import {
 import { UploadDocumentDialog } from './upload-document-dialog';
 import { DeleteDocumentDialog } from './delete-document-dialog';
 
-type PropertyDocument = Database['public']['Tables']['property_documents']['Row'];
-type UserExtended = Database['public']['Tables']['users_extended']['Row'];
+type PropertyDocument = Database['public']['Tables']['documents']['Row'];
 
 type PropertyDocumentsProps = {
   propertyId: string;
@@ -34,25 +33,25 @@ export async function PropertyDocuments({ propertyId }: PropertyDocumentsProps) 
   const { data: canDelete } = await supabase.rpc('has_property_role', hasPropertyRoleArgs);
 
   const { data: documents, error: documentsError } = await supabase
-    .from('property_documents')
+    .from('documents')
     .select('*')
     .eq('property_id', propertyId)
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
-  const uploaderMap: Map<string, Pick<UserExtended, 'full_name' | 'primary_role'>> = new Map();
+  const uploaderMap: Map<string, { full_name: string | null; primary_role?: string | null }> = new Map();
 
   if (documents && documents.length > 0) {
     const uploaderIds = [...new Set(documents.map((d) => d.uploaded_by_user_id))];
     const { data: uploaders } = await supabase
-      .from('users_extended')
-      .select('user_id, full_name, primary_role')
-      .in('user_id', uploaderIds);
+      .from('users')
+      .select('id, full_name, primary_role')
+      .in('id', uploaderIds);
 
     uploaders?.forEach((u) => {
-      uploaderMap.set(u.user_id, {
+      uploaderMap.set(u.id, {
         full_name: u.full_name,
-        primary_role: u.primary_role,
+        primary_role: u.primary_role ?? null,
       });
     });
   }
@@ -104,7 +103,7 @@ export async function PropertyDocuments({ propertyId }: PropertyDocumentsProps) 
     }
     acc[type].push(doc);
     return acc;
-  }, {} as Record<string, Array<PropertyDocument & { signedUrl: string | null; uploader?: Pick<UserExtended, 'full_name' | 'primary_role'> }>>);
+  }, {} as Record<string, Array<PropertyDocument & { signedUrl: string | null; uploader?: { full_name: string | null; primary_role?: string | null } }>>);
 
   return (
     <Card>

@@ -56,7 +56,7 @@ const UploadPhotoSchema = z.object({
  * 2. Validate form data
  * 3. Check user has permission to upload (via RLS helper)
  * 4. Upload file to Supabase Storage
- * 5. Insert record into property_media table
+ * 5. Insert record into media table
  * 6. Log media_uploaded event
  * 7. Revalidate property page
  * 
@@ -161,7 +161,7 @@ export async function uploadPropertyPhoto(
     const title = validatedData.description || file.name;
     
     const { data: media, error: insertError } = await supabase
-      .from('property_media')
+      .from('media')
       .insert({
         property_id: propertyId,
         uploaded_by_user_id: user.id,

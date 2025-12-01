@@ -11,10 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { PLACEHOLDER_IMAGE } from '@/lib/signed-url';
 import { DeleteMediaButton } from './delete-media-button';
 
-type PropertyMedia = Database['public']['Tables']['property_media']['Row'];
+type Media = Database['public']['Tables']['media']['Row'];
 
 interface GalleryImageProps {
-  media: PropertyMedia;
+  media: Media;
   signedUrl: string | null;
   propertyId: string;
   canDelete?: boolean;

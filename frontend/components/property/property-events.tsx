@@ -10,10 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 type PropertyEvent = Database['public']['Tables']['property_events']['Row'];
-type UserExtended = Database['public']['Tables']['users_extended']['Row'];
 
 interface EventWithActor extends PropertyEvent {
-  actor?: Pick<UserExtended, 'full_name' | 'primary_role'> | null;
+  actor?: { full_name: string | null } | null;
 }
 
 interface PropertyEventsProps {
@@ -290,16 +289,15 @@ export async function PropertyEvents({ propertyId }: PropertyEventsProps) {
   ];
 
   const { data: actors } = await supabase
-    .from('users_extended')
-    .select('user_id, full_name, primary_role')
-    .in('user_id', actorIds);
+    .from('users')
+    .select('id, full_name')
+    .in('id', actorIds);
 
   // Create actor lookup map
-  const actorMap = new Map<string, Pick<UserExtended, 'full_name' | 'primary_role'>>();
+  const actorMap = new Map<string, { full_name: string | null }>();
   actors?.forEach((actor) => {
-    actorMap.set(actor.user_id, {
+    actorMap.set(actor.id, {
       full_name: actor.full_name,
-      primary_role: actor.primary_role,
     });
   });
 
@@ -367,9 +365,6 @@ export async function PropertyEvents({ propertyId }: PropertyEventsProps) {
                               <>
                                 <span>
                                   by {event.actor.full_name}
-                                  {event.actor.primary_role && (
-                                    <span className="capitalize"> ({event.actor.primary_role})</span>
-                                  )}
                                 </span>
                                 <span>•</span>
                               </>

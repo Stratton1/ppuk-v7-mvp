@@ -1,0 +1,152 @@
+PPUK v7.0 Build - Folder Structure
+==================================================
+├── docs
+│   ├── AGENTS.md
+│   ├── AUTH_ROLE_ARCHITECTURE_SPECIFICATION.md
+│   ├── CONTRIBUTING.md
+│   ├── LEGACY_SCHEMA_REMOVAL_PLAN.md
+│   ├── PPUK_V7_COMPLETE_BLUEPRINT.md
+│   ├── PPUK_V7_COMPLETE_BLUEPRINT_V2.md
+│   ├── README.md
+│   ├── RLS_POLICY_PLAN.md
+│   ├── SCHEMA_ARCHITECTURE_SPECIFICATION.md
+│   ├── SCHEMA_VERIFICATION_REPORT.md
+│   ├── codebase-audit-v7.md
+│   ├── concise.md
+│   ├── continue.md
+│   ├── core.md
+│   ├── current_state_and_next_steps.txt
+│   ├── frontendconsider.md
+│   ├── project-tree.md
+│   ├── refresh.md
+│   └── roadmap.md
+├── frontend
+│   ├── actions
+│   │   ├── delete-property-document.ts
+│   │   ├── delete-property-media.ts
+│   │   ├── grant-property-role.ts
+│   │   ├── revoke-property-role.ts
+│   │   ├── set-public-visibility.ts
+│   │   ├── tasks.ts
+│   │   ├── upload-property-document.ts
+│   │   └── upload-property-photo.ts
+│   ├── app
+│   │   ├── api
+│   │   │   ├── me
+│   │   │   └── property-access
+│   │   ├── auth
+│   │   │   ├── login
+│   │   │   └── register
+│   │   ├── dashboard
+│   │   │   ├── error.tsx
+│   │   │   ├── loading.tsx
+│   │   │   └── page.tsx
+│   │   ├── p
+│   │   │   └── [slug]
+│   │   ├── properties
+│   │   │   ├── [id]
+│   │   │   ├── create
+│   │   │   ├── error.tsx
+│   │   │   ├── loading.tsx
+│   │   │   └── page.tsx
+│   │   ├── search
+│   │   │   └── page.tsx
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── providers.tsx
+│   ├── components
+│   │   ├── dashboard
+│   │   │   ├── access-card.tsx
+│   │   │   ├── activity-timeline.tsx
+│   │   │   ├── kpi-card.tsx
+│   │   │   ├── property-card.tsx
+│   │   │   └── recent-activity.tsx
+│   │   ├── layout
+│   │   │   ├── app-shell.tsx
+│   │   │   ├── footer.tsx
+│   │   │   ├── global-search.tsx
+│   │   │   ├── navbar.tsx
+│   │   │   └── sidebar.tsx
+│   │   ├── property
+│   │   │   ├── notes
+│   │   │   ├── tasks
+│   │   │   ├── create-property-form.tsx
+│   │   │   ├── delete-document-dialog.tsx
+│   │   │   ├── delete-media-button.tsx
+│   │   │   ├── delete-media-dialog.tsx
+│   │   │   ├── edit-property-form.tsx
+│   │   │   ├── gallery-image.tsx
+│   │   │   ├── grant-access-dialog.tsx
+│   │   │   ├── property-access.tsx
+│   │   │   ├── property-card.tsx
+│   │   │   ├── property-documents.tsx
+│   │   │   ├── property-events.tsx
+│   │   │   ├── property-flags.tsx
+│   │   │   ├── property-gallery.tsx
+│   │   │   ├── property-header.tsx
+│   │   │   ├── property-list.tsx
+│   │   │   ├── property-meta.tsx
+│   │   │   ├── remove-access-dialog.tsx
+│   │   │   ├── upload-document-dialog.tsx
+│   │   │   └── upload-photo-dialog.tsx
+│   │   ├── public-passport
+│   │   │   ├── public-documents.tsx
+│   │   │   ├── public-gallery.tsx
+│   │   │   ├── public-hero.tsx
+│   │   │   └── public-metadata.tsx
+│   │   ├── ui
+│   │   │   ├── badge.tsx
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   ├── skeleton.tsx
+│   │   │   └── textarea.tsx
+│   │   └── protected-route.tsx
+│   ├── hooks
+│   │   ├── useSupabase.ts
+│   │   └── useUser.ts
+│   ├── lib
+│   │   ├── auth
+│   │   │   ├── actions.ts
+│   │   │   ├── middleware-helpers.ts
+│   │   │   └── server-user.ts
+│   │   ├── document-utils.ts
+│   │   ├── role-utils.ts
+│   │   ├── signed-url.ts
+│   │   └── utils.ts
+│   ├── providers
+│   │   ├── query-provider.tsx
+│   │   └── supabase-provider.tsx
+│   ├── public
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── next.svg
+│   │   ├── placeholder.svg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   ├── types
+│   │   ├── auth.ts
+│   │   ├── forms.ts
+│   │   └── supabase.ts
+│   ├── README.md
+│   ├── components.json
+│   ├── eslint.config.mjs
+│   ├── middleware.ts
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── tailwind.config.ts
+│   └── tsconfig.json
+├── eslint.config.js
+├── folder-structure.txt
+├── package.json
+├── tsconfig.json
+├── tsconfig.tsbuildinfo
+├── verify_schema.sql
+└── vitest.config.ts

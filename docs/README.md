@@ -1,42 +1,33 @@
-# Property Passport UK Platform (v7) - Starter Scaffold
+# Property Passport UK v7 — Canonical Guide
 
-This repository is the starter TypeScript + Express scaffold for the Property Passport UK platform. It includes opinionated defaults for linting/formatting, environment management, and testing.
+This repository contains the Next.js 16 frontend (App Router) backed by Supabase (Postgres + RLS) for the Property Passport UK v7 platform.
 
-## Quick start
+## Stack
+- **Frontend:** Next.js 16 (App Router), React 19, TypeScript strict, Tailwind + shadcn/ui.
+- **Backend:** Supabase (typed clients via `@supabase/ssr`), RLS enforced, buckets `property-documents` and `property-photos`.
+- **Location:** App code in `frontend/` (app, components, actions, lib, hooks, providers, types). Supabase migrations in `supabase/`.
 
-1) **Prerequisites:** Node 18+ (see `../.nvmrc`), npm.
-2) **Install deps:** `npm install`
-3) **Environment:** copy `../.env.example` to `.env` and adjust as needed.
-4) **Run dev server:** `npm run dev` (ts-node-dev, reloads on change).
-5) **Health check:** `GET http://localhost:3000/health` returns `{ "status": "ok" }`.
+## How to run locally
+1) Node **≥20.19.6** (use `nvm use 20`).  
+2) Supabase CLI linked (`supabase link`).  
+3) Install & build:
+```bash
+cd frontend
+npm install
+npm run build
+npm run dev
+```
+4) Env: ensure `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (no secrets in client).
 
-## Scripts
+## Documentation map (source of truth)
+- **Architecture & Blueprint:** `PPUK_V7_COMPLETE_BLUEPRINT_V2.md` (canonical), `PPUK_V7_COMPLETE_BLUEPRINT.md` (deprecated for context).
+- **Auth & Roles:** `AUTH_ROLE_ARCHITECTURE_SPECIFICATION.md`
+- **Schema & RLS:** `SCHEMA_ARCHITECTURE_SPECIFICATION.md`, `SCHEMA_VERIFICATION_REPORT.md`, `RLS_POLICY_PLAN.md`
+- **Roadmap & Current State:** `roadmap.md`, `current_state_and_next_steps.txt`, `codebase-audit-v7.md`
+- **Hygiene Reports:** `CODEBASE_HYGIENE_REPORT.md`
+- **Legacy removal plan:** `LEGACY_SCHEMA_REMOVAL_PLAN.md`
 
-- `npm run dev` — start dev server (ts-node-dev) at configured port.
-- `npm run build` — typecheck and emit compiled JS to `dist/`.
-- `npm run start` — run compiled server from `dist/`.
-- `npm run lint` / `npm run lint:fix` — ESLint with TypeScript + Prettier.
-- `npm run format` / `npm run format:check` — Prettier formatting.
-- `npm test` / `npm run test:watch` — Vitest suite.
-
-## Project layout
-
-- `src/` — application code
-  - `config/` — environment/config loading
-  - `middlewares/` — Express middlewares (error handling, etc.)
-  - `routes/` — route handlers (e.g., `/health`)
-  - `tests/` — automated tests (Vitest)
-- `docs/` (this directory) — architectural and process documentation
-- `.husky/` — git hooks (pre-commit runs lint-staged)
-
-## Development standards
-
-- TypeScript-first; keep code under `src/` only.
-- Validate inputs and avoid leaking internals in errors.
-- Keep modules cohesive and layered (config, routes, controllers, services, etc.).
-- Lint and tests must pass before merging; hooks run lint-staged on commit.
-- Never commit secrets — use environment variables and `.env.example` for defaults.
-
-## Additional references
-
-See this directory for deeper architecture notes (`core.md`, `PPUK_V7_COMPLETE_BLUEPRINT*.md`, `refresh.md`, etc.) and contributor guidance in `./CONTRIBUTING.md` and `./AGENTS.md`.
+## Notes
+- Legacy v6 tables (`property_notes`, `property_tasks`, `property_media`, `property_documents`, `users_extended`, `user_property_roles`, `property_flags`, `audit_logs`) are dropped; do not reference them.
+- Use Supabase clients from `frontend/lib/supabase` and v7-generated types in `frontend/types/supabase.ts`.
+- Refer to `.cursorrules` and `.cursor/rules/propertypassportv7rules.mdc` for enforced engineering rules.

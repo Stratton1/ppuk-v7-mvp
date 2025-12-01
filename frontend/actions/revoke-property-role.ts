@@ -24,11 +24,11 @@ export type RevokeRoleResult =
  * 1. Validate authentication
  * 2. Check user has permission to revoke roles (owner or admin)
  * 3. Fetch role details for event logging
- * 4. Delete role from user_property_roles
+ * 4. Delete role from property_stakeholders
  * 5. Log role_revoked event
  * 6. Revalidate property page
  * 
- * @param roleId - user_property_roles ID to revoke
+ * @param roleId - property_stakeholders ID to revoke
  * @param propertyId - Property ID (for revalidation and permission check)
  */
 export async function revokePropertyRole(
@@ -73,7 +73,7 @@ export async function revokePropertyRole(
 
     // Fetch role details before deletion (for event logging)
     const { data: role, error: fetchError } = await supabase
-      .from('user_property_roles')
+      .from('property_stakeholders')
       .select('user_id, role, granted_by_user_id')
       .eq('id', roleId)
       .single();
@@ -93,14 +93,14 @@ export async function revokePropertyRole(
 
     // Get user name for event log
     const { data: targetUser } = await supabase
-      .from('users_extended')
+      .from('users')
       .select('full_name')
       .eq('user_id', role.user_id)
       .single();
 
     // Delete the role
     const { error: deleteError } = await supabase
-      .from('user_property_roles')
+      .from('property_stakeholders')
       .delete()
       .eq('id', roleId);
 

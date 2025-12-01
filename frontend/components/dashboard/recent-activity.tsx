@@ -160,12 +160,26 @@ export async function DashboardRecentActivity({ userId }: DashboardRecentActivit
 
   // Fetch actor user info in bulk
   const actorIds = [...new Set(events.map((e) => e.actor_user_id).filter((id): id is string => id !== null))];
-  const { data: actors } = await supabase
-    .from('users_extended')
+  
+  const { data: actors, error: actorsError } = await supabase
+    .from('users')
     .select('id, full_name')
     .in('id', actorIds);
 
-  const actorsMap = new Map(actors?.map((a) => [a.id, a]) || []);
+  if (actorsError) {
+    console.error('Failed to fetch actors', actorsError);
+    return (
+      <Card>
+        <CardContent className="py-8 text-center text-sm text-destructive">
+          Error loading activity.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const actorsMap = new Map(
+    (actors ?? []).map((a) => [a.id, a])
+  );
 
   return (
     <Card>
@@ -178,7 +192,7 @@ export async function DashboardRecentActivity({ userId }: DashboardRecentActivit
               color: 'bg-gray-100 text-gray-800',
             };
             const actor = event.actor_user_id ? actorsMap.get(event.actor_user_id) : null;
-            const actorName = actor?.full_name || 'Unknown user';
+            const actorName = actor?.full_name ?? 'Unknown User';
             const property =
               'properties' in event && event.properties && typeof event.properties === 'object'
                 ? (event.properties as { display_address?: string })

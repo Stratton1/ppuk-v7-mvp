@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import type { TaskInsertWithoutUser } from '@/actions/tasks';
 import type { Database } from '@/types/supabase';
 
-type TaskInsert = Database['public']['Tables']['property_tasks']['Insert'];
-type TaskInsertWithoutUser = Omit<TaskInsert, 'created_by_user_id'>;
+type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
 
 type CreateTaskDialogProps = {
   propertyId: string;

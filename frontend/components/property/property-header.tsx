@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getFeaturedMediaUrl, PLACEHOLDER_IMAGE } from '@/lib/signed-url';
 import { setPublicVisibilityAction } from '@/actions/set-public-visibility';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
 type Property = Database['public']['Tables']['properties']['Row'] & {
@@ -25,7 +25,7 @@ interface PropertyHeaderProps {
 }
 
 export async function PropertyHeader({ property, featuredMedia }: PropertyHeaderProps) {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServerClient();
 
   // Check if user can edit property (owner or admin only)
   const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {

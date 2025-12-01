@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSupabase } from '@/providers/supabase-provider';
 
 type ProtectedRouteProps = {
@@ -11,19 +11,47 @@ type ProtectedRouteProps = {
 
 export const ProtectedRoute = ({ children, redirectTo = '/auth/login' }: ProtectedRouteProps) => {
   const router = useRouter();
-  const { session, loading } = useSupabase();
+  const supabase = useSupabase();
+  const [loading, setLoading] = useState(true);
+  const [hasSession, setHasSession] = useState(false);
 
   useEffect(() => {
-    if (!loading && !session) {
+    let isMounted = true;
+    let subscription: ReturnType<typeof supabase.auth.onAuthStateChange> | null = null;
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (!isMounted) return;
+      if (error) {
+        setHasSession(false);
+      } else {
+        setHasSession(!!data.session);
+      }
+      setLoading(false);
+    });
+
+    subscription = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      setHasSession(!!session);
+      setLoading(false);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription?.data.subscription.unsubscribe();
+    };
+  }, [supabase, redirectTo, router]);
+
+  useEffect(() => {
+    if (!loading && !hasSession) {
       router.replace(redirectTo);
     }
-  }, [loading, session, redirectTo, router]);
+  }, [loading, hasSession, redirectTo, router]);
 
   if (loading) {
     return <div className="text-sm text-muted-foreground">Checking authentication…</div>;
   }
 
-  if (!session) {
+  if (!hasSession) {
     return null;
   }
 

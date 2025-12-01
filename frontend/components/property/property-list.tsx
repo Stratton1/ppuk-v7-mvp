@@ -54,24 +54,26 @@ export async function PropertyList() {
     );
   }
 
-  // Fetch featured media and signed URLs for each property
+  // Fetch featured media (first active photo) for each property
   const propertiesWithMedia = await Promise.all(
     properties.map(async (property) => {
-      // Get featured media via RPC
-      const featuredMediaArgs: Database['public']['Functions']['get_featured_media']['Args'] = {
-        property_id: property.id,
-      };
-      const { data: featuredMedia } = await supabase.rpc('get_featured_media', featuredMediaArgs);
+      const { data: media } = await supabase
+        .from('media')
+        .select('id, storage_path')
+        .eq('property_id', property.id)
+        .eq('status', 'active')
+        .eq('media_type', 'photo')
+        .order('created_at', { ascending: true })
+        .limit(1);
 
-      // Get signed URL if featured media exists
       let signedUrl: string | null = null;
-      if (featuredMedia && featuredMedia.length > 0) {
-        signedUrl = await getFeaturedMediaUrl(featuredMedia[0].storage_path);
+      if (media && media.length > 0) {
+        signedUrl = await getFeaturedMediaUrl(media[0].storage_path);
       }
 
       return {
         property,
-        featuredMedia: featuredMedia?.[0] || null,
+        featuredMedia: media?.[0] || null,
         signedUrl,
       };
     })
