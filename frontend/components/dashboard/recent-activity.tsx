@@ -159,27 +159,23 @@ export async function DashboardRecentActivity({ userId }: DashboardRecentActivit
   }
 
   // Fetch actor user info in bulk
-  const actorIds = [...new Set(events.map((e) => e.actor_user_id).filter((id): id is string => id !== null))];
-  
+  // Fetch actor user info in bulk
+  const actorIds = [...new Set(
+    events
+      .map((e) => e.actor_user_id)
+      .filter((id): id is string => !!id)
+  )];
+
   const { data: actors, error: actorsError } = await supabase
     .from('users')
     .select('id, full_name')
     .in('id', actorIds);
 
   if (actorsError) {
-    console.error('Failed to fetch actors', actorsError);
-    return (
-      <Card>
-        <CardContent className="py-8 text-center text-sm text-destructive">
-          Error loading activity.
-        </CardContent>
-      </Card>
-    );
+    console.error('Error fetching actor user data:', actorsError);
   }
 
-  const actorsMap = new Map(
-    (actors ?? []).map((a) => [a.id, a])
-  );
+  const actorsMap = new Map((actors ?? []).map((a) => [a.id, a]));
 
   return (
     <Card>

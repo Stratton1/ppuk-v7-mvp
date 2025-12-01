@@ -1,96 +1,46 @@
-# Property Passport UK v7.0 — End-to-End Roadmap
+# Property Passport UK v7.0 — Roadmap & Status
 
-Source of truth: `/docs` + `.cursorrules` + `.cursor/rules/*.mdc`. Architecture: Supabase backend (Postgres, RLS, Storage, Edge Functions), React/Vite/Tailwind/shadcn frontend, strict TypeScript, Zod validation, Edge Functions for all external APIs, no client-side secrets, least-privilege RLS.
+Source of truth: `/docs`, `.cursorrules`, and the Supabase-linked project `jarbgvpyudutzeqtazoo`. Frontend: Next.js 16 App Router, Supabase SSR client, shadcn. Backend: Supabase (Postgres, RLS, Storage), no v6 artifacts.
 
-## Critical Path & Milestones
-- **Critical path:** Env/CI → Auth & RLS baseline → Schema & storage → Edge-function integration pattern → Property passport flows → External data integrations → Pro/Admin features → Security/perf hardening → Launch.
-- **Milestones:**  
-  - **M1 (W2):** Foundation/CI/auth shell in place.  
-  - **M2 (W4):** Schema + RLS + storage + audit/cache operational with tests.  
-  - **M3 (W6):** Property passport CRUD, uploads/gallery, tasks/notes/watchlist/notifications live with RLS.  
-  - **M4 (W8):** Priority Edge Functions + cache + frontend data cards/hooks.  
-  - **M5 (W10):** Role-aware UX, pro tools, reports/exports.  
-  - **M6 (W12):** Admin console, audit views, analytics/ops docs.  
-  - **M7 (W14):** Security/perf hardened, DR tested, launch-ready with runbooks.
+## Current Status (Mar 2025)
+- **Frontend Phase B (done):** Notes subsystem removed from runtime; featured media now pulled directly from `media` (dashboard and public slug pages); no runtime v6 RPCs; build passing on Node 20.
+- **Backend Phase 3A (done):** New migration `20250314000000_ppuk_v7_backend_alignment.sql` drops v6 tables/functions, rebuilds helpers/RPCs for v7 tables (properties, property_stakeholders, media, documents, tasks), and aligns public slug/visibility, search, dashboard, recent activity, completion scoring.  
+  - Legacy tables removed: `property_media`, `property_documents`, `property_tasks`, `property_notes`, `users_extended`, `user_property_roles`.  
+  - Legacy RPCs removed: `get_featured_media`, v6 `get_user_properties`, v6 tasks/notes RPCs, v6 public passport.  
+  - Helpers rebuilt: `is_admin` (uses users.primary_role), `has_property_role` (property_stakeholders-aware), slug/visibility helpers.  
+  - RPCs rebuilt: create/update property, search_properties, get_user_properties, get_recent_activity, get_dashboard_stats, calculate_property_completion, get_public_property.  
+- **Seed (done):** `supabase/seed.sql` rewritten for v7-only data (auth users, users/profiles, properties, property_stakeholders, media, documents, tasks, property_events).  
+- **Types (done):** `supabase gen types --linked` regenerated `frontend/types/supabase.ts`; no v6 tables/RPCs remain.  
+- **Schema verification:** `verify_schema.sql` updated; `supabase db diff --linked` clean (aside from remote `pg_net` extension noted).  
+- **Known warnings:** Next.js middleware deprecation (needs proxy migration); CLI suggests updating `baseline-browser-mapping`.
 
-## Timeline (14-week baseline)
-- **W1-2:** Foundation (repo, CI/CD, envs, auth baseline, base UI shell).  
-- **W3-4:** Core services (schema, RLS, storage, audit, cache).  
-- **W5-6:** Core features (passport CRUD, uploads/media, tasks/notes/watchlist/notifications).  
-- **W7-8:** Integrations (Edge Functions for priority gov APIs + cache + UI hooks/cards).  
-- **W9-10:** User/pro features (role UX, reports/exports, consent).  
-- **W11-12:** Admin/analytics/ops.  
-- **W13-14:** Hardening, perf, DR, launch.
+## Completed Phases & Outcomes
+1) **Phase A: Repo audit**  
+   - Catalogued all v6 references; confirmed Node 20.19.6, Supabase link to `jarbgvpyudutzeqtazoo`.  
+2) **Phase B: Frontend v7 alignment (runtime)**  
+   - Removed notes UI/actions from runtime; featured media via `media`; no v6 RPC usage; build green.  
+3) **Phase 3A: Backend alignment (current)**  
+   - Dropped v6 schema/RPCs; rebuilt helpers/RPCs/seed; regenerated types; updated verification script.
 
-## Phase 1 — Foundation (W1-2)
-**Goals:** Reliable scaffolding, CI/CD, auth baseline, coding standards.
-- Repo & Tooling: ESLint/Prettier/Vitest; Husky + lint-staged; typecheck gate; Node 18+. (AI assist)
-- CI/CD: GitHub Actions → lint → typecheck → test → build; npm cache; preview deploy hooks. (AI assist)
-- Environments: `.env.example` for dev/stage/prod; secrets only in vault/CI; document bootstrap. (Human)
-- Supabase: Project creation, service keys in CI secrets; enable Auth providers (magic/OTP, Google). (Human)
-- Auth Baseline: Frontend guards, session handling via Supabase client; no client-side secrets. (AI assist)
-- UI Shell: Vite/React/Tailwind/shadcn; layout, theming (navy/sky/slate), routing scaffold, error boundaries, toast. (AI assist)
-- DoD: CI green; auth enabled; envs documented; shell renders.
+## Remaining Work to Finished Product
+- **Middleware migration:** Replace deprecated `middleware` with Next.js 16 `proxy` convention and verify routes.  
+- **RLS regression tests:** Add/test RLS for all v7 tables (properties, property_stakeholders, media, documents, tasks, property_events, property_metadata, invitations, integrations).  
+- **RPC QA:** Ensure frontend uses only the rebuilt v7 RPCs; remove any lingering codepaths to legacy names after types refresh is integrated into app.  
+- **Docs cleanup:** Update any docs still describing React Router v6, v6 tables, or legacy flows; align architecture specs to current schema and RPCs.  
+- **Seed enrichment:** Add richer sample data (flags, notifications, invitations, metadata) if needed for demos.  
+- **Performance/security:** Address Next.js middleware warning, review storage policies, consider adding `pg_net` handling note.  
+- **Launch readiness:** Run verify_schema on remote, add CI gates for migrations/types, and document operational runbooks (backups, DR, monitoring).
 
-## Phase 2 — Core Services & Data Model (W3-4)
-**Goals:** Schema + RLS, storage, audit, cache.
-- Schema: Tables for users/profiles, properties, property_parties, documents, media, api_cache, audit_log, notifications, watchlist, notes, tasks. (AI draft; Human approve)
-- RLS: Role matrix per docs; policies per table; tests per role; least privilege. (AI generate tests; Human approve)
-- Storage: Buckets `property-documents`, `property-photos`; signed URLs only; MIME/size checks; AV hook stub. (AI assist)
-- Audit: Triggers for sensitive actions; structured JSON; no PII leaks in logs. (AI assist)
-- API Cache: `api_cache` with TTL, checksum, source key; cache-first pattern. (AI assist)
-- DoD: Migrations applied; RLS tests passing; storage configured; audit/cache live.
+## Forward Plan (near-term)
+- Regenerate frontend types in CI after each migration; block merges on drift.  
+- Add automated RLS tests (policy coverage per role) and RPC integration tests.  
+- Finalize middleware/proxy migration and re-run `npm run build`.  
+- Review and update docs for v7 terminology and flows; retire v6 references.  
+- Confirm remote schema matches (rerun `supabase db diff --linked` when pool allows) and rerun `verify_schema.sql` on remote.
 
-## Phase 3 — Core Features (W5-6)
-**Goals:** Passport flows, docs/media, productivity tools.
-- Passport CRUD: UPRN-anchored property create/read/update; party linkage; Zod validation; controllers/services wired. (AI assist)
-- Tabs Scaffold: Summary, ownership, compliance, planning, risks, media, documents. (AI assist)
-- Uploads & Media: Edge upload function with validation; metadata in DB; signed access; expiry rotation. (AI assist)
-- Productivity: Tasks, notes, watchlist, notifications with RLS; unread counts; webhook/email placeholders. (AI assist)
-- DoD: End-to-end passport CRUD; uploads/gallery; tasks/notes/watchlist/notifications working with RLS tests.
-
-## Phase 4 — Integrations (W7-8)
-**Goals:** Priority gov data via Edge Functions, cached and surfaced in UI.
-- Edge Functions (Deno): EPC, Land Registry Open Data, Environment Agency Flood, Postcodes.io, Police.uk, Ordnance Survey, ONS (priority set). Validate with Zod, sanitize errors, rate-limit, cache-first. (AI assist; Human approve)
-- Cache & Refresh: TTL invalidation, manual refresh endpoint, cache warming. (AI assist)
-- Frontend Hooks/Cards: React Query hooks per source; loading/error states; UI cards per dataset. (AI assist)
-- DoD: Functions deployed; cache populated; UI shows integrated data with skeleton/error states; integration tests passing.
-
-## Phase 5 — User & Professional Features (W9-10)
-**Goals:** Role-aware UX, pro tooling, reporting.
-- Role UX: Owner/Buyer/Agent/Conveyancer/Surveyor/Admin routes, feature flags, guarded navigation. (AI assist)
-- Pro Tools: Reports/exports (PDF/HTML) with sanitized data; task assignment across parties; chain visibility stub. (AI assist)
-- Consent & Access: Invitations/role assignment; consent logging for data sharing; audit of access grants. (Human + AI)
-- DoD: Role dashboards; reports export; consent + audit wired; RLS tests updated.
-
-## Phase 6 — Admin, Analytics, Ops (W11-12)
-**Goals:** Admin console, audit/ops visibility, analytics stubs.
-- Admin Console: Role management, property moderation, document takedown, rate-limit tuning. (AI assist)
-- Analytics: Server-side event stubs; dashboards for usage/perf; zero PII in logs. (AI assist)
-- Ops: Health/readiness endpoints; alerting hooks; backup/restore runbook. (Human)
-- DoD: Admin UI secured; audit views; basic analytics; ops docs drafted.
-
-## Phase 7 — Hardening & Launch (W13-14)
-**Goals:** Security, performance, DR, launch readiness.
-- Security: Pen-test remediation list; CSP/headers; secret scanning; RLS regression suite. (Human lead)
-- Performance: Profiling, slow-query review, cache tuning, image optimization. (AI assist)
-- DR: Backup schedule verification; restore drill; incident runbook. (Human)
-- Launch: Final QA/UAT signoff; documentation freeze; on-call rotations; cutover plan. (Human)
-- DoD: All checks green; signoffs captured; runbooks published.
-
-## Cross-Cutting Concerns
-- **Validation:** Zod at all boundaries (forms, edge functions, controllers).  
-- **Security/RLS:** No bypass; signed URLs only; no client secrets; structured sanitized errors; rate limiting on sensitive paths.  
-- **Testing:** Unit (schemas/utils/hooks), integration (edge functions, RLS policies, storage flows), E2E (auth + passport + uploads + integrations). CI gates block on failures.  
-- **CI/CD:** GitHub Actions for lint/type/test/build/deploy edge functions; stage preview; manual approvals to prod.  
-- **Docs:** Keep `/docs` authoritative; update READMEs and module docs per change; record TODO/tech debt.  
-- **Logging/Monitoring:** Structured logs sans PII; audit for sensitive actions; health/readiness endpoints.  
-- **Compliance:** RLS coverage for every table; consent logging; storage access via signed URLs; no inline secrets.
-
-## AI vs Human Responsibilities
-- **AI (Cursor/Codex):** Scaffolding/config, schema drafts, RLS/test generation, edge function boilerplate, frontend hooks/cards, lint/test wiring, docs updates.  
-- **Human:** Secret management, Supabase admin actions, RLS approval, production deployments, security/pen-test, legal/compliance, incident response, final QA/UAT signoff.
-
-## Dependencies Summary
-- Auth/env → RLS/schema → storage/audit/cache → passport flows → integrations → pro/admin → hardening/launch.  
-- Edge-function pattern precedes any external API use; RLS tests precede exposing data; CI must be green before merge/deploy.
+## Quick Reference
+- Latest migration: `20250314000000_ppuk_v7_backend_alignment.sql`  
+- Seed file: `supabase/seed.sql` (v7-only)  
+- Types: `frontend/types/supabase.ts` (regenerated)  
+- Verification: `verify_schema.sql`  
+- Linked project: `jarbgvpyudutzeqtazoo`

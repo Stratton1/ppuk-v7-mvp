@@ -21,14 +21,15 @@ export async function GET(
     return NextResponse.json({ access: true });
   }
 
-  // 3. Check stakeholder access (owners, agents, surveyors, etc.)
+  // 3. Check access via ownership or stakeholder role
   const supabase = createServerClient();
 
   const { data: stakeholderRows, error } = await supabase
     .from('property_stakeholders')
-    .select('id')
+    .select('property_id')
     .eq('property_id', propertyId)
     .eq('user_id', session.userId)
+    .is('deleted_at', null)
     .limit(1);
 
   if (error) {
@@ -36,7 +37,14 @@ export async function GET(
     return NextResponse.json({ access: false, error: 'Error checking access' }, { status: 500 });
   }
 
-  const hasAccess = (stakeholderRows?.length ?? 0) > 0;
+  const { data: ownedProperty } = await supabase
+    .from('properties')
+    .select('id')
+    .eq('id', propertyId)
+    .eq('created_by_user_id', session.userId)
+    .limit(1);
+
+  const hasAccess = (stakeholderRows?.length ?? 0) > 0 || (ownedProperty?.length ?? 0) > 0;
 
   return NextResponse.json({ access: hasAccess });
 }

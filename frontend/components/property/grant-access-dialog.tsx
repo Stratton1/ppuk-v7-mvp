@@ -30,11 +30,8 @@ interface GrantAccessDialogProps {
  * Available roles that can be granted
  */
 const GRANTABLE_ROLES = [
-  { value: 'agent', label: 'Estate Agent', icon: '🏢' },
-  { value: 'conveyancer', label: 'Conveyancer', icon: '⚖️' },
-  { value: 'surveyor', label: 'Surveyor', icon: '📐' },
-  { value: 'buyer', label: 'Buyer', icon: '💰' },
-  { value: 'tenant', label: 'Tenant', icon: '🔑' },
+  { value: 'owner', label: 'Owner', icon: '🏠' },
+  { value: 'editor', label: 'Editor', icon: '✏️' },
   { value: 'viewer', label: 'Viewer', icon: '👁️' },
 ];
 
@@ -122,17 +119,17 @@ export function GrantAccessDialog({ propertyId, children }: GrantAccessDialogPro
           {/* User ID Field */}
           <div className="space-y-2">
             <Label htmlFor="email">
-              User ID <span className="text-destructive">*</span>
+              User Email <span className="text-destructive">*</span>
             </Label>
             <Input
               id="email"
               name="email"
-              placeholder="e.g., user-uuid-from-system"
+              placeholder="e.g., user@example.com"
               required
               disabled={loading || success}
             />
             <p className="text-xs text-muted-foreground">
-              Enter the User ID (UUID) of the person you want to grant access to. You can find this in the user management system or seed data.
+              Invite an existing user by their email. They must already be registered.
             </p>
           </div>
 

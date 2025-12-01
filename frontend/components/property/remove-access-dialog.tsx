@@ -20,20 +20,14 @@ import { Button } from '@/components/ui/button';
 import { revokePropertyRole } from '@/actions/revoke-property-role';
 
 interface RemoveAccessDialogProps {
-  roleId: string;
   propertyId: string;
+  userId: string;
   userName: string;
   userRole: string;
   children: React.ReactNode; // Trigger button
 }
 
-export function RemoveAccessDialog({
-  roleId,
-  propertyId,
-  userName,
-  userRole,
-  children,
-}: RemoveAccessDialogProps) {
+export function RemoveAccessDialog({ propertyId, userId, userName, userRole, children }: RemoveAccessDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,7 +41,11 @@ export function RemoveAccessDialog({
     setError(null);
 
     try {
-      const result = await revokePropertyRole(roleId, propertyId);
+      const result = await revokePropertyRole(
+        propertyId,
+        userId,
+        userRole as Parameters<typeof revokePropertyRole>[2]
+      );
 
       if (!result.success) {
         setError(result.error);

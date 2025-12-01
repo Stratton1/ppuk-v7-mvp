@@ -9,9 +9,25 @@ import { AccessCard } from '@/components/dashboard/access-card';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Database } from '@/types/supabase';
 
-type ActivityItem = Database['public']['Functions']['get_recent_activity']['Returns'][number];
-type StatsItem = Database['public']['Functions']['get_dashboard_stats']['Returns'][number];
-type UserProperty = Database['public']['Functions']['get_user_properties']['Returns'][number];
+type PropertyRow = Database['public']['Tables']['properties']['Row'];
+type StakeholderWithProperty = Database['public']['Tables']['property_stakeholders']['Row'] & {
+  properties: PropertyRow | null;
+};
+type MediaRow = Pick<
+  Database['public']['Tables']['media']['Row'],
+  'property_id' | 'storage_path' | 'storage_bucket' | 'created_at' | 'deleted_at' | 'media_type'
+>;
+type ActivityItem = {
+  property_id: string;
+  property_address: string;
+  event_type: string;
+  created_at: string;
+};
+type AccessEntry = {
+  property: PropertyRow;
+  role: Database['public']['Enums']['property_role_type'];
+  access_expires_at: string | null;
+};
 
 const FALLBACK_IMAGE = '/placeholder.svg';
 
@@ -19,7 +35,6 @@ async function getCompletion(supabase: ReturnType<typeof createServerClient>, pr
   const completionArgs: Database['public']['Functions']['calculate_property_completion']['Args'] = {
     property_id: propertyId,
   };
-  // Type assertion needed due to Supabase RPC type inference issue
   const { data, error } = await (supabase.rpc as any)('calculate_property_completion', completionArgs);
   if (error || data === null) return 0;
   return data;
@@ -44,45 +59,115 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
   const supabase = createServerClient();
   const userId = userSession.userId;
 
-  const userPropertiesArgs: Database['public']['Functions']['get_user_properties']['Args'] = {
-    user_id: userId,
-  };
-  const recentActivityArgs: Database['public']['Functions']['get_recent_activity']['Args'] = {
-    auth_uid: userId,
-  };
-  const dashboardStatsArgs: Database['public']['Functions']['get_dashboard_stats']['Args'] = {
-    auth_uid: userId,
-  };
+  const { data: ownedProperties } = await supabase
+    .from('properties')
+    .select(
+      'id, display_address, status, uprn, latitude, longitude, created_at, updated_at, deleted_at, created_by_user_id, public_slug, public_visibility'
+    )
+    .eq('created_by_user_id', userId)
+    .is('deleted_at', null);
 
-  // Type assertions needed due to Supabase RPC type inference issues
-  const [{ data: propertiesData }, { data: activityData }, { data: statsData }] = await Promise.all([
-    (supabase.rpc as any)('get_user_properties', userPropertiesArgs),
-    (supabase.rpc as any)('get_recent_activity', recentActivityArgs),
-    (supabase.rpc as any)('get_dashboard_stats', dashboardStatsArgs),
-  ]);
+  const { data: stakeholderData } = await supabase
+    .from('property_stakeholders')
+    .select(
+      `
+      property_id,
+      role,
+      expires_at,
+      properties!inner(
+        id, display_address, status, uprn, latitude, longitude, created_at, updated_at, deleted_at, created_by_user_id, public_slug, public_visibility
+      )
+    `
+    )
+    .eq('user_id', userId)
+    .is('deleted_at', null);
 
-  const properties: UserProperty[] = (propertiesData as UserProperty[]) ?? [];
-  const activity: ActivityItem[] = (activityData as ActivityItem[]) ?? [];
-  const stats = (statsData && statsData[0]) || ({} as StatsItem);
+  const accessMap = new Map<string, AccessEntry>();
 
-  const propertyIds = properties.map((p: UserProperty) => p.property_id);
-  const { data: baseProperties } = propertyIds.length
+  (ownedProperties ?? []).forEach((property) => {
+    accessMap.set(property.id, { property, role: 'owner', access_expires_at: null });
+  });
+
+  ((stakeholderData as StakeholderWithProperty[] | null) ?? []).forEach((stakeholder) => {
+    const property = stakeholder.properties;
+    if (!property) return;
+    if (!accessMap.has(property.id)) {
+      accessMap.set(property.id, {
+        property,
+        role: stakeholder.role,
+        access_expires_at: stakeholder.expires_at,
+      });
+    }
+  });
+
+  const accessList = Array.from(accessMap.values());
+  const propertyIds = accessList.map((p) => p.property.id);
+
+  const ownedCount = accessList.filter((p) => p.role === 'owner').length;
+  const accessibleCount = accessList.length;
+
+  const { count: documentsCount } = propertyIds.length
     ? await supabase
-        .from('properties')
-        .select('id, display_address, status, uprn, latitude, longitude, created_at, updated_at, deleted_at, created_by_user_id, public_slug, public_visibility')
-        .in('id', propertyIds)
-    : { data: [] as Database['public']['Tables']['properties']['Row'][] | null };
+        .from('documents')
+        .select('id', { count: 'exact', head: true })
+        .in('property_id', propertyIds)
+        .is('deleted_at', null)
+    : { count: 0 };
 
-  const baseMap = new Map((baseProperties ?? []).map((p) => [p.id, p]));
+  const stats = {
+    owned_properties: ownedCount,
+    accessible_properties: accessibleCount,
+    unresolved_flags: 0,
+    total_documents: documentsCount ?? 0,
+  };
+
+  const { data: mediaRows } = propertyIds.length
+    ? await supabase
+        .from('media')
+        .select('property_id, storage_path, storage_bucket, created_at, deleted_at, media_type')
+        .in('property_id', propertyIds)
+        .eq('media_type', 'photo')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+    : { data: [] as MediaRow[] | null };
+
+  const featuredMedia = new Map<string, MediaRow>();
+  (mediaRows ?? []).forEach((row) => {
+    if (!featuredMedia.has(row.property_id)) {
+      featuredMedia.set(row.property_id, row);
+    }
+  });
+
+  const { data: eventRows } = propertyIds.length
+    ? await supabase
+        .from('property_events')
+        .select('property_id, event_type, created_at, properties!inner(display_address)')
+        .in('property_id', propertyIds)
+        .order('created_at', { ascending: false })
+        .limit(100)
+    : {
+        data: [] as (Database['public']['Tables']['property_events']['Row'] & {
+          properties: { display_address?: string } | null;
+        })[] | null,
+      };
+
+  const activity: ActivityItem[] =
+    (eventRows ?? []).map((event) => ({
+      property_id: event.property_id,
+      property_address: (event.properties as { display_address?: string } | null)?.display_address ?? 'Unknown property',
+      event_type: event.event_type,
+      created_at: event.created_at,
+    })) ?? [];
 
   const hydrated = await Promise.all(
-    properties.map(async (prop) => {
-      const base = baseMap.get(prop.property_id);
-      if (!base) return null;
-      const completion = await getCompletion(supabase, prop.property_id);
-      const imageUrl =
-        (await getSignedUrl(supabase, 'property-photos', prop.featured_media_storage_path)) || FALLBACK_IMAGE;
-      return { base, access: prop, completion, imageUrl };
+    accessList.map(async (entry) => {
+      const completion = await getCompletion(supabase, entry.property.id);
+      const media = featuredMedia.get(entry.property.id);
+      const imageUrl = media
+        ? (await getSignedUrl(supabase, media.storage_bucket || 'property-photos', media.storage_path)) ||
+          FALLBACK_IMAGE
+        : FALLBACK_IMAGE;
+      return { base: entry.property, role: entry.role, accessExpiresAt: entry.access_expires_at, completion, imageUrl };
     })
   ).then((list) => list.filter((item): item is NonNullable<typeof item> => !!item));
 
@@ -142,7 +227,7 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
           <h2 className="text-2xl font-semibold">Your Access Roles</h2>
           <p className="text-sm text-muted-foreground">Roles granted to you with any expiry notices.</p>
         </div>
-        {properties.length === 0 ? (
+        {hydrated.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-sm text-muted-foreground">No access granted yet.</CardContent>
           </Card>
@@ -152,9 +237,9 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
               <AccessCard
                 key={prop.base.id}
                 displayAddress={prop.base.display_address}
-                role={prop.access.role}
+                role={prop.role}
                 status={prop.base.status}
-                accessExpiresAt={prop.access.access_expires_at}
+                accessExpiresAt={prop.accessExpiresAt}
                 imageUrl={prop.imageUrl}
               />
             ))}

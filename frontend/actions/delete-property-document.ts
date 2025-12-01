@@ -53,7 +53,7 @@ export async function deletePropertyDocument(
     // Check if user has permission to delete documents for this property
     const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
       property_id: propertyId,
-      allowed_roles: ['owner', 'admin', 'agent', 'conveyancer'],
+      allowed_roles: ['owner', 'editor'],
     };
     const { data: hasPermission, error: permissionError } = await supabase.rpc(
       'has_property_role',

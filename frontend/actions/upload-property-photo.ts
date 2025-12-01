@@ -120,12 +120,9 @@ export async function uploadPropertyPhoto(
     // Check if user has permission to upload photos for this property
     const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
       property_id: propertyId,
-      allowed_roles: ['owner', 'agent', 'surveyor', 'admin'],
+      allowed_roles: ['owner', 'editor'],
     };
-    const { data: hasPermission, error: permissionError } = await supabase.rpc(
-      'has_property_role',
-      hasPropertyRoleArgs
-    );
+    const { data: hasPermission, error: permissionError } = await supabase.rpc('has_property_role', hasPropertyRoleArgs);
 
     if (permissionError) {
       console.error('Permission check error:', permissionError);

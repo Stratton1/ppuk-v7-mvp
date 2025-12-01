@@ -218,6 +218,8 @@ All policies were created successfully (NOTICE messages indicate policies didn't
 
 - ✅ All RLS policies active and enforced
 - ✅ All legacy v6 tables removed
+- ✅ Roles standardized to `owner`/`editor`/`viewer` via `20250315000000_ppuk_v7_roles_permissions.sql` (property_stakeholders/invitations role column -> property_role_type)
+- ✅ Helper/RPC rebuild: see `20250315000000_ppuk_v7_roles_permissions.sql` and `docs/RLS_VERIFICATION_REPORT.md`
 - ✅ All migrations in perfect sync
 - ✅ Helper functions updated to use new schema
 - ✅ Safe to proceed to Batch 2 (Auth + Role Architecture)
@@ -266,4 +268,3 @@ SELECT * FROM pg_policies WHERE schemaname = 'public' ORDER BY tablename;
 ---
 
 **END OF VERIFICATION REPORT**
-

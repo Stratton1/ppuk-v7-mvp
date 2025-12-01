@@ -34,7 +34,7 @@ export default async function EditPropertyPage({ params }: EditPropertyPageProps
   // Check if user has permission to edit (owner or admin only)
   const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
     property_id: id,
-    allowed_roles: ['owner', 'admin'],
+    allowed_roles: ['owner', 'editor'],
   };
   const { data: canEdit } = await supabase.rpc('has_property_role', hasPropertyRoleArgs);
 

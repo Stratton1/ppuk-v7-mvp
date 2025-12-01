@@ -1,12 +1,8 @@
 export type RoleType =
   | 'admin'
   | 'owner'
-  | 'buyer'
-  | 'agent'
-  | 'surveyor'
-  | 'conveyancer'
-  | 'viewer'
-  | 'tenant';
+  | 'editor'
+  | 'viewer';
 
 export interface ServerUserSession {
   userId: string;

@@ -1,12 +1,11 @@
 /**
  * File: property-access.tsx
- * Purpose: Display all user roles and access permissions for a property
+ * Purpose: Display all user roles and access permissions for a property (v7 roles)
  * Type: Server Component
- * Security: RLS automatically filters roles based on user permissions
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,7 +24,7 @@ import { RemoveAccessDialog } from './remove-access-dialog';
 type StakeholderRole = Database['public']['Tables']['property_stakeholders']['Row'];
 
 interface RoleWithUser extends StakeholderRole {
-  user?: { full_name: string | null; organisation?: string | null; primary_role?: string | null } | null;
+  user?: { full_name: string | null; organisation?: string | null } | null;
   grantedByUser?: { full_name: string | null } | null;
 }
 
@@ -34,20 +33,11 @@ interface PropertyAccessProps {
 }
 
 export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
-  const supabase = createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // Check if user can manage roles (owner or admin only)
-  const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
-    property_id: propertyId,
-    allowed_roles: ['owner', 'admin'],
-  };
-  const { data: canManageRoles } = await supabase.rpc('has_property_role', hasPropertyRoleArgs);
-
-  // Fetch all property roles
-  // RLS will automatically filter based on user's permissions
   const { data: roles, error: rolesError } = await supabase
     .from('property_stakeholders')
     .select('*')
@@ -55,7 +45,6 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
-  // Handle error
   if (rolesError) {
     return (
       <Card>
@@ -71,26 +60,20 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
     );
   }
 
-  // Handle empty state (no roles visible to this user)
   if (!roles || roles.length === 0) {
-    return null; // Hide panel entirely if no roles are visible
+    return null;
   }
 
-  // Fetch user information for all unique user_ids
   const userIds = [...new Set(roles.map((r) => r.user_id))];
-  const grantedByIds = [
-    ...new Set(roles.map((r) => r.granted_by_user_id).filter((id): id is string => id !== null)),
-  ];
+  const grantedByIds = [...new Set(roles.map((r) => r.granted_by_user_id).filter((id): id is string => !!id))];
   const allUserIds = [...new Set([...userIds, ...grantedByIds])];
 
-  // Query users table (v7 schema) - full_name and organisation are in users table
   const { data: users, error: usersError } = await supabase
     .from('users')
     .select('id, full_name, organisation')
     .in('id', allUserIds);
 
   if (usersError) {
-    console.error('Failed to fetch users', usersError);
     return (
       <Card>
         <CardHeader>
@@ -105,16 +88,9 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
     );
   }
 
-  // Create user lookup map using id (v7 schema)
   const userMap = new Map<string, { full_name: string | null; organisation: string | null }>();
-  users?.forEach((u) => {
-    userMap.set(u.id, {
-      full_name: u.full_name,
-      organisation: u.organisation ?? null,
-    });
-  });
+  users?.forEach((u) => userMap.set(u.id, { full_name: u.full_name, organisation: u.organisation ?? null }));
 
-  // Merge roles with user information
   const rolesWithUsers: RoleWithUser[] = roles.map((role) => ({
     ...role,
     user: userMap.get(role.user_id),
@@ -123,18 +99,17 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
       : null,
   }));
 
-  // Group roles by role type
   const rolesByType = rolesWithUsers.reduce((acc, role) => {
     const type = role.role;
-    if (!acc[type]) {
-      acc[type] = [];
-    }
+    if (!acc[type]) acc[type] = [];
     acc[type].push(role);
     return acc;
   }, {} as Record<string, RoleWithUser[]>);
 
-  // Sort role types by priority
   const sortedRoleTypes = sortRoles(Object.keys(rolesByType));
+  const canManageRoles = user
+    ? rolesWithUsers.some((r) => r.user_id === user.id && r.role === 'owner')
+    : false;
 
   return (
     <Card>
@@ -159,7 +134,6 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
 
           return (
             <div key={roleType} className="space-y-3">
-              {/* Role Type Header */}
               <div className="flex items-center gap-2">
                 <span className="text-lg">{getRoleIcon(roleType)}</span>
                 <h3 className="font-semibold">{getRoleLabel(roleType)}</h3>
@@ -168,7 +142,6 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
                 </Badge>
               </div>
 
-              {/* Users with this role */}
               <div className="space-y-2">
                 {roleList.map((roleAssignment) => {
                   const status = getAccessStatus(roleAssignment.expires_at);
@@ -179,32 +152,22 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
                       key={`${roleAssignment.user_id}-${roleAssignment.property_id}-${roleAssignment.role}`}
                       className="flex items-start justify-between gap-4 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                     >
-                      {/* User Info */}
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-sm">
-                            {roleAssignment.user?.full_name || 'Unknown User'}
-                          </p>
+                          <p className="font-medium text-sm">{roleAssignment.user?.full_name || 'Unknown User'}</p>
                           <Badge variant={getStatusVariant(status)} className="text-xs capitalize">
                             {status}
                           </Badge>
                         </div>
 
-                        {/* Organisation (for professionals) */}
                         {roleAssignment.user?.organisation && (
-                          <p className="text-xs text-muted-foreground">
-                            {roleAssignment.user.organisation}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{roleAssignment.user.organisation}</p>
                         )}
 
-                        {/* Metadata */}
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                          {/* Granted by */}
                           {roleAssignment.grantedByUser?.full_name && (
                             <span>Granted by {roleAssignment.grantedByUser.full_name}</span>
                           )}
-
-                          {/* Granted date */}
                           <span>
                             on{' '}
                             {new Date(roleAssignment.granted_at).toLocaleDateString('en-GB', {
@@ -213,23 +176,16 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
                               year: 'numeric',
                             })}
                           </span>
-
-                          {/* Expiry info */}
-                          {roleAssignment.expires_at && (
+                          {roleAssignment.expires_at ? (
                             <span className={days !== null && days < 0 ? 'text-destructive' : ''}>
                               {formatExpiryDate(roleAssignment.expires_at)}
                             </span>
-                          )}
-
-                          {!roleAssignment.expires_at && (
-                            <span className="font-medium text-green-600 dark:text-green-400">
-                              Permanent access
-                            </span>
+                          ) : (
+                            <span className="font-medium text-green-600 dark:text-green-400">Permanent access</span>
                           )}
                         </div>
                       </div>
 
-                      {/* Status Indicator & Actions */}
                       <div className="flex flex-col items-end gap-1">
                         {days !== null && days >= 0 && days <= 7 && (
                           <span className="text-xs font-medium text-orange-600 dark:text-orange-400">
@@ -239,12 +195,11 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
                         {days !== null && days < 0 && (
                           <span className="text-xs font-medium text-destructive">Expired</span>
                         )}
-                        
-                        {/* Remove button (only for non-owners and if user can manage) */}
+
                         {canManageRoles && roleAssignment.role !== 'owner' && (
                           <RemoveAccessDialog
-                            roleId={`${roleAssignment.user_id}-${roleAssignment.property_id}-${roleAssignment.role}`}
                             propertyId={propertyId}
+                            userId={roleAssignment.user_id}
                             userName={roleAssignment.user?.full_name || 'Unknown User'}
                             userRole={roleAssignment.role}
                           >
@@ -266,11 +221,10 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
           );
         })}
 
-        {/* Footer Note */}
         <div className="border-t pt-4">
           <p className="text-xs text-muted-foreground">
-            Access permissions are automatically enforced. Only authorized roles can view restricted
-            documents and information.
+            Access permissions are enforced via RLS. Owners can grant or revoke roles; public visibility allows
+            read-only access for everyone.
           </p>
         </div>
       </CardContent>

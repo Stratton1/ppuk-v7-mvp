@@ -257,7 +257,7 @@ export type Database = {
           expires_at: string | null
           id: string
           property_id: string | null
-          role: Database["public"]["Enums"]["role_type"]
+          role: Database["public"]["Enums"]["property_role_type"]
           status: Database["public"]["Enums"]["invitation_status"]
           token: string
           updated_at: string
@@ -268,7 +268,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           property_id?: string | null
-          role: Database["public"]["Enums"]["role_type"]
+          role: Database["public"]["Enums"]["property_role_type"]
           status?: Database["public"]["Enums"]["invitation_status"]
           token: string
           updated_at?: string
@@ -279,7 +279,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           property_id?: string | null
-          role?: Database["public"]["Enums"]["role_type"]
+          role?: Database["public"]["Enums"]["property_role_type"]
           status?: Database["public"]["Enums"]["invitation_status"]
           token?: string
           updated_at?: string
@@ -562,7 +562,7 @@ export type Database = {
           granted_at: string
           granted_by_user_id: string | null
           property_id: string
-          role: Database["public"]["Enums"]["role_type"]
+          role: Database["public"]["Enums"]["property_role_type"]
           updated_at: string
           user_id: string
         }
@@ -573,7 +573,7 @@ export type Database = {
           granted_at?: string
           granted_by_user_id?: string | null
           property_id: string
-          role: Database["public"]["Enums"]["role_type"]
+          role: Database["public"]["Enums"]["property_role_type"]
           updated_at?: string
           user_id: string
         }
@@ -584,7 +584,7 @@ export type Database = {
           granted_at?: string
           granted_by_user_id?: string | null
           property_id?: string
-          role?: Database["public"]["Enums"]["role_type"]
+          role?: Database["public"]["Enums"]["property_role_type"]
           updated_at?: string
           user_id?: string
         }
@@ -784,21 +784,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_invitation: {
+        Args: { invitation_token: string }
+        Returns: undefined
+      }
       calculate_property_completion: {
         Args: { property_id: string }
         Returns: number
       }
-      can_access_document: { Args: { document_id: string }; Returns: boolean }
-      create_property_with_event: {
-        Args: {
-          p_display_address: string
-          p_latitude?: number
-          p_longitude?: number
-          p_status?: string
-          p_uprn: string
-        }
-        Returns: string
-      }
+      can_delete: { Args: { property_id: string }; Returns: boolean }
+      can_edit_property: { Args: { property_id: string }; Returns: boolean }
+      can_invite: { Args: { property_id: string }; Returns: boolean }
+      can_upload: { Args: { property_id: string }; Returns: boolean }
+      can_view_property: { Args: { property_id: string }; Returns: boolean }
       create_property_with_role: {
         Args: {
           p_display_address: string
@@ -810,20 +808,12 @@ export type Database = {
         Returns: string
       }
       get_dashboard_stats: {
-        Args: { auth_uid: string }
+        Args: { auth_uid?: string }
         Returns: {
           accessible_properties: number
           owned_properties: number
           total_documents: number
           total_media: number
-          unresolved_flags: number
-        }[]
-      }
-      get_featured_media: {
-        Args: { property_id: string }
-        Returns: {
-          id: string
-          storage_path: string
         }[]
       }
       get_public_property: {
@@ -839,7 +829,7 @@ export type Database = {
         }[]
       }
       get_recent_activity: {
-        Args: { auth_uid: string }
+        Args: { auth_uid?: string }
         Returns: {
           created_at: string
           event_type: string
@@ -853,24 +843,36 @@ export type Database = {
           access_expires_at: string
           created_at: string
           display_address: string
-          featured_media_id: string
-          featured_media_mime_type: string
-          featured_media_storage_path: string
           latitude: number
           longitude: number
           property_id: string
-          role: string
+          public_visibility: boolean
+          role: Database["public"]["Enums"]["property_role_type"]
           status: string
           uprn: string
         }[]
       }
-      get_user_property_roles: {
-        Args: { property_id: string }
-        Returns: string[]
+      grant_property_role: {
+        Args: {
+          expires_at?: string
+          property_id: string
+          role: Database["public"]["Enums"]["property_role_type"]
+          target_user_id: string
+        }
+        Returns: undefined
       }
       has_property_role: {
         Args: { allowed_roles: string[]; property_id: string }
         Returns: boolean
+      }
+      invite_user_to_property: {
+        Args: {
+          email: string
+          expires_at?: string
+          property_id: string
+          role: Database["public"]["Enums"]["property_role_type"]
+        }
+        Returns: string
       }
       is_admin: { Args: never; Returns: boolean }
       is_approved_for_property: {
@@ -878,26 +880,38 @@ export type Database = {
         Returns: boolean
       }
       is_property_creator: { Args: { property_id: string }; Returns: boolean }
+      is_property_editor: { Args: { property_id: string }; Returns: boolean }
       is_property_owner: { Args: { property_id: string }; Returns: boolean }
       is_property_stakeholder: {
         Args: { property_id: string }
         Returns: boolean
       }
+      is_property_viewer: { Args: { property_id: string }; Returns: boolean }
       is_service_role: { Args: never; Returns: boolean }
       is_within_access_window: {
         Args: { property_id: string }
         Returns: boolean
       }
       regenerate_slug: { Args: { property_id: string }; Returns: string }
+      revoke_property_role: {
+        Args: {
+          property_id: string
+          role: Database["public"]["Enums"]["property_role_type"]
+          target_user_id: string
+        }
+        Returns: undefined
+      }
+      role_for_property: {
+        Args: { property_id: string }
+        Returns: Database["public"]["Enums"]["property_role_type"]
+      }
       search_properties: {
         Args: { query_text: string; result_limit?: number }
         Returns: {
-          created_at: string
           display_address: string
           id: string
           latitude: number
           longitude: number
-          relevance_score: number
           status: string
           uprn: string
         }[]
@@ -951,6 +965,7 @@ export type Database = {
       invitation_status: "pending" | "accepted" | "expired" | "revoked"
       media_type: "photo" | "video" | "floorplan" | "other"
       notification_type: "info" | "warning" | "action_required"
+      property_role_type: "owner" | "editor" | "viewer"
       property_status: "draft" | "active" | "archived"
       role_type:
         | "owner"
@@ -1125,6 +1140,7 @@ export const Constants = {
       invitation_status: ["pending", "accepted", "expired", "revoked"],
       media_type: ["photo", "video", "floorplan", "other"],
       notification_type: ["info", "warning", "action_required"],
+      property_role_type: ["owner", "editor", "viewer"],
       property_status: ["draft", "active", "archived"],
       role_type: [
         "owner",

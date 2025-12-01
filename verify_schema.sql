@@ -70,3 +70,31 @@ WHERE schemaname = 'public'
 GROUP BY tablename
 ORDER BY tablename;
 
+-- 6. Ensure no functions reference legacy v6 tables
+SELECT 'LEGACY FUNCTION REFERENCES:' as check_type;
+SELECT proname as legacy_function
+FROM pg_proc
+WHERE pronamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+  AND pg_get_functiondef(oid) ~ '(property_media|property_documents|property_tasks|property_notes|users_extended|user_property_roles)'
+ORDER BY proname;
+
+-- 7. Verify v7 RPCs are present
+SELECT 'EXPECTED RPCS:' as check_type;
+SELECT proname as function_name
+FROM pg_proc
+WHERE pronamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+  AND proname IN (
+    'create_property_with_role',
+    'update_property_with_event',
+    'search_properties',
+    'get_user_properties',
+    'get_recent_activity',
+    'get_dashboard_stats',
+    'calculate_property_completion',
+    'get_public_property',
+    'set_public_visibility',
+    'regenerate_slug',
+    'has_property_role',
+    'is_admin'
+  )
+ORDER BY proname;

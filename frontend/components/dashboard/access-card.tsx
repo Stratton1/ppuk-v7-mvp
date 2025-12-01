@@ -18,12 +18,7 @@ const statusStyles: Record<string, string> = {
 
 const roleLabels: Record<string, string> = {
   owner: 'Owner',
-  admin: 'Admin',
-  agent: 'Agent',
-  surveyor: 'Surveyor',
-  conveyancer: 'Conveyancer',
-  buyer: 'Buyer',
-  tenant: 'Tenant',
+  editor: 'Editor',
   viewer: 'Viewer',
 };
 

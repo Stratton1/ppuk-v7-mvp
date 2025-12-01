@@ -27,7 +27,7 @@ export async function PropertyGallery({ propertyId, media }: PropertyGalleryProp
   // Check if user can delete media (owner, admin, agent, surveyor)
   const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
     property_id: propertyId,
-    allowed_roles: ['owner', 'admin', 'agent', 'surveyor'],
+    allowed_roles: ['owner', 'editor'],
   };
   const { data: canDelete } = await supabase.rpc('has_property_role', hasPropertyRoleArgs);
 

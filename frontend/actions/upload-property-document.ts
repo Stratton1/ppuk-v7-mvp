@@ -136,7 +136,7 @@ export async function uploadPropertyDocument(
     // Check if user has permission to upload documents for this property
     const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
       property_id: propertyId,
-      allowed_roles: ['owner', 'conveyancer', 'surveyor', 'agent'],
+      allowed_roles: ['owner', 'editor'],
     };
     const { data: hasPermission, error: permissionError } = await supabase.rpc(
       'has_property_role',

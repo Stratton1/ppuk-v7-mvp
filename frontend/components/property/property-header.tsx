@@ -30,7 +30,7 @@ export async function PropertyHeader({ property, featuredMedia }: PropertyHeader
   // Check if user can edit property (owner or admin only)
   const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
     property_id: property.id,
-    allowed_roles: ['owner', 'admin'],
+    allowed_roles: ['owner', 'editor'],
   };
   // Type assertion needed due to Supabase RPC type inference issue
   const { data: canEdit } = await (supabase.rpc as any)('has_property_role', hasPropertyRoleArgs);

@@ -4,9 +4,9 @@
  */
 
 /**
- * Available property roles
+ * Available property roles (v7)
  */
-export type PropertyRole = 'owner' | 'buyer' | 'tenant' | 'agent' | 'surveyor' | 'conveyancer' | 'viewer' | 'admin';
+export type PropertyRole = 'owner' | 'editor' | 'viewer' | 'admin';
 
 /**
  * Access status based on expiry date
@@ -16,17 +16,17 @@ export type AccessStatus = 'active' | 'expiring' | 'expired';
 /**
  * Roles allowed to upload media
  */
-export const MEDIA_UPLOAD_ROLES = ['owner', 'admin', 'agent', 'surveyor'] as const;
+export const MEDIA_UPLOAD_ROLES = ['owner', 'editor', 'admin'] as const;
 
 /**
  * Roles allowed to delete media
  */
-export const MEDIA_DELETE_ROLES = ['owner', 'admin', 'agent', 'surveyor'] as const;
+export const MEDIA_DELETE_ROLES = ['owner', 'editor', 'admin'] as const;
 
 /**
  * Roles allowed to delete documents
  */
-export const DOCUMENT_DELETE_ROLES = ['owner', 'admin', 'agent', 'conveyancer'] as const;
+export const DOCUMENT_DELETE_ROLES = ['owner', 'editor', 'admin'] as const;
 
 /**
  * Role configuration with labels, icons, and descriptions
@@ -41,35 +41,11 @@ export const ROLE_CONFIG: Record<
     description: 'Property owner with full access',
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
   },
-  buyer: {
-    label: 'Buyer',
-    icon: '💰',
-    description: 'Prospective buyer with time-limited access',
-    color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-  },
-  tenant: {
-    label: 'Tenant',
-    icon: '🔑',
-    description: 'Current or prospective tenant',
-    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-  },
-  agent: {
-    label: 'Estate Agent',
-    icon: '🏢',
-    description: 'Real estate agent managing the property',
+  editor: {
+    label: 'Editor',
+    icon: '✏️',
+    description: 'Can edit property details, documents, media, and tasks',
     color: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
-  },
-  surveyor: {
-    label: 'Surveyor',
-    icon: '📐',
-    description: 'Property surveyor with inspection access',
-    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-  },
-  conveyancer: {
-    label: 'Conveyancer',
-    icon: '⚖️',
-    description: 'Legal conveyancer handling property transfer',
-    color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
   },
   viewer: {
     label: 'Viewer',
@@ -208,18 +184,14 @@ export function formatExpiryDate(expiresAt: string | null): string {
 
 /**
  * Sort roles by priority
- * Owner > Admin > Agent > Conveyancer > Surveyor > Buyer > Tenant > Viewer
+ * Owner > Admin > Editor > Viewer
  */
 export function sortRoles(roles: string[]): string[] {
   const priority: Record<string, number> = {
     owner: 1,
     admin: 2,
-    agent: 3,
-    conveyancer: 4,
-    surveyor: 5,
-    buyer: 6,
-    tenant: 7,
-    viewer: 8,
+    editor: 3,
+    viewer: 4,
   };
 
   return roles.sort((a, b) => {
