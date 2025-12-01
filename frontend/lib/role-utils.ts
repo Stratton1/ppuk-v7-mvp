@@ -1,3 +1,5 @@
+import type { ServerUserSession } from '@/types/auth';
+
 /**
  * File: role-utils.ts
  * Purpose: Helper utilities for property roles and access management
@@ -199,4 +201,61 @@ export function sortRoles(roles: string[]): string[] {
     const bPriority = priority[b] || 999;
     return aPriority - bPriority;
   });
+}
+
+// -----------------------------------------------------------------------------
+// Session-aware helpers (v7)
+// -----------------------------------------------------------------------------
+
+export function isAdmin(session: ServerUserSession | null | undefined): boolean {
+  return Boolean(session?.isAdmin || session?.primary_role === 'admin');
+}
+
+export function isOwner(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  if (!session) return false;
+  if (isAdmin(session)) return true;
+  return session.property_roles[propertyId] === 'owner';
+}
+
+export function isEditor(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  if (!session) return false;
+  if (isAdmin(session)) return true;
+  const role = session.property_roles[propertyId];
+  return role === 'owner' || role === 'editor';
+}
+
+export function isViewer(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  if (!session) return false;
+  if (isAdmin(session)) return true;
+  return session.property_roles[propertyId] === 'owner' ||
+    session.property_roles[propertyId] === 'editor' ||
+    session.property_roles[propertyId] === 'viewer';
+}
+
+export function canEditProperty(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  return isEditor(session, propertyId);
+}
+
+export function canViewProperty(
+  session: ServerUserSession | null | undefined,
+  propertyId: string,
+  opts?: { isPublic?: boolean }
+): boolean {
+  if (isAdmin(session)) return true;
+  if (opts?.isPublic) return true;
+  return isViewer(session, propertyId);
+}
+
+export function canUploadDocument(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  return isEditor(session, propertyId);
+}
+
+export function canUploadMedia(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  return isEditor(session, propertyId);
+}
+
+export function canInvite(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  if (!session) return false;
+  if (isAdmin(session)) return true;
+  return isOwner(session, propertyId);
 }

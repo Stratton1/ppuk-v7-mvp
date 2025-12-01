@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
-import type { RoleType, ServerUserSession } from '@/types/auth';
+import type { ServerUserSession } from '@/types/auth';
 
-type UserRow = Database['public']['Tables']['users']['Row'];
-type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+const ROLE_PRIORITY: ServerUserSession['primary_role'][] = ['admin', 'owner', 'editor', 'viewer'];
 
 export function getServerClient() {
   return createClient();
@@ -20,45 +19,46 @@ export async function getServerUser(): Promise<ServerUserSession | null> {
     return null;
   }
 
-  const { data: publicUser } = await supabase
+  const { data: userRow } = await supabase
     .from('users')
-    .select('*')
+    .select('id, email, full_name, primary_role')
     .eq('id', authUser.id)
-    .single();
+    .maybeSingle();
 
-  if (!publicUser) {
+  if (!userRow) {
     return null;
   }
 
-  const { data: profile } = await supabase
+  const { data: profileRow } = await supabase
     .from('profiles')
-    .select('*')
+    .select('phone, bio')
     .eq('user_id', authUser.id)
-    .single();
+    .maybeSingle();
 
-  const { data: userRoles } = await supabase
-    .from('user_roles')
-    .select('roles(name)')
-    .eq('user_id', authUser.id);
+  const { data: stakeholderRows } = await supabase
+    .from('property_stakeholders')
+    .select('property_id, role, deleted_at, expires_at')
+    .eq('user_id', authUser.id)
+    .is('deleted_at', null)
+    .or('expires_at.is.null,expires_at.gt.now()');
 
-  const globalRoles: RoleType[] = (userRoles ?? []).flatMap((ur) => {
-    const name = (ur as { roles?: { name?: unknown } }).roles?.name;
-    return typeof name === 'string' ? ([name] as RoleType[]) : [];
+  const property_roles: Record<string, 'owner' | 'editor' | 'viewer'> = {};
+  (stakeholderRows ?? []).forEach((row) => {
+    property_roles[row.property_id] = row.role as 'owner' | 'editor' | 'viewer';
   });
 
-  const isAdmin = globalRoles.includes('admin');
+  const isAdmin = userRow.primary_role === 'admin';
+
+  // Choose the strongest role: admin > owner > editor > viewer
+  const primary_role =
+    (ROLE_PRIORITY.find((r) => r === userRow.primary_role) as ServerUserSession['primary_role']) || 'viewer';
 
   return {
-    userId: authUser.id,
-    email: authUser.email ?? '',
-    emailVerified: Boolean(authUser.email_confirmed_at),
-    fullName: (publicUser as UserRow).full_name ?? null,
-    avatarUrl: (publicUser as UserRow).avatar_url ?? null,
-    organisation: (publicUser as UserRow).organisation ?? null,
-    primaryRole: ((publicUser as UserRow).primary_role as RoleType) ?? 'viewer',
-    phone: (profile as ProfileRow | null)?.phone ?? null,
-    bio: (profile as ProfileRow | null)?.bio ?? null,
-    globalRoles,
+    id: userRow.id,
+    email: userRow.email ?? null,
+    full_name: userRow.full_name ?? null,
+    primary_role,
+    property_roles,
     isAdmin,
   };
 }

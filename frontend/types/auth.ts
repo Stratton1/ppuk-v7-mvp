@@ -1,19 +1,10 @@
-export type RoleType =
-  | 'admin'
-  | 'owner'
-  | 'editor'
-  | 'viewer';
-
 export interface ServerUserSession {
-  userId: string;
-  email: string;
-  emailVerified: boolean;
-  fullName: string | null;
-  avatarUrl: string | null;
-  organisation: string | null;
-  primaryRole: RoleType;
-  phone: string | null;
-  bio: string | null;
-  globalRoles: RoleType[];
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  primary_role: 'admin' | 'owner' | 'editor' | 'viewer';
+  property_roles: Record<string, 'owner' | 'editor' | 'viewer'>;
   isAdmin: boolean;
 }
+
+export type RoleType = ServerUserSession['primary_role'];

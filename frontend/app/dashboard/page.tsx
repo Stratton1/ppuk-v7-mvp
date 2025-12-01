@@ -57,7 +57,7 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
     redirect('/auth/login');
   }
   const supabase = createServerClient();
-  const userId = userSession.userId;
+  const userId = userSession.id;
 
   const { data: ownedProperties } = await supabase
     .from('properties')
