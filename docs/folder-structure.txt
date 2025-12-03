@@ -190,6 +190,11 @@ PPUK v7.0 Build - Folder Structure
 │   ├── proxy.ts
 │   ├── tailwind.config.ts
 │   └── tsconfig.json
+├── lovable
+│   ├── components
+│   │   └── … (Lovable integration copy used in-app; see its README)
+│   └── original
+│       └── property-passport-ui-1619a988  (untouched upstream backup)
 ├── supabase
 │   ├── .branches
 │   │   └── _current_branch
