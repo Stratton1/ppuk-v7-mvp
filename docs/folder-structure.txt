@@ -1,14 +1,35 @@
 PPUK v7.0 Build - Folder Structure
 ==================================================
+.
+├── .cursor
+│   ├── memory.json
+│   └── rules
+│       └── propertypassportv7rules.mdc
+├── .cursorrules
+├── .github
+│   └── workflows
+│       └── ci.yml
+├── .gitignore
+├── .husky
+│   ├── _
+│   │   └── husky.sh
+│   └── pre-commit
+├── .nvmrc
+├── .prettierignore
+├── .prettierrc
 ├── docs
 │   ├── AGENTS.md
 │   ├── AUTH_ROLE_ARCHITECTURE_SPECIFICATION.md
+│   ├── CODEBASE_HYGIENE_REPORT.md
 │   ├── CONTRIBUTING.md
+│   ├── FULL_REPO_ANALYSIS.txt
+│   ├── FULL_REPO_GAP_ANALYSIS.txt
 │   ├── LEGACY_SCHEMA_REMOVAL_PLAN.md
 │   ├── PPUK_V7_COMPLETE_BLUEPRINT.md
 │   ├── PPUK_V7_COMPLETE_BLUEPRINT_V2.md
 │   ├── README.md
 │   ├── RLS_POLICY_PLAN.md
+│   ├── RLS_VERIFICATION_REPORT.md
 │   ├── SCHEMA_ARCHITECTURE_SPECIFICATION.md
 │   ├── SCHEMA_VERIFICATION_REPORT.md
 │   ├── codebase-audit-v7.md
@@ -16,11 +37,16 @@ PPUK v7.0 Build - Folder Structure
 │   ├── continue.md
 │   ├── core.md
 │   ├── current_state_and_next_steps.txt
+│   ├── folder-structure.txt
 │   ├── frontendconsider.md
 │   ├── project-tree.md
 │   ├── refresh.md
 │   └── roadmap.md
+├── eslint.config.js
 ├── frontend
+│   ├── .gitignore
+│   ├── .nvmrc
+│   ├── README.md
 │   ├── actions
 │   │   ├── delete-property-document.ts
 │   │   ├── delete-property-media.ts
@@ -33,19 +59,36 @@ PPUK v7.0 Build - Folder Structure
 │   ├── app
 │   │   ├── api
 │   │   │   ├── me
+│   │   │   │   └── route.ts
 │   │   │   └── property-access
+│   │   │       └── [propertyId]
+│   │   │           └── route.ts
 │   │   ├── auth
 │   │   │   ├── login
+│   │   │   │   ├── login-form.tsx
+│   │   │   │   └── page.tsx
 │   │   │   └── register
+│   │   │       ├── page.tsx
+│   │   │       └── register-form.tsx
 │   │   ├── dashboard
 │   │   │   ├── error.tsx
 │   │   │   ├── loading.tsx
 │   │   │   └── page.tsx
 │   │   ├── p
 │   │   │   └── [slug]
+│   │   │       └── page.tsx
 │   │   ├── properties
 │   │   │   ├── [id]
+│   │   │   │   ├── edit
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── error.tsx
+│   │   │   │   ├── loading.tsx
+│   │   │   │   ├── not-found.tsx
+│   │   │   │   └── page.tsx
 │   │   │   ├── create
+│   │   │   │   ├── error.tsx
+│   │   │   │   ├── loading.tsx
+│   │   │   │   └── page.tsx
 │   │   │   ├── error.tsx
 │   │   │   ├── loading.tsx
 │   │   │   └── page.tsx
@@ -70,8 +113,6 @@ PPUK v7.0 Build - Folder Structure
 │   │   │   ├── navbar.tsx
 │   │   │   └── sidebar.tsx
 │   │   ├── property
-│   │   │   ├── notes
-│   │   │   ├── tasks
 │   │   │   ├── create-property-form.tsx
 │   │   │   ├── delete-document-dialog.tsx
 │   │   │   ├── delete-media-button.tsx
@@ -89,6 +130,9 @@ PPUK v7.0 Build - Folder Structure
 │   │   │   ├── property-list.tsx
 │   │   │   ├── property-meta.tsx
 │   │   │   ├── remove-access-dialog.tsx
+│   │   │   ├── tasks
+│   │   │   │   ├── create-task-dialog.tsx
+│   │   │   │   └── task-list.tsx
 │   │   │   ├── upload-document-dialog.tsx
 │   │   │   └── upload-photo-dialog.tsx
 │   │   ├── public-passport
@@ -117,6 +161,9 @@ PPUK v7.0 Build - Folder Structure
 │   │   ├── document-utils.ts
 │   │   ├── role-utils.ts
 │   │   ├── signed-url.ts
+│   │   ├── supabase
+│   │   │   ├── client.ts
+│   │   │   └── server.ts
 │   │   └── utils.ts
 │   ├── providers
 │   │   ├── query-provider.tsx
@@ -128,23 +175,56 @@ PPUK v7.0 Build - Folder Structure
 │   │   ├── placeholder.svg
 │   │   ├── vercel.svg
 │   │   └── window.svg
+│   ├── tests
+│   │   └── rls.spec.ts
 │   ├── types
 │   │   ├── auth.ts
 │   │   ├── forms.ts
 │   │   └── supabase.ts
-│   ├── README.md
 │   ├── components.json
 │   ├── eslint.config.mjs
-│   ├── middleware.ts
-│   ├── next-env.d.ts
 │   ├── next.config.ts
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── postcss.config.mjs
+│   ├── proxy.ts
 │   ├── tailwind.config.ts
 │   └── tsconfig.json
-├── eslint.config.js
-├── folder-structure.txt
+├── supabase
+│   ├── .branches
+│   │   └── _current_branch
+│   ├── .temp
+│   │   ├── cli-latest
+│   │   ├── gotrue-version
+│   │   ├── pooler-url
+│   │   ├── postgres-version
+│   │   ├── project-ref
+│   │   ├── rest-version
+│   │   ├── storage-migration
+│   │   └── storage-version
+│   ├── config.toml
+│   ├── migrations
+│   │   ├── 20241201000000_initial_schema.sql
+│   │   ├── 20241201000001_rls_helper_functions.sql
+│   │   ├── 20241201000002_rls_policies.sql
+│   │   ├── 20241201000003_featured_media_rpc.sql
+│   │   ├── 20241201000004_property_create_rpc.sql
+│   │   ├── 20241201000005_storage_buckets.sql
+│   │   ├── 20241201000006_update_property_rpc.sql
+│   │   ├── 20241201000007_search_properties_rpc.sql
+│   │   ├── 20241201000008_get_user_properties_rpc.sql
+│   │   ├── 20241202000001_dashboard_rpcs.sql
+│   │   ├── 20241202000002_public_passport.sql
+│   │   ├── 20241202000003_tasks_notes.sql
+│   │   ├── 20241202000004_fix_set_public_visibility.sql
+│   │   ├── 20241202000005_reset_rpcs.sql
+│   │   ├── 20241202000006_recreate_rpcs.sql
+│   │   ├── 20250101000000_ppuk_v7_schema.sql
+│   │   ├── 20250101000100_ppuk_v7_rls_policies.sql
+│   │   ├── 20250101000200_ppuk_drop_legacy_v6.sql
+│   │   ├── 20250314000000_ppuk_v7_backend_alignment.sql
+│   │   └── 20250315000000_ppuk_v7_roles_permissions.sql
+│   └── seed.sql
 ├── package.json
 ├── tsconfig.json
 ├── tsconfig.tsbuildinfo

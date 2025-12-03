@@ -40,12 +40,12 @@ if (!url || !serviceKey || !anonKey) {
         id: data.user.id,
         email,
         full_name: email,
-        primary_role: 'viewer',
+        primary_role: 'consumer',
       });
       return data.user.id;
     };
 
-    const ownerId = await createUser(ownerEmail);
+    await createUser(ownerEmail);
     const editorId = await createUser(editorEmail);
     const viewerId = await createUser(viewerEmail);
 
@@ -78,12 +78,12 @@ if (!url || !serviceKey || !anonKey) {
     await ownerClient.rpc('grant_property_role', {
       target_user_id: editorId,
       property_id: propertyId,
-      role: 'editor',
+      permission: 'editor',
     });
     await ownerClient.rpc('grant_property_role', {
       target_user_id: viewerId,
       property_id: propertyId,
-      role: 'viewer',
+      permission: 'viewer',
     });
   }, 60000);
 
@@ -118,9 +118,12 @@ if (!url || !serviceKey || !anonKey) {
         const editorClient = createClient(url, anonKey, {
           global: { headers: { Authorization: `Bearer ${editorToken}` } },
         });
+        const { data: editorUser } = await editorClient.auth.getUser();
+        const editorUserId = editorUser.user?.id;
+        if (!editorUserId) throw new Error('editor user missing');
         const { error } = await editorClient.from('documents').insert({
           property_id: propertyId,
-          uploaded_by_user_id: (await editorClient.auth.getUser()).data.user?.id!,
+          uploaded_by_user_id: editorUserId,
           title: 'Test Doc',
           document_type: 'other',
           storage_bucket: 'property-documents',
@@ -149,11 +152,14 @@ if (!url || !serviceKey || !anonKey) {
         const viewerClient = createClient(url, anonKey, {
           global: { headers: { Authorization: `Bearer ${viewerToken}` } },
         });
+        const { data: viewerUser } = await viewerClient.auth.getUser();
+        const viewerUserId = viewerUser.user?.id;
+        if (!viewerUserId) throw new Error('viewer user missing');
         const { error: failUpdate } = await viewerClient
           .from('documents')
           .insert({
             property_id: propertyId,
-            uploaded_by_user_id: (await viewerClient.auth.getUser()).data.user?.id!,
+            uploaded_by_user_id: viewerUserId,
             title: 'Should fail',
             document_type: 'other',
             storage_bucket: 'property-documents',

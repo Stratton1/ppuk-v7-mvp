@@ -3,4 +3,7 @@
  * Returns null to avoid build-time schema mismatches.
  */
 
-export const PropertyFlags = (_props: { propertyId: string }) => null;
+export const PropertyFlags = (_props: { propertyId: string }) => {
+  void _props;
+  return null;
+};

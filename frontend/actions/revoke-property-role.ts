@@ -14,9 +14,14 @@ export type RevokeRoleResult = { success: true } | { success: false; error: stri
 export async function revokePropertyRole(
   propertyId: string,
   userId: string,
-  role: Database['public']['Enums']['property_role_type']
+  status: Database['public']['Enums']['property_status_type'] | null,
+  permission: Database['public']['Enums']['property_permission_type'] | null
 ): Promise<RevokeRoleResult> {
   try {
+    if (!status && !permission) {
+      return { success: false, error: 'Missing status or permission to revoke' };
+    }
+
     const supabase = createServerClient();
     const {
       data: { user },
@@ -27,7 +32,8 @@ export async function revokePropertyRole(
     const { error: revokeError } = await supabase.rpc('revoke_property_role', {
       target_user_id: userId,
       property_id: propertyId,
-      role,
+      status: status ?? undefined,
+      permission: permission ?? undefined,
     } satisfies Database['public']['Functions']['revoke_property_role']['Args']);
 
     if (revokeError) {
@@ -40,8 +46,9 @@ export async function revokePropertyRole(
       actor_user_id: user.id,
       event_type: 'updated',
       event_payload: {
-        action: 'role_revoked',
-        role,
+        action: 'access_revoked',
+        status,
+        permission,
         revoked_from_user_id: userId,
       },
     });

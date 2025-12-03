@@ -10,11 +10,13 @@ import { z } from 'zod';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
-const GRANTABLE_ROLES = ['owner', 'editor', 'viewer'] as const;
+const STATUSES = ['owner', 'buyer', 'tenant'] as const;
+const PERMISSIONS = ['editor', 'viewer'] as const;
 
 const GrantRoleSchema = z.object({
   email: z.string().email('Invalid email address'),
-  role: z.enum(GRANTABLE_ROLES),
+  status: z.enum(STATUSES).optional().nullable(),
+  permission: z.enum(PERMISSIONS),
   expiresAt: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -33,32 +35,40 @@ export async function grantPropertyRole(propertyId: string, formData: FormData):
       return { success: false, error: 'Authentication required to grant access' };
     }
 
+    const rawStatus = formData.get('status');
+    const statusValue = rawStatus ? rawStatus.toString() : null;
+
     const parse = GrantRoleSchema.safeParse({
       email: formData.get('email'),
-      role: formData.get('role'),
+      status: statusValue,
+      permission: formData.get('permission'),
       expiresAt: formData.get('expiresAt'),
       notes: formData.get('notes'),
     });
     if (!parse.success) {
       return { success: false, error: parse.error.issues[0]?.message || 'Invalid input' };
     }
-    const { email, role, expiresAt, notes } = parse.data;
+    const { email, status, permission, expiresAt, notes } = parse.data;
 
     const { data: targetUser, error: userError } = await supabase
       .from('users')
-      .select('id, full_name')
+      .select('id, full_name, primary_role')
       .eq('email', email)
       .single();
     if (userError || !targetUser) {
       return { success: false, error: 'User not found for that email' };
     }
 
+    const effectiveStatus = targetUser.primary_role === 'consumer' ? status ?? null : null;
+    const normalizedPermission =
+      effectiveStatus === 'owner' && permission === 'viewer' ? 'editor' : permission;
     const expiresAtIso = expiresAt ? new Date(expiresAt).toISOString() : null;
 
     const { error: grantError } = await supabase.rpc('grant_property_role', {
       target_user_id: targetUser.id,
       property_id: propertyId,
-      role,
+      status: effectiveStatus ?? undefined,
+      permission: normalizedPermission,
       expires_at: expiresAtIso ?? undefined,
     } satisfies Database['public']['Functions']['grant_property_role']['Args']);
 
@@ -72,8 +82,9 @@ export async function grantPropertyRole(propertyId: string, formData: FormData):
       actor_user_id: user.id,
       event_type: 'updated',
       event_payload: {
-        action: 'role_granted',
-        role,
+        action: 'access_granted',
+        status: effectiveStatus ?? null,
+        permission: normalizedPermission,
         granted_to_user_id: targetUser.id,
         granted_to_name: targetUser.full_name,
         expires_at: expiresAtIso,

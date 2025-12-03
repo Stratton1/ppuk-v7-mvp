@@ -33,7 +33,7 @@ export async function PropertyHeader({ property, featuredMedia }: PropertyHeader
     allowed_roles: ['owner', 'editor'],
   };
   // Type assertion needed due to Supabase RPC type inference issue
-  const { data: canEdit } = await (supabase.rpc as any)('has_property_role', hasPropertyRoleArgs);
+  const { data: canEdit } = await supabase.rpc('has_property_role', hasPropertyRoleArgs);
 
   // Generate signed URL for featured media
   let signedUrl: string | null = null;

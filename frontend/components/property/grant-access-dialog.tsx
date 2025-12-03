@@ -26,11 +26,13 @@ interface GrantAccessDialogProps {
   children: React.ReactNode; // Trigger button
 }
 
-/**
- * Available roles that can be granted
- */
-const GRANTABLE_ROLES = [
+const GRANTABLE_STATUSES = [
   { value: 'owner', label: 'Owner', icon: '🏠' },
+  { value: 'buyer', label: 'Buyer', icon: '🛒' },
+  { value: 'tenant', label: 'Tenant', icon: '🧾' },
+];
+
+const GRANTABLE_PERMISSIONS = [
   { value: 'editor', label: 'Editor', icon: '✏️' },
   { value: 'viewer', label: 'Viewer', icon: '👁️' },
 ];
@@ -97,7 +99,7 @@ export function GrantAccessDialog({ propertyId, children }: GrantAccessDialogPro
         <DialogHeader>
           <DialogTitle>Grant Access</DialogTitle>
           <DialogDescription>
-            Give a user access to this property with a specific role.
+            Give a user access to this property with an optional status and a permission level.
           </DialogDescription>
         </DialogHeader>
 
@@ -133,30 +135,49 @@ export function GrantAccessDialog({ propertyId, children }: GrantAccessDialogPro
             </p>
           </div>
 
-          {/* Role Selection */}
+          {/* Status Selection */}
           <div className="space-y-2">
-            <Label htmlFor="role">
-              Role <span className="text-destructive">*</span>
-            </Label>
+            <Label htmlFor="status">Status (optional)</Label>
             <select
-              id="role"
-              name="role"
-              required
+              id="status"
+              name="status"
               disabled={loading || success}
               defaultValue=""
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <option value="" disabled>
-                Select a role...
-              </option>
-              {GRANTABLE_ROLES.map((role) => (
+              <option value="">No status</option>
+              {GRANTABLE_STATUSES.map((role) => (
                 <option key={role.value} value={role.value}>
                   {role.icon} {role.label}
                 </option>
               ))}
             </select>
             <p className="text-xs text-muted-foreground">
-              Choose the level of access for this user
+              Status applies to consumers only. Owners are defaulted to Editor permission.
+            </p>
+          </div>
+
+          {/* Permission Selection */}
+          <div className="space-y-2">
+            <Label htmlFor="permission">
+              Permission <span className="text-destructive">*</span>
+            </Label>
+            <select
+              id="permission"
+              name="permission"
+              required
+              disabled={loading || success}
+              defaultValue="viewer"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {GRANTABLE_PERMISSIONS.map((role) => (
+                <option key={role.value} value={role.value}>
+                  {role.icon} {role.label}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground">
+              Professionals get permission only; consumers can also receive a status.
             </p>
           </div>
 
@@ -207,8 +228,8 @@ export function GrantAccessDialog({ propertyId, children }: GrantAccessDialogPro
           <div className="rounded-md bg-muted p-3 text-xs text-muted-foreground">
             <p className="font-medium">What happens next:</p>
             <ul className="mt-2 space-y-1 list-disc pl-4">
-              <li>User will be assigned the selected role</li>
-              <li>They will gain access based on role permissions</li>
+              <li>User will be assigned the selected status (optional) and permission</li>
+              <li>Owners default to Editor; professionals require explicit permission</li>
               <li>An event will be logged in the property timeline</li>
               <li>You can revoke access at any time</li>
             </ul>

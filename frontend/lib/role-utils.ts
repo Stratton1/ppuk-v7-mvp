@@ -1,4 +1,4 @@
-import type { ServerUserSession } from '@/types/auth';
+import type { PropertyPermission, PropertyStatus, ServerUserSession } from '@/types/auth';
 
 /**
  * File: role-utils.ts
@@ -6,9 +6,9 @@ import type { ServerUserSession } from '@/types/auth';
  */
 
 /**
- * Available property roles (v7)
+ * Available access markers (statuses + permissions)
  */
-export type PropertyRole = 'owner' | 'editor' | 'viewer' | 'admin';
+export type PropertyRole = PropertyStatus | PropertyPermission | 'admin';
 
 /**
  * Access status based on expiry date
@@ -42,6 +42,18 @@ export const ROLE_CONFIG: Record<
     icon: '🏠',
     description: 'Property owner with full access',
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+  },
+  buyer: {
+    label: 'Buyer',
+    icon: '🛒',
+    description: 'Interested buyer with viewing rights',
+    color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+  },
+  tenant: {
+    label: 'Tenant',
+    icon: '🧾',
+    description: 'Tenant with viewing rights',
+    color: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
   },
   editor: {
     label: 'Editor',
@@ -185,20 +197,22 @@ export function formatExpiryDate(expiresAt: string | null): string {
 }
 
 /**
- * Sort roles by priority
- * Owner > Admin > Editor > Viewer
+ * Sort access markers by priority
+ * Owner > Editor > Viewer > Buyer > Tenant > Admin (fallback)
  */
 export function sortRoles(roles: string[]): string[] {
   const priority: Record<string, number> = {
     owner: 1,
-    admin: 2,
-    editor: 3,
-    viewer: 4,
+    editor: 2,
+    viewer: 3,
+    buyer: 4,
+    tenant: 5,
+    admin: 6,
   };
 
   return roles.sort((a, b) => {
-    const aPriority = priority[a] || 999;
-    const bPriority = priority[b] || 999;
+    const aPriority = priority[a] ?? 999;
+    const bPriority = priority[b] ?? 999;
     return aPriority - bPriority;
   });
 }
@@ -214,22 +228,38 @@ export function isAdmin(session: ServerUserSession | null | undefined): boolean 
 export function isOwner(session: ServerUserSession | null | undefined, propertyId: string): boolean {
   if (!session) return false;
   if (isAdmin(session)) return true;
-  return session.property_roles[propertyId] === 'owner';
+  return (session.property_roles[propertyId]?.status ?? []).includes('owner');
+}
+
+export function isBuyer(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  if (!session) return false;
+  return (session.property_roles[propertyId]?.status ?? []).includes('buyer');
+}
+
+export function isTenant(session: ServerUserSession | null | undefined, propertyId: string): boolean {
+  if (!session) return false;
+  return (session.property_roles[propertyId]?.status ?? []).includes('tenant');
 }
 
 export function isEditor(session: ServerUserSession | null | undefined, propertyId: string): boolean {
   if (!session) return false;
   if (isAdmin(session)) return true;
-  const role = session.property_roles[propertyId];
-  return role === 'owner' || role === 'editor';
+  const info = session.property_roles[propertyId];
+  if (!info) return false;
+  return info.permission === 'editor' || (info.status ?? []).includes('owner');
 }
 
 export function isViewer(session: ServerUserSession | null | undefined, propertyId: string): boolean {
   if (!session) return false;
   if (isAdmin(session)) return true;
-  return session.property_roles[propertyId] === 'owner' ||
-    session.property_roles[propertyId] === 'editor' ||
-    session.property_roles[propertyId] === 'viewer';
+  const info = session.property_roles[propertyId];
+  const statuses = info?.status ?? [];
+  return (
+    isEditor(session, propertyId) ||
+    info?.permission === 'viewer' ||
+    statuses.includes('buyer') ||
+    statuses.includes('tenant')
+  );
 }
 
 export function canEditProperty(session: ServerUserSession | null | undefined, propertyId: string): boolean {

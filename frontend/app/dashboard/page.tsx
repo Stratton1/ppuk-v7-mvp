@@ -25,7 +25,8 @@ type ActivityItem = {
 };
 type AccessEntry = {
   property: PropertyRow;
-  role: Database['public']['Enums']['property_role_type'];
+  statuses: Database['public']['Enums']['property_status_type'][];
+  permission: Database['public']['Enums']['property_permission_type'] | null;
   access_expires_at: string | null;
 };
 
@@ -35,7 +36,7 @@ async function getCompletion(supabase: ReturnType<typeof createServerClient>, pr
   const completionArgs: Database['public']['Functions']['calculate_property_completion']['Args'] = {
     property_id: propertyId,
   };
-  const { data, error } = await (supabase.rpc as any)('calculate_property_completion', completionArgs);
+  const { data, error } = await supabase.rpc('calculate_property_completion', completionArgs);
   if (error || data === null) return 0;
   return data;
 }
@@ -72,7 +73,8 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
     .select(
       `
       property_id,
-      role,
+      status,
+      permission,
       expires_at,
       properties!inner(
         id, display_address, status, uprn, latitude, longitude, created_at, updated_at, deleted_at, created_by_user_id, public_slug, public_visibility
@@ -85,25 +87,42 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
   const accessMap = new Map<string, AccessEntry>();
 
   (ownedProperties ?? []).forEach((property) => {
-    accessMap.set(property.id, { property, role: 'owner', access_expires_at: null });
+    accessMap.set(property.id, { property, statuses: ['owner'], permission: 'editor', access_expires_at: null });
   });
 
   ((stakeholderData as StakeholderWithProperty[] | null) ?? []).forEach((stakeholder) => {
     const property = stakeholder.properties;
     if (!property) return;
-    if (!accessMap.has(property.id)) {
-      accessMap.set(property.id, {
-        property,
-        role: stakeholder.role,
-        access_expires_at: stakeholder.expires_at,
-      });
+    const existing = accessMap.get(property.id) ?? {
+      property,
+      statuses: [] as AccessEntry['statuses'],
+      permission: null as AccessEntry['permission'],
+      access_expires_at: null as AccessEntry['access_expires_at'],
+    };
+
+    if (stakeholder.status && !existing.statuses.includes(stakeholder.status)) {
+      existing.statuses.push(stakeholder.status);
     }
+
+    if (stakeholder.permission === 'editor' || existing.statuses.includes('owner')) {
+      existing.permission = 'editor';
+    } else if (stakeholder.permission === 'viewer' && existing.permission !== 'editor') {
+      existing.permission = 'viewer';
+    }
+
+    if (stakeholder.expires_at) {
+      if (!existing.access_expires_at || new Date(stakeholder.expires_at) < new Date(existing.access_expires_at)) {
+        existing.access_expires_at = stakeholder.expires_at;
+      }
+    }
+
+    accessMap.set(property.id, existing);
   });
 
   const accessList = Array.from(accessMap.values());
   const propertyIds = accessList.map((p) => p.property.id);
 
-  const ownedCount = accessList.filter((p) => p.role === 'owner').length;
+  const ownedCount = accessList.filter((p) => p.statuses.includes('owner')).length;
   const accessibleCount = accessList.length;
 
   const { count: documentsCount } = propertyIds.length
@@ -167,7 +186,14 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
         ? (await getSignedUrl(supabase, media.storage_bucket || 'property-photos', media.storage_path)) ||
           FALLBACK_IMAGE
         : FALLBACK_IMAGE;
-      return { base: entry.property, role: entry.role, accessExpiresAt: entry.access_expires_at, completion, imageUrl };
+      return {
+        base: entry.property,
+        statuses: entry.statuses,
+        permission: entry.permission,
+        accessExpiresAt: entry.access_expires_at,
+        completion,
+        imageUrl,
+      };
     })
   ).then((list) => list.filter((item): item is NonNullable<typeof item> => !!item));
 
@@ -237,7 +263,8 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
               <AccessCard
                 key={prop.base.id}
                 displayAddress={prop.base.display_address}
-                role={prop.role}
+                statuses={prop.statuses}
+                permission={prop.permission}
                 status={prop.base.status}
                 accessExpiresAt={prop.accessExpiresAt}
                 imageUrl={prop.imageUrl}

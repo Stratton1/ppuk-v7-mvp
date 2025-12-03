@@ -18,16 +18,25 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { revokePropertyRole } from '@/actions/revoke-property-role';
+import type { Database } from '@/types/supabase';
 
 interface RemoveAccessDialogProps {
   propertyId: string;
   userId: string;
   userName: string;
-  userRole: string;
+  status: Database['public']['Enums']['property_status_type'] | null;
+  permission: Database['public']['Enums']['property_permission_type'] | null;
   children: React.ReactNode; // Trigger button
 }
 
-export function RemoveAccessDialog({ propertyId, userId, userName, userRole, children }: RemoveAccessDialogProps) {
+export function RemoveAccessDialog({
+  propertyId,
+  userId,
+  userName,
+  status,
+  permission,
+  children,
+}: RemoveAccessDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -41,11 +50,7 @@ export function RemoveAccessDialog({ propertyId, userId, userName, userRole, chi
     setError(null);
 
     try {
-      const result = await revokePropertyRole(
-        propertyId,
-        userId,
-        userRole as Parameters<typeof revokePropertyRole>[2]
-      );
+      const result = await revokePropertyRole(propertyId, userId, status, permission);
 
       if (!result.success) {
         setError(result.error);
@@ -89,8 +94,10 @@ export function RemoveAccessDialog({ propertyId, userId, userName, userRole, chi
             <p className="text-sm text-muted-foreground">{userName}</p>
           </div>
           <div>
-            <p className="text-sm font-medium">Current Role:</p>
-            <p className="text-sm text-muted-foreground capitalize">{userRole}</p>
+            <p className="text-sm font-medium">Current Access:</p>
+            <p className="text-sm text-muted-foreground capitalize">
+              {[status, permission].filter(Boolean).join(' / ') || 'Unknown'}
+            </p>
           </div>
         </div>
 

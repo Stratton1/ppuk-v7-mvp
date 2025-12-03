@@ -23,7 +23,7 @@ export async function loginAction(_prevState: ActionResult, formData: FormData):
 export async function registerAction(_prevState: ActionResult, formData: FormData): Promise<ActionResult> {
   const email = formData.get('email')?.toString() ?? '';
   const password = formData.get('password')?.toString() ?? '';
-  const primaryRole = (formData.get('primaryRole')?.toString() as RoleType | undefined) ?? 'viewer';
+  const primaryRole = (formData.get('primaryRole')?.toString() as RoleType | undefined) ?? 'consumer';
 
   const supabase = createClient();
   const { data, error } = await supabase.auth.signUp({ email, password });
