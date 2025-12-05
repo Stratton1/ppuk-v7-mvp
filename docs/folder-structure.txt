@@ -192,9 +192,13 @@ PPUK v7.0 Build - Folder Structure
 │   └── tsconfig.json
 ├── lovable
 │   ├── components
-│   │   └── … (Lovable integration copy used in-app; see its README)
+│   │   ├── src/           (Lovable UI source used for integration work)
+│   │   ├── public/
+│   │   ├── package.json
+│   │   ├── tailwind.config.ts
+│   │   └── README.md
 │   └── original
-│       └── property-passport-ui-1619a988  (untouched upstream backup)
+│       └── property-passport-ui-1619a988/  (raw Lovable export kept as backup)
 ├── supabase
 │   ├── .branches
 │   │   └── _current_branch
