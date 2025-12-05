@@ -7,9 +7,11 @@ import { PropertyDocuments } from '@/components/property/property-documents';
 import { PropertyAccess } from '@/components/property/property-access';
 import { PropertyEvents } from '@/components/property/property-events';
 import { PropertyFlags } from '@/components/property/property-flags';
-import { TaskList } from '@/components/property/tasks/task-list';
 import { CreateTaskDialog } from '@/components/property/tasks/create-task-dialog';
 import { createTaskAction } from '@/actions/tasks';
+import { AppSection } from '@/components/app/AppSection';
+import { PropertyLayout } from '@/components/app/PropertyLayout';
+import { TasksList } from '@/components/app/TasksList';
 import type { Database } from '@/types/supabase';
 
 interface PropertyDetailPageProps {
@@ -51,27 +53,39 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
   ]);
 
   return (
-    <div className="container mx-auto space-y-8 py-8">
+    <div className="mx-auto max-w-6xl space-y-6 px-4 py-6">
       <PropertyHeader property={propertyTyped} featuredMedia={allMedia?.[0] || null} />
-      <PropertyMeta property={propertyTyped} />
-      <PropertyGallery propertyId={propertyTyped.id} media={allMedia || []} />
-      <PropertyDocuments propertyId={propertyTyped.id} />
-      <PropertyAccess propertyId={propertyTyped.id} />
-      <PropertyEvents propertyId={propertyTyped.id} />
-      <PropertyFlags propertyId={propertyTyped.id} />
+      <PropertyLayout
+        header={null}
+        sidebar={<PropertyAccess propertyId={propertyTyped.id} />}
+      >
+        <AppSection>
+          <PropertyMeta property={propertyTyped} />
+        </AppSection>
 
-      {/* H. Tasks */}
-      <div className="space-y-4">
-        <CreateTaskDialog propertyId={propertyTyped.id} onSubmit={createTaskAction} />
-        <TaskList tasks={tasks || []} />
-      </div>
+        <AppSection title="Gallery" description="Key photos for this property.">
+          <PropertyGallery propertyId={propertyTyped.id} media={allMedia || []} />
+        </AppSection>
 
-      {/* TODO: Notes functionality removed in v7 schema migration */}
-      {/* I. Notes */}
-      {/* <div className="space-y-4">
-        <CreateNoteDialog propertyId={propertyTyped.id} onSubmit={createNoteAction} />
-        <NoteList notes={notes || []} />
-      </div> */}
+        <AppSection title="Documents" description="Stored securely with signed URLs.">
+          <PropertyDocuments propertyId={propertyTyped.id} />
+        </AppSection>
+
+        <AppSection title="Events" description="Activity timeline across this passport.">
+          <PropertyEvents propertyId={propertyTyped.id} />
+        </AppSection>
+
+        <AppSection title="Flags" description="Issues or blockers that need attention.">
+          <PropertyFlags propertyId={propertyTyped.id} />
+        </AppSection>
+
+        <AppSection title="Tasks" description="Track actions across this property.">
+          <div className="space-y-4">
+            <CreateTaskDialog propertyId={propertyTyped.id} onSubmit={createTaskAction} />
+            <TasksList tasks={tasks || []} />
+          </div>
+        </AppSection>
+      </PropertyLayout>
     </div>
   );
 }

@@ -6,6 +6,8 @@
  */
 
 import { CreatePropertyForm } from '@/components/property/create-property-form';
+import { AppPageHeader } from '@/components/app/AppPageHeader';
+import { AppSection } from '@/components/app/AppSection';
 
 export const metadata = {
   title: 'Create Property | Property Passport UK',
@@ -14,9 +16,15 @@ export const metadata = {
 
 export default function CreatePropertyPage() {
   return (
-    <div className="container mx-auto py-8">
-      <CreatePropertyForm />
+    <div className="mx-auto max-w-5xl space-y-6 px-4 py-6">
+      <AppPageHeader
+        title="Create Property"
+        description="Register a new property and automatically assign yourself as owner."
+        breadcrumbs={[{ label: 'Properties', href: '/properties' }, { label: 'Create' }]}
+      />
+      <AppSection>
+        <CreatePropertyForm />
+      </AppSection>
     </div>
   );
 }
-

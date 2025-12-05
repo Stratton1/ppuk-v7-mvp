@@ -80,24 +80,13 @@ export async function PropertyList() {
   );
 
   return (
-    <div className="container mx-auto py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Active Properties</h1>
-        <p className="mt-2 text-muted-foreground">
-          Browse all available properties in the Property Passport UK system
-        </p>
-      </div>
-
-      {/* Property Grid */}
+    <div className="space-y-6 p-4 sm:p-6">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {propertiesWithMedia.map(({ property, signedUrl }) => (
           <PropertyCard key={property.id} property={property} signedUrl={signedUrl} />
         ))}
       </div>
-
-      {/* Results Count */}
-      <div className="mt-8 text-center text-sm text-muted-foreground">
+      <div className="text-center text-sm text-muted-foreground">
         Showing {properties.length} {properties.length === 1 ? 'property' : 'properties'}
       </div>
     </div>

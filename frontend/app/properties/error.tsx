@@ -23,9 +23,9 @@ export default function PropertiesError({
   }, [error]);
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md rounded-2xl border-destructive/50 bg-destructive/5">
           <CardHeader>
             <CardTitle className="text-destructive">Something went wrong</CardTitle>
           </CardHeader>
@@ -38,7 +38,7 @@ export default function PropertiesError({
             )}
             <div className="flex gap-2">
               <Button onClick={reset}>Try again</Button>
-              <Button variant="outline" onClick={() => window.location.href = '/'}>
+              <Button variant="outline" onClick={() => (window.location.href = '/')}>
                 Go home
               </Button>
             </div>

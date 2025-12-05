@@ -86,7 +86,7 @@ export default async function PublicPassportPage({ params }: { params: { slug: s
   ).then((docs) => docs.filter((d): d is { name: string; url: string } => !!d));
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6 px-4 py-6">
       <PublicHero address={publicProperty.display_address} status={publicProperty.status} imageUrl={featuredUrl} />
       <PublicMetadata uprn={publicProperty.uprn} status={publicProperty.status} />
       <div className="space-y-3">

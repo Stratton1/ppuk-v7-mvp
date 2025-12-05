@@ -1,12 +1,16 @@
 import React from 'react';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { getServerUser } from '@/lib/auth/server-user';
 import { DashboardPropertyCard } from '@/components/dashboard/property-card';
 import { ActivityTimeline } from '@/components/dashboard/activity-timeline';
-import { KpiCard } from '@/components/dashboard/kpi-card';
 import { AccessCard } from '@/components/dashboard/access-card';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AppPageHeader } from '@/components/app/AppPageHeader';
+import { AppSection } from '@/components/app/AppSection';
+import { AppKPI } from '@/components/app/AppKPI';
 import type { Database } from '@/types/supabase';
 
 type PropertyRow = Database['public']['Tables']['properties']['Row'];
@@ -198,28 +202,35 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
   ).then((list) => list.filter((item): item is NonNullable<typeof item> => !!item));
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-semibold text-primary">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Personalised view of your properties and recent activity.</p>
-      </div>
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-6">
+      <AppPageHeader
+        title="Dashboard"
+        description="Personalised view of your properties, access, and recent activity."
+        actions={
+          <Button asChild size="sm">
+            <Link href="/properties/create">Add property</Link>
+          </Button>
+        }
+      />
 
-      {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard title="Owned Properties" value={stats.owned_properties ?? 0} />
-        <KpiCard title="Accessible Properties" value={stats.accessible_properties ?? 0} />
-        <KpiCard title="Unresolved Flags" value={stats.unresolved_flags ?? 0} />
-        <KpiCard title="Documents Uploaded" value={stats.total_documents ?? 0} />
+        <AppKPI label="Owned Properties" value={stats.owned_properties ?? 0} hint="You created these passports" />
+        <AppKPI label="Accessible Properties" value={stats.accessible_properties ?? 0} hint="Shared with you" />
+        <AppKPI label="Unresolved Flags" value={stats.unresolved_flags ?? 0} hint="Issues to review" />
+        <AppKPI label="Documents Uploaded" value={stats.total_documents ?? 0} hint="Across your properties" />
       </div>
 
-      {/* Your Properties */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold">Your Properties</h2>
-            <p className="text-sm text-muted-foreground">Accessible passports with completion and quick actions.</p>
-          </div>
-        </div>
+      <AppSection
+        title="Your Properties"
+        description="Accessible passports with completion and quick actions."
+        actions={
+          hydrated.length > 0 ? (
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/properties">View all</Link>
+            </Button>
+          ) : null
+        }
+      >
         {hydrated.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-sm text-muted-foreground">No properties found.</CardContent>
@@ -236,23 +247,13 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
             ))}
           </div>
         )}
-      </section>
+      </AppSection>
 
-      {/* Recent Activity */}
-      <section className="space-y-3">
-        <div>
-          <h2 className="text-2xl font-semibold">Recent Activity</h2>
-          <p className="text-sm text-muted-foreground">Latest events across your accessible properties.</p>
-        </div>
+      <AppSection title="Recent Activity" description="Latest events across your accessible properties.">
         <ActivityTimeline items={activity as ActivityItem[]} />
-      </section>
+      </AppSection>
 
-      {/* Access Roles */}
-      <section className="space-y-3">
-        <div>
-          <h2 className="text-2xl font-semibold">Your Access Roles</h2>
-          <p className="text-sm text-muted-foreground">Roles granted to you with any expiry notices.</p>
-        </div>
+      <AppSection title="Your Access Roles" description="Roles granted to you with any expiry notices.">
         {hydrated.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-sm text-muted-foreground">No access granted yet.</CardContent>
@@ -272,7 +273,7 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
             ))}
           </div>
         )}
-      </section>
+      </AppSection>
     </div>
   );
 }

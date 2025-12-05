@@ -11,6 +11,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { AppPageHeader } from '@/components/app/AppPageHeader';
+import { AppSection } from '@/components/app/AppSection';
 
 interface SearchPageProps {
   searchParams: {
@@ -49,19 +51,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mx-auto max-w-4xl space-y-6">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Search Properties</h1>
-          <p className="text-muted-foreground">
-            Search by address, postcode, or UPRN
-          </p>
-        </div>
+    <div className="mx-auto max-w-6xl space-y-6 px-4 py-6">
+      <AppPageHeader
+        title="Search Properties"
+        description="Search by address, postcode, or UPRN."
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Search' }]}
+      />
 
-        {/* Search Form */}
+      <AppSection>
         <form action="/search" method="get" className="space-y-4">
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               type="search"
               name="q"
@@ -70,13 +69,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               className="flex-1"
               autoFocus
             />
-            <Button type="submit">Search</Button>
+            <Button type="submit" className="sm:self-start">
+              Search
+            </Button>
           </div>
         </form>
 
-        {/* Results */}
         {query && query.length < 2 && (
-          <Card>
+          <Card className="mt-4 rounded-2xl">
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
               Please enter at least 2 characters to search
             </CardContent>
@@ -84,7 +84,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         )}
 
         {error && (
-          <Card>
+          <Card className="mt-4 rounded-2xl border-destructive/60 bg-destructive/5">
             <CardContent className="py-8">
               <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
                 Search error: {error}
@@ -94,7 +94,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         )}
 
         {query && query.length >= 2 && !error && results.length === 0 && (
-          <Card>
+          <Card className="mt-4 rounded-2xl">
             <CardContent className="py-12 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                 <svg
@@ -121,7 +121,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         )}
 
         {results.length > 0 && (
-          <div className="space-y-4">
+          <div className="mt-6 space-y-4">
             <p className="text-sm text-muted-foreground">
               Found {results.length} {results.length === 1 ? 'property' : 'properties'}
             </p>
@@ -133,7 +133,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           </div>
         )}
-      </div>
+      </AppSection>
     </div>
   );
 }
@@ -141,7 +141,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 /**
  * Individual search result component
  */
-async function PropertySearchResult({ property }: { property: Database['public']['Functions']['search_properties']['Returns'][number] }) {
+function PropertySearchResult({
+  property,
+}: {
+  property: Database['public']['Functions']['search_properties']['Returns'][number];
+}) {
   // Determine status badge variant
   const statusVariant =
     property.status === 'active'

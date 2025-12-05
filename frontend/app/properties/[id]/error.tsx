@@ -23,9 +23,9 @@ export default function PropertyDetailError({
   }, [error]);
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md rounded-2xl border-destructive/50 bg-destructive/5">
           <CardHeader>
             <CardTitle className="text-destructive">Failed to load property</CardTitle>
           </CardHeader>
@@ -33,12 +33,10 @@ export default function PropertyDetailError({
             <p className="text-sm text-muted-foreground">
               We could not load this property. It may not exist or there was a server error.
             </p>
-            {error.message && (
-              <p className="text-xs text-muted-foreground">Error: {error.message}</p>
-            )}
+            {error.message && <p className="text-xs text-muted-foreground">Error: {error.message}</p>}
             <div className="flex gap-2">
               <Button onClick={reset}>Try again</Button>
-              <Button variant="outline" onClick={() => window.location.href = '/properties'}>
+              <Button variant="outline" onClick={() => (window.location.href = '/properties')}>
                 Back to properties
               </Button>
             </div>

@@ -8,17 +8,15 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 
 export default function PropertiesLoading() {
   return (
-    <div className="container mx-auto py-8">
-      {/* Header Skeleton */}
-      <div className="mb-8">
+    <div className="mx-auto max-w-6xl space-y-6 px-4 py-6">
+      <div className="space-y-2">
         <Skeleton className="h-9 w-64" />
-        <Skeleton className="mt-2 h-5 w-96" />
+        <Skeleton className="h-5 w-96" />
       </div>
 
-      {/* Property Grid Skeleton */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} className="flex flex-col overflow-hidden">
+          <Card key={i} className="flex flex-col overflow-hidden rounded-2xl">
             <Skeleton className="aspect-video w-full" />
             <CardHeader>
               <Skeleton className="h-6 w-full" />

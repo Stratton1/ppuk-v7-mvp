@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export default function PropertyDetailLoading() {
   return (
-    <div className="container mx-auto space-y-8 py-8">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
       {/* Hero Section Skeleton */}
       <div className="space-y-4">
         <Skeleton className="aspect-video w-full rounded-lg md:aspect-[21/9]" />
@@ -156,4 +156,3 @@ export default function PropertyDetailLoading() {
     </div>
   );
 }
-

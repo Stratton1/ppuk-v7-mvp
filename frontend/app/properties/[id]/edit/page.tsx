@@ -8,6 +8,8 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
 import { EditPropertyForm } from '@/components/property/edit-property-form';
+import { AppPageHeader } from '@/components/app/AppPageHeader';
+import { AppSection } from '@/components/app/AppSection';
 
 interface EditPropertyPageProps {
   params: {
@@ -55,8 +57,19 @@ export default async function EditPropertyPage({ params }: EditPropertyPageProps
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <EditPropertyForm property={property} />
+    <div className="mx-auto max-w-5xl space-y-6 px-4 py-6">
+      <AppPageHeader
+        title="Edit Property"
+        description="Update property details and keep the passport data fresh."
+        breadcrumbs={[
+          { label: 'Properties', href: '/properties' },
+          { label: property.display_address || 'Property', href: `/properties/${property.id}` },
+          { label: 'Edit' },
+        ]}
+      />
+      <AppSection>
+        <EditPropertyForm property={property} />
+      </AppSection>
     </div>
   );
 }
