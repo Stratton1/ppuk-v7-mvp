@@ -6,7 +6,7 @@ type AppAvatarProps = {
   email?: string | null;
   imageUrl?: string | null;
   size?: 'sm' | 'md' | 'lg';
-  className?: string;s
+  className?: string;
 };
 
 const sizeClasses: Record<NonNullable<AppAvatarProps['size']>, string> = {

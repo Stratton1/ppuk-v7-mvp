@@ -1,0 +1,63 @@
+Deprecated: see docs/reports/ENGINEERING_AUDIT_V7.md for the canonical audit.
+# FULL REPO GAP ANALYSIS — Stratton1/ppuk-v7-mvp
+
+## A) Missing Files
+- `frontend/package.json` and `frontend/package-lock.json` (first pass noted duplication but did not detail contents; they were considered missing/removed at root-level summary).
+- `frontend/.gitignore` (not described).
+- `frontend/postcss.config.mjs`, `frontend/eslint.config.mjs`, `frontend/next-env.d.ts`, `frontend/next.config.ts`, `frontend/public/*` (assets) — not covered individually.
+- `verify_schema.sql` (not analysed).
+- `folder-structure.txt` (content not described).
+- `supabase/.temp/*`, `supabase/.branches/_current_branch` (ignored but not noted).
+- Root `.nvmrc`, `.prettier*` ignored in first pass details.
+- `frontend/.env.example` / `.env.local` placeholders after cleanup not fully described.
+
+## B) Missing Detail
+- Root `package.json` vs `frontend/package.json`: exact scripts and dependency conflicts, and how Vercel/CI will detect the correct root, not detailed.
+- `frontend/app/properties/*` and many components/actions still target v6 tables (property_media/docs/notes/tasks). First pass noted mismatch broadly but not file-by-file mapping to legacy schema usage.
+- `frontend/types/supabase.ts` still v6: not explicitly called out as requiring regeneration and the exact mismatches (tables/functions/enums) vs v7 schema.
+- `supabase/seed.sql`: still v6 seed; not flagged as incompatible with v7 tables and drop migration.
+- CI (`.github/workflows/ci.yml`): backend job remnants and wrong root detection not fully analysed.
+- `middleware.ts`: fetch to API for property access; risk of double Supabase session creation per request not discussed.
+- `frontend/app/api/property-access/[propertyId]/route.ts`: Does not use `x-user-id` header set by middleware; relies on session; potential mismatch with spec not noted.
+- `frontend/app/api/me/route.ts`: No caching/error handling; returns null silently; not discussed.
+- `frontend/lib/auth/actions.ts`: No input validation, no CSRF protection, no email normalization; not flagged specifically.
+- `frontend/components/public-*`: Public exposure of gallery/documents relies on signed URLs; potential leakage if RPC returns signed URLs; not assessed.
+- `supabase/migrations/20250101000000_ppuk_v7_schema.sql`: Added enums/tables but lacks constraints aligning with previous RLS helpers (no user_property_roles equivalents); relationships with existing RPCs unaligned; not highlighted.
+- `supabase/migrations/20250101000100_ppuk_v7_rls_policies.sql`: Policies assume new tables only; potential breakage if legacy tables remain; no mention of missing policies for integrations/tasks nuance.
+- `supabase/migrations/20250101000200_ppuk_drop_legacy_v6.sql`: Drops legacy tables but not legacy RPCs, functions, or triggers; not mentioned.
+- `vitest.config.ts`: Points to `src/**/*.test.ts` (nonexistent), not flagged as dead config.
+
+## C) Missed Issues or Risks
+- **Secrets**: Root `.env` with real service key still present; severity high (noted but not emphasized as repo leak). Frontend `.env.local` blank; risk of missing env at runtime.
+- **Build scripts**: Root scripts `next dev frontend` are invalid; Vercel build will fail (missing workspace setting). Not explicit.
+- **Type/schema drift**: Generated Supabase types (v6) conflict with v7 migrations and RLS; all components/actions may be calling non-existent columns/tables at runtime.
+- **Data model mismatch**: Components/actions use v6 tables (property_documents/media/tasks/notes) while v7 schema defines documents/media/tasks with different columns. Risk of RLS failures and runtime errors not exhaustively listed.
+- **Seed/migrations**: v6 seed inserts into auth/users/property_*; drop migration would remove referenced tables, causing seed failures if run post-drop.
+- **RPCs**: v6 RPC migrations remain (e.g., search_properties, get_user_properties) targeting old tables; not verified against new schema—likely broken.
+- **Middleware**: Uses Supabase server client per request and then fetches property access API (double auth calls); does not short-circuit for non-existent propertyId; potential latency and error propagation not mentioned.
+- **API property access**: Does not validate propertyId format; returns access=true for creator even if RLS denies; potential bypass if RLS mismatched.
+- **Protected-route component**: Still uses client-side supabase.auth calls; may conflict with middleware/session headers.
+- **CI**: Lint/test/typecheck scripts refer to frontend but root package dominates; potential no-op pipeline.
+- **Testing**: No tests; vitest config stale. Not called out as blocker.
+- **Documentation drift**: Many docs refer to /src backend; not flagged as obsolete needing purge/update.
+- **Supabase drop migration**: Uses cascade on some tables; may drop dependent objects unexpectedly; no rollback plan noted.
+
+## D) Architectural Blind Spots
+- No mapping between RLS policies (v7) and existing RPC/functions; potential mismatch unaddressed.
+- No inventory of RPCs in migrations vs code usage (which RPCs target legacy tables).
+- No plan for regenerating Supabase types and updating all imports.
+- No detailed assessment of public routes data exposure (public passport endpoints) with new RLS and signed URL strategy.
+- No evaluation of React Query usage vs server components; hybrid data fetching inconsistencies.
+- No assessment of performance/caching for repeated Supabase calls in server components (dashboard makes multiple RPCs and storage calls serially).
+- No explicit evaluation of deployment root (frontend vs repo root) for Vercel.
+
+## E) Recommendations for Third Pass
+- Enumerate all RPCs/functions in `supabase/migrations` and map to code usages; flag those targeting legacy tables and create a migration plan to v7 tables.
+- Regenerate Supabase types from the actual DB (post-drop) and audit every file for type/column mismatches.
+- Deep-dive into all actions/components under `frontend/actions` and `frontend/components` to catalog v6 table usage and propose exact replacements with v7 tables.
+- Review CI/workflow and package scripts for correctness (root vs frontend), propose final package layout and Vercel config.
+- Perform security sweep: remove secrets from repo, ensure env handling in middleware/server actions, check public endpoints for leakage, evaluate CSRF and validation gaps in server actions.
+- Validate middleware/property-access flow against the AUTH_ROLE_ARCHITECTURE_SPECIFICATION; adjust to use header-passed user, handle missing propertyId, and reduce redundant Supabase calls.
+- Inspect seed files and migrations for conflicts post-drop; propose v7-aligned seed or remove old seed.
+- Update docs to remove /src backend references; align with Next-only architecture.
+- Clean test/tooling: fix vitest config or remove; add lint/type scripts pointing to frontend; propose test plan.

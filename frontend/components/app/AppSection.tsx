@@ -8,6 +8,7 @@ type AppSectionProps = {
   children: React.ReactNode;
   className?: string;
   padded?: boolean;
+  id?: string;
 };
 
 export function AppSection({
@@ -17,9 +18,11 @@ export function AppSection({
   children,
   className,
   padded = true,
+  id,
 }: AppSectionProps) {
   return (
     <section
+      id={id}
       className={cn(
         'rounded-2xl border border-border/60 bg-card/80 shadow-sm shadow-glow-xs backdrop-blur transition hover:shadow-glow-sm',
         className

@@ -19,13 +19,18 @@ npm run dev
 ```
 4) Env: ensure `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (no secrets in client).
 
-## Documentation map (source of truth)
-- **Architecture & Blueprint:** `PPUK_V7_COMPLETE_BLUEPRINT_V2.md` (canonical), `PPUK_V7_COMPLETE_BLUEPRINT.md` (deprecated for context).
-- **Auth & Roles:** `AUTH_ROLE_ARCHITECTURE_SPECIFICATION.md`
-- **Schema & RLS:** `SCHEMA_ARCHITECTURE_SPECIFICATION.md`, `SCHEMA_VERIFICATION_REPORT.md`, `RLS_POLICY_PLAN.md`
-- **Roadmap & Current State:** `roadmap.md`, `current_state_and_next_steps.txt`, `codebase-audit-v7.md`
-- **Hygiene Reports:** `CODEBASE_HYGIENE_REPORT.md`
-- **Legacy removal plan:** `LEGACY_SCHEMA_REMOVAL_PLAN.md`
+## Documentation map (canonical)
+- **Blueprints & Orientation**: `PPUK_V7_COMPLETE_BLUEPRINT_V2.md` (canonical), `BEGINNER_ROADMAP_BLUEPRINT.md`, `REPO_STRUCTURE.md` (repo map). v1 blueprint lives in `legacy/` for reference.
+- **Architecture** (`architecture/`): `AUTH_ROLE_ARCHITECTURE_SPECIFICATION.md`, `SCHEMA_ARCHITECTURE_SPECIFICATION.md`, `RLS_ARCHITECTURE_V7.md`.
+- **Reports** (`reports/`): `ENGINEERING_AUDIT_V7.md` (canonical audit), `SCHEMA_VERIFICATION_REPORT.md`, `RLS_VERIFICATION_REPORT.md`, `CODEBASE_HYGIENE_REPORT.md`.
+- **Ops** (`ops/`): `SMOKE_TEST_SCRIPT_ROLES_V7.md`, `current_state_and_next_steps.txt`.
+- **Meta** (`meta/`): `AGENT_OPERATING_GUIDE.md`, `refresh.md`, `continue.md`, `frontendconsider.md`.
+- **Roadmap**: `roadmap.md`.
+
+## Notes
+- Legacy docs retained under `docs/legacy/` for historical reference (e.g., `PPUK_V7_COMPLETE_BLUEPRINT.md`, `LEGACY_SCHEMA_REMOVAL_PLAN.md`, `RLS_POLICY_PLAN.md`).
+- Use Supabase clients from `frontend/lib/supabase` and v7-generated types in `frontend/types/supabase.ts`.
+- Refer to `.cursorrules` and `.cursor/rules/propertypassportv7rules.mdc` for enforced engineering rules.
 
 ## Notes
 - Legacy v6 tables (`property_notes`, `property_tasks`, `property_media`, `property_documents`, `users_extended`, `user_property_roles`, `property_flags`, `audit_logs`) are dropped; do not reference them.

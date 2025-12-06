@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { getFeaturedMediaUrl, PLACEHOLDER_IMAGE } from '@/lib/signed-url';
 import { setPublicVisibilityAction } from '@/actions/set-public-visibility';
 import { createClient as createServerClient } from '@/lib/supabase/server';
+import { getServerUser } from '@/lib/auth/server-user';
+import { getRoleLabel, getRoleIcon } from '@/lib/role-utils';
 import type { Database } from '@/types/supabase';
 
 type Property = Database['public']['Tables']['properties']['Row'] & {
@@ -26,6 +28,7 @@ interface PropertyHeaderProps {
 
 export async function PropertyHeader({ property, featuredMedia }: PropertyHeaderProps) {
   const supabase = createServerClient();
+  const session = await getServerUser();
 
   // Check if user can edit property (owner or admin only)
   const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
@@ -50,6 +53,12 @@ export async function PropertyHeader({ property, featuredMedia }: PropertyHeader
       : property.status === 'draft'
       ? 'secondary'
       : 'outline';
+
+  const roleInfo = session?.property_roles?.[property.id];
+  const roleBadges = [
+    ...(roleInfo?.status ?? []).map((r) => ({ label: getRoleLabel(r), icon: getRoleIcon(r) })),
+    roleInfo?.permission ? { label: getRoleLabel(roleInfo.permission), icon: getRoleIcon(roleInfo.permission) } : null,
+  ].filter(Boolean) as Array<{ label: string; icon: string }>;
 
   return (
     <div className="overflow-hidden rounded-3xl border border-border/60 bg-card/70 shadow-md shadow-glow-xs">
@@ -80,6 +89,12 @@ export async function PropertyHeader({ property, featuredMedia }: PropertyHeader
                 Passport ready
               </Badge>
             )}
+            {roleBadges.map((badge) => (
+              <Badge key={badge.label} variant="secondary" className="gap-1 capitalize">
+                <span>{badge.icon}</span>
+                {badge.label}
+              </Badge>
+            ))}
           </div>
         </div>
 
@@ -132,8 +147,25 @@ export async function PropertyHeader({ property, featuredMedia }: PropertyHeader
                 </Button>
               </>
             )}
+            <Button asChild variant="outline">
+              <Link href={`/invitations?propertyId=${property.id}`}>Invite</Link>
+            </Button>
+            <Button asChild variant="default">
+              <Link href={`/properties/${property.id}#documents`}>Upload documents</Link>
+            </Button>
           </div>
         )}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Button asChild size="sm" variant="ghost">
+            <Link href={`/properties/${property.id}#key-facts`}>Key facts</Link>
+          </Button>
+          <Button asChild size="sm" variant="ghost">
+            <Link href={`/properties/${property.id}#timeline`}>Timeline</Link>
+          </Button>
+          <Button asChild size="sm" variant="ghost">
+            <Link href={`/properties/${property.id}#stakeholders`}>Stakeholders</Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

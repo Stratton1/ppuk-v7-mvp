@@ -1,3 +1,4 @@
+Superseded by REPO_STRUCTURE.md (canonical). This file is retained temporarily.
 Project Tree (key paths, Next.js-only)
 
 .

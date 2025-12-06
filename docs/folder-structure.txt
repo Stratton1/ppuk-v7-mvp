@@ -1,3 +1,4 @@
+Superseded by REPO_STRUCTURE.md (canonical). This file is retained temporarily.
 PPUK v7.0 Build - Folder Structure
 ==================================================
 .
