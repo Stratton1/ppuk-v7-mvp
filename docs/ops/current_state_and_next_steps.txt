@@ -1,0 +1,66 @@
+Property Passport UK v7.0 — Checklist to Launch
+
+Legend: [x] done, [ ] not done
+
+Foundation & Tooling
+- [x] Initialize repo with TypeScript, Node 20+, npm scripts (dev/build/start/lint/format/test/typecheck).
+- [x] Add ESLint + Prettier config, Husky + lint-staged hooks.
+- [x] Add Vitest and sample test (src/tests/health.test.ts).
+- [ ] Add .env.example and remove secrets from committed .env; document environment bootstrap.
+- [x] Add GitHub Actions CI for lint → typecheck → test → build (backend + frontend) with caching.
+
+Backend Server (Express)
+- [x] Express app scaffold with helmet, cors, JSON/body parsing, x-powered-by disabled.
+- [x] Graceful shutdown handlers in src/server.ts.
+- [x] Central not-found and error-handling middleware (no internals leaked).
+- [x] /health endpoint and test.
+- [ ] Implement real routes/controllers/services for domain flows (property CRUD/search, documents/media listing, tasks/notes, role management, visibility toggle, audit/events read).
+- [ ] Add request validation (Zod) and rate limiting on sensitive routes.
+- [ ] Add readiness endpoint (dependencies: DB/storage) and structured logging.
+
+Supabase Data, Security, and Storage
+- [x] Schema migrations for properties, property_documents, property_media, users_extended, user_property_roles, property_events, property_flags, audit_logs with constraints and updated_at triggers.
+- [x] RLS helper functions (is_admin, has_property_role, is_property_owner/creator, can_access_document, approval/access-window helpers).
+- [x] RLS policies enabled on all core tables (public discovery + role/time-bound access + admin override).
+- [x] RPCs: create_property_with_role, update_property_with_event, set_public_visibility, regenerate_slug, search_properties, get_user_properties, dashboard stats, featured media, property create/update helpers.
+- [x] Storage buckets property-documents (20MB) and property-photos (10MB) with policies.
+- [x] Seed data for roles/properties/docs/media/events/flags/audit (RLS temporarily disabled during seed).
+- [x] Supabase types generated and committed (src/types/supabase.ts, frontend/src/types/supabase.ts).
+- [ ] Apply migrations to live dev project and verify RLS/storage policies.
+- [ ] Add regression tests for RLS (all roles, expiry windows, document/media matrix) and storage signed-URL access.
+- [ ] Add AV/malware scanning hook and server-side MIME/size enforcement (complementing client checks).
+
+Frontend (Next.js App Router + Tailwind/shadcn)
+- [x] Base layout shell (navbar/sidebar/footer) and home page with RLS-first messaging.
+- [x] Providers for Supabase session handling and React Query (with devtools).
+- [x] Supabase clients for server components/actions and browser; env checks.
+- [x] Server actions: visibility toggle + slug regen; task/note creation; document/photo upload (validation + storage + DB + event log); document/media delete; role grant/revoke; revalidation hooks.
+- [ ] Auth flows: login/register/logout, protected routes/guards, session UX.
+- [ ] Dashboard: stats cards (dashboard RPC), recent activity, task/note widgets.
+- [ ] Properties: list/search, property detail tabs (summary/ownership/compliance/planning/risks/media/docs/tasks/notes), upload/view/download via signed URLs, role invites/requests, public slug view.
+- [ ] UX polish: loading/error/empty states, toasts, accessibility (WCAG), responsive tweaks.
+
+Integrations & Edge Functions
+- [ ] Edge Functions for EPC, HMLR, Flood, Postcodes.io, Police, OS, ONS with Zod validation, cache/TTL, sanitized errors.
+- [ ] Cache layer usage (api_cache) with warm/refresh endpoints; frontend hooks/cards consuming cached data.
+- [ ] Performance tuning on queries (indexes, pagination/filtering on lists).
+
+Security, Observability, Ops
+- [ ] Structured logging (no PII), error reporting, metrics.
+- [ ] Health/readiness endpoints hooked to DB/storage/external dependencies.
+- [ ] CSP/helmet tuning, rate limiting, secret rotation procedure.
+- [ ] Audit log surfacing in admin views; consent/access logging for sharing flows.
+- [ ] Backup/restore runbook for Supabase; DR drill plan.
+- [ ] AV scan for uploads (storage hook or external service).
+
+Testing & QA
+- [x] Unit test for /health route.
+- [ ] Expand unit tests (validators/services/utils) and integration tests (Supabase RPC + RLS-aware flows).
+- [ ] E2E smoke: auth → create property → upload doc/photo → assign role → toggle visibility → public view.
+- [ ] Accessibility and performance passes (Lighthouse/Next.js profiling), image optimization.
+
+Launch Readiness
+- [ ] CI green across lint/type/test/build; migrations applied; secrets sealed.
+- [ ] Monitoring/alerting on key endpoints and Edge Functions.
+- [ ] Content/legal/privacy notices; cookie/security messaging where needed.
+- [ ] Final launch checklist documented; rollback plan; on-call/ownership noted.

@@ -1,0 +1,83 @@
+---
+alwaysApply: true
+---
+
+# Property Passport UK v7 — Master Rule Index (STRICT)
+
+This file connects Cursor's rule system to the modular engineering standards in `/docs/engineering`.
+
+All other rule files under `.cursor/rules` refine these principles for specific areas.
+
+## 1. Rule Sources
+
+The canonical rule sources for this project are:
+
+- docs/engineering/ARCHITECTURE.md
+
+- docs/engineering/SUPABASE_STANDARDS.md
+
+- docs/engineering/SERVER_ACTIONS.md
+
+- docs/engineering/COMPONENT_GUIDELINES.md
+
+- docs/engineering/DESIGN_SYSTEM.md
+
+- docs/engineering/TESTING_STANDARDS.md
+
+- docs/engineering/AI_RULES.md
+
+- docs/engineering/PERFORMANCE_GUIDELINES.md
+
+- docs/engineering/DOMAIN_LANGUAGE.md
+
+## 2. Applicable Sub-Rules
+
+The following rule modules exist under `.cursor/rules`:
+
+- architecture.mdc
+
+- supabase-standards.mdc
+
+- server-actions.mdc
+
+- component-guidelines.mdc
+
+- design-system.mdc
+
+- testing-standards.mdc
+
+- ai-rules.mdc
+
+- performance-guidelines.mdc
+
+- domain-language.mdc
+
+Each module is mandatory. When Cursor edits code, it must comply with all relevant modules.
+
+## 3. Priority
+
+If there is a conflict:
+
+1. Security & RLS rules win.
+
+2. Supabase standards win over convenience.
+
+3. Domain language & UX rules win over generic naming.
+
+4. Performance rules win over naive implementation.
+
+5. Testing rules win over speed of change.
+
+## 4. Strictness
+
+These rules are **STRICT**. Cursor must:
+
+- Reject unsafe operations.
+
+- Warn when a user request conflicts with the rules.
+
+- Prefer minimal, compliant changes over large refactors.
+
+- Defer schema changes unless explicitly instructed.
+
+This file must be kept in sync with the engineering docs in `/docs/engineering`.

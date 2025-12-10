@@ -1,0 +1,245 @@
+---
+alwaysApply: true
+---
+
+Canonical cursor rules for PPUK v7. This is the human-readable master spec from which root .cursorrules is derived.
+CURSOR RULES — Canonical Engineering Specification (PPUK v7)
+
+Version: 1.0
+Status: Active
+Owner: CTO / Engineering Lead
+Scope: Applies to all AI-generated or AI-modified code within this repository.
+
+1. Purpose
+
+These rules define how AI tools (Cursor, Claude Code, GitHub Copilot, Playwright MCP agents) must operate when modifying, generating, or analysing code within the Property Passport UK v7 codebase.
+
+The goal is to ensure:
+
+Predictable, consistent engineering output
+
+Alignment with the PPUK v7 architecture
+
+Zero regressions in RLS, Supabase schema, role logic, or UI contract
+
+Consistency across components, routes, actions, and tests
+
+This file supersedes all prior AI instructions.
+
+2. Project Architecture Summary (AI must internalise)
+
+PPUK v7 is built on:
+
+Next.js 16 App Router (React 19)
+
+Supabase (PostgreSQL, RLS, Storage, Edge Functions)
+
+Shadcn/UI component system
+
+TypeScript strict mode
+
+Server Actions for mutations
+
+React Query for client data fetching
+
+Playwright for E2E
+
+Vitest for unit + integration + RLS
+
+Local Supabase for dev/testing
+
+Core Domain Concepts:
+
+Property
+
+Stakeholders (owner, buyer, tenant)
+
+Permissions (viewer, editor)
+
+Global roles (consumer, agent, conveyancer, surveyor, admin)
+
+Documents, Media, Tasks, Events
+
+Public Passport
+
+3. AI Editing Rules (Mandatory)
+3.1 Do NOT break RLS
+
+Any modification to:
+
+schema
+
+policies
+
+RPC
+
+role model
+
+must preserve:
+
+property-scoped access
+
+is_admin() bypass
+
+permissions hierarchy
+
+soft-delete semantics (deleted_at)
+
+3.2 Do NOT add client-side secrets
+
+Client components may only read NEXT_PUBLIC_* variables.
+
+3.3 Server Actions rules
+
+Every server action MUST:
+
+validate input with Zod
+
+check authentication
+
+check permissions using role utilities
+
+return { success: boolean, error?: string }
+
+call revalidatePath() when necessary
+
+3.4 UI components rules
+
+Use server components by default.
+
+Use client components only when interaction is required.
+
+Use shadcn/ui as the base system.
+
+Follow naming conventions in design_systems.md.
+
+4. Coding Conventions
+4.1 File Naming
+
+Components: PascalCase.tsx
+
+Utilities: kebab-case.ts
+
+Hooks: use-something.ts
+
+Actions: kebab-case.ts
+
+RPCs: snake_case in SQL
+
+4.2 Folder Structure Enforcement
+
+AI must preserve and expand only according to:
+
+components/
+app/
+actions/
+hooks/
+lib/
+tests/
+supabase/migrations/
+
+
+Never create new random folders.
+
+5. Database & Supabase Rules
+5.1 Migrations
+
+Always create new migrations; never modify old ones.
+
+Use timestamps for naming: YYYYMMDDHHMMSS_description.sql.
+
+Add comments explaining purpose.
+
+Add indexes for any column filtered frequently.
+
+5.2 RLS Rules
+
+All tables containing user or property-linked data must have RLS ON.
+
+Use helpers: can_view_property(), can_edit_property(), etc.
+
+Admins bypass RLS using is_admin().
+
+6. Testing Rules
+RLS Tests (Vitest)
+
+Must test:
+
+owner access
+
+viewer access
+
+editor access
+
+buyer/tenant behavior
+
+admin bypass
+
+Integration Tests
+
+Each server action must have:
+
+success case
+
+failure case
+
+permission violation case
+
+Playwright E2E
+
+Use:
+
+/test/login for seeded users
+
+/api/test/reset before each test
+
+data-testid attributes consistently
+
+7. Performance Rules
+
+AI must enforce:
+
+batch RPCs over N+1 queries
+
+signed URL caching
+
+cursor-based pagination
+
+indexes on foreign keys & common filters
+
+8. AI Behaviour Rules
+8.1 NEVER guess migrations
+
+Always ask for confirmation if schema changes are required.
+
+8.2 NEVER rename variables unless part of a coordinated refactor.
+
+Avoid breakage.
+
+8.3 ALWAYS generate type-safe code
+
+Use Database types.
+
+8.4 ALWAYS update docs when adding new features
+
+Write to:
+
+/docs/engineering/propertypassportv7rules.mdc
+
+/docs/engineering/design_systems.md
+
+8.5 ALWAYS follow domain language
+
+Use the property vocabulary already established.
+
+9. Deployment Rules
+
+Ensure environment variables align with .env.example.
+
+No runtime secrets on client side.
+
+Follow Vercel build conventions.
+
+This file is the canonical reference version of the Cursor rules for the PPUK v7 codebase. It defines development principles, architectural expectations, coding conventions, testing patterns, and AI-agent behaviour guidelines. The root-level `.cursorrules` file will be a minimized version generated from the content here. This is the authoritative source of truth for AI-driven code editing, generation, and refactoring.
+
+✔ END OF CURSOR RULES

@@ -1,0 +1,203 @@
+# Property Passport UK v7 — Cursor Global Rules (STRICT)
+
+Always apply these rules for every response = TRUE 
+
+You are operating inside the **Property Passport UK v7** repository.
+
+Your primary responsibilities:
+
+- Follow the architecture and engineering standards defined in `/docs/engineering`.
+
+- Never break RLS, security, or permissions models.
+
+- Never introduce schema or role changes unless the user explicitly and clearly instructs you to.
+
+- Always respect the domain language and design system.
+
+The canonical engineering references are:
+
+- docs/engineering/ARCHITECTURE.md
+
+- docs/engineering/SUPABASE_STANDARDS.md
+
+- docs/engineering/SERVER_ACTIONS.md
+
+- docs/engineering/COMPONENT_GUIDELINES.md
+
+- docs/engineering/DESIGN_SYSTEM.md
+
+- docs/engineering/TESTING_STANDARDS.md
+
+- docs/engineering/AI_RULES.md
+
+- docs/engineering/PERFORMANCE_GUIDELINES.md
+
+- docs/engineering/DOMAIN_LANGUAGE.md
+
+## 1. Behavioural Mode (Option A — Maximum Strictness)
+
+You MUST:
+
+1. Treat all engineering docs in `/docs/engineering` as binding law.
+
+2. Default to **Server Components** and **Server Actions** patterns described there.
+
+3. Assume **Supabase RLS is the source of truth** for permissions and never bypass it.
+
+4. Refuse to:
+
+   - Add, remove, or modify database tables, columns, policies, or enums unless the user explicitly asks you to.
+
+   - Introduce any changes that would weaken or bypass security.
+
+   - Generate client-side Supabase write logic.
+
+5. When in doubt, be conservative and explain the safest options.
+
+If the user asks for something that conflicts with the standards, warn them clearly and propose a compliant alternative.
+
+## 2. When Editing Code
+
+When modifying code in this repo, you MUST:
+
+- Preserve the existing architecture (folder structure, naming conventions, file responsibilities).
+
+- Preserve type safety (TypeScript strict mode).
+
+- Preserve domain terminology (see DOMAIN_LANGUAGE.md).
+
+- Preserve tests; if you change behaviour, **update or add tests**.
+
+- Use the correct layer:
+
+  - Database logic in Supabase (migrations/RPC/RLS) where applicable.
+
+  - Mutations in Next.js Server Actions.
+
+  - UI logic in React components (Server or Client as appropriate).
+
+- Use Shadcn UI for primitives and TailwindCSS for styling.
+
+Do NOT:
+
+- Inline random CSS.
+
+- Introduce new state management libraries.
+
+- Create new top-level folders without strong reason.
+
+- Rewrite large files unnecessarily.
+
+## 3. Database & Supabase
+
+You MUST follow:
+
+- SUPABASE_STANDARDS.md
+
+- PERFORMANCE_GUIDELINES.md
+
+You MUST NOT:
+
+- Change schema, RLS, or RPCs unless explicitly asked.
+
+- Modify existing migrations.
+
+- Add new migrations without:
+
+  - Explaining exactly what will change.
+
+  - Linking the changes back to existing standards.
+
+If the user asks for schema changes, first:
+
+- Restate what they want.
+
+- Summarise the impact.
+
+- Then propose a migration approach that complies with SUPABASE_STANDARDS.md.
+
+## 4. Server Actions & Components
+
+You MUST follow:
+
+- SERVER_ACTIONS.md
+
+- COMPONENT_GUIDELINES.md
+
+- DESIGN_SYSTEM.md
+
+Every new Server Action MUST:
+
+- Use `use server`;
+
+- Use Zod for input validation;
+
+- Call `getServerUser()` and enforce auth;
+
+- Enforce permissions via Supabase / helpers;
+
+- Return `{ success: boolean; error?: string; data?: unknown }`;
+
+- Trigger `revalidatePath` for affected routes.
+
+Every new component MUST:
+
+- Be typed, no `any`;
+
+- Use proper props interfaces;
+
+- Use Shadcn UI + Tailwind;
+
+- Include appropriate `data-testid` attributes for E2E tests.
+
+## 5. Testing
+
+You MUST follow:
+
+- TESTING_STANDARDS.md
+
+When you:
+
+- Add a new major feature → propose or add Vitest + Playwright coverage.
+
+- Change permission logic → update RLS tests.
+
+- Change UI flow → update or add E2E tests.
+
+If the user asks for critical refactors without tests, strongly recommend test coverage and outline what to test.
+
+## 6. AI-Specific Rules
+
+You MUST follow:
+
+- AI_RULES.md
+
+You MUST NOT:
+
+- Invent new domain terms;
+
+- Rename core concepts (e.g. "Property Passport", "Stakeholder", "Completion Score");
+
+- Suggest ignoring documentation;
+
+- Remove or weaken validations or checks.
+
+When generating code, always:
+
+- Reference the relevant engineering doc(s) in your own reasoning.
+
+- Align with DOMAIN_LANGUAGE.md and DESIGN_SYSTEM.md.
+
+## 7. When Unsure
+
+If a request is ambiguous or potentially unsafe:
+
+- Do NOT guess.
+
+- Explain the uncertainty.
+
+- Suggest safe interpretations and ask the user which they intend.
+
+Your primary objective:
+
+***Help build and maintain Property Passport UK v7 in a safe, coherent, production-grade way, strictly aligned with the engineering standards in /docs/engineering.***

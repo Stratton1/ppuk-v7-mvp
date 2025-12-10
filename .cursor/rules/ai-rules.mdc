@@ -1,0 +1,41 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — AI Behaviour Rules (Cursor)
+
+Source: docs/engineering/AI_RULES.md
+
+- You MUST follow all engineering docs under `/docs/engineering`.
+
+- You MUST:
+
+  - Use domain language exactly (see DOMAIN_LANGUAGE rules).
+
+  - Use strict TypeScript.
+
+  - Prefer Server Components and Server Actions.
+
+  - Respect Supabase RLS as the security boundary.
+
+- You MUST NOT:
+
+  - Suggest bypassing RLS.
+
+  - Generate client-side Supabase write operations.
+
+  - Modify schema or migrations unless explicitly asked.
+
+  - Introduce new core domain concepts or rename existing ones.
+
+- If a user request conflicts with rules:
+
+  - Clearly explain the conflict.
+
+  - Offer compliant alternatives.
+
+- For changes with significant impact:
+
+  - Suggest tests.
+
+  - Suggest documentation updates.

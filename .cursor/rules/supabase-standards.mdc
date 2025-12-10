@@ -1,0 +1,39 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — Supabase Standards (Cursor)
+
+Source: docs/engineering/SUPABASE_STANDARDS.md
+
+- DO NOT modify schema, RLS, or migrations unless the user explicitly asks for it.
+
+- DO NOT touch existing migration files; only add new ones when requested.
+
+- All tables must have:
+
+  - `created_at`, `updated_at`, and `deleted_at` (soft delete).
+
+- RLS must be ON for property-related tables.
+
+- Use helper functions like `can_view_property`, `can_edit_property`, `is_admin()` in policies and RPCs.
+
+- Use enums for roles and statuses, do not change existing enum values.
+
+- Storage:
+
+  - Use `property-documents` and `property-media` buckets.
+
+  - Never create public buckets. Always rely on signed URLs.
+
+- Performance:
+
+  - Add indexes to foreign keys and frequently filtered columns.
+
+  - Use partial indexes for `deleted_at IS NULL` patterns.
+
+- When user asks for schema changes:
+
+  - Clearly explain impact.
+
+  - Propose compliant migration plan.

@@ -1,0 +1,440 @@
+Superseded by REPO_STRUCTURE.md (canonical). This file is retained temporarily.
+PPUK v7.0 Build - Complete Folder Structure
+==================================================
+Last Updated: March 2025
+.
+├── .cursor
+│   ├── memory.json
+│   ├── plans
+│   │   └── ppuk_v7.0_phased_execution_roadmap_26935643.plan.md
+│   └── rules
+│       └── propertypassportv7rules.mdc
+├── .cursorrules
+├── .github
+│   └── workflows
+│       └── ci.yml
+├── .gitignore
+├── .husky
+│   ├── _
+│   │   └── husky.sh
+│   └── pre-commit
+├── .nvmrc
+├── .prettierignore
+├── .prettierrc
+├── docs
+│   ├── architecture
+│   │   ├── AUTH_ROLE_ARCHITECTURE_SPECIFICATION.md
+│   │   ├── RLS_ARCHITECTURE_V7.md
+│   │   └── SCHEMA_ARCHITECTURE_SPECIFICATION.md
+│   ├── BEGINNER_ROADMAP_BLUEPRINT.md
+│   ├── CONTRIBUTING.md
+│   ├── engineering
+│   │   ├── cursorrules.mdc
+│   │   ├── design_systems.md
+│   │   └── propertypassportv7rules.mdc
+│   ├── ENVIRONMENT_SETUP.md
+│   ├── folder-structure.txt
+│   ├── FRONTEND_PAGES.md
+│   ├── legacy
+│   │   ├── codebase-audit-v7.md
+│   │   ├── FULL_REPO_ANALYSIS.txt
+│   │   ├── FULL_REPO_GAP_ANALYSIS.txt
+│   │   ├── LEGACY_SCHEMA_REMOVAL_PLAN.md
+│   │   ├── PPUK_V7_COMPLETE_BLUEPRINT.md
+│   │   └── RLS_POLICY_PLAN.md
+│   ├── meta
+│   │   ├── AGENT_OPERATING_GUIDE.md
+│   │   ├── continue.md
+│   │   ├── frontendconsider.md
+│   │   ├── legacy
+│   │   │   ├── AGENTS.md
+│   │   │   ├── concise.md
+│   │   │   └── core.md
+│   │   └── refresh.md
+│   ├── ops
+│   │   ├── current_state_and_next_steps.txt
+│   │   └── SMOKE_TEST_SCRIPT_ROLES_V7.md
+│   ├── PHASE_COMPLETION_SUMMARY.md
+│   ├── PPUK_FULL_AUDIT.md
+│   ├── PPUK_V7_COMPLETE_BLUEPRINT_V2.md
+│   ├── project-tree.md
+│   ├── README.md
+│   ├── REPO_STRUCTURE.md
+│   ├── reports
+│   │   ├── CODEBASE_HYGIENE_REPORT.md
+│   │   ├── ENGINEERING_AUDIT_V7.md
+│   │   ├── RLS_VERIFICATION_REPORT.md
+│   │   └── SCHEMA_VERIFICATION_REPORT.md
+│   ├── roadmap.md
+│   ├── TEST_ACCOUNTS.md
+│   └── TESTING_STABILITY_NOTES.md
+├── eslint.config.js
+├── frontend
+│   ├── .env.example
+│   ├── .env.local (not in git)
+│   ├── .env.test.local (not in git)
+│   ├── .gitignore
+│   ├── .nvmrc
+│   ├── actions
+│   │   ├── delete-property-document.ts
+│   │   ├── delete-property-media.ts
+│   │   ├── grant-property-role.ts
+│   │   ├── property-flags.ts
+│   │   ├── revoke-property-role.ts
+│   │   ├── set-public-visibility.ts
+│   │   ├── tasks.ts
+│   │   ├── upload-property-document.ts
+│   │   ├── upload-property-photo.ts
+│   │   └── watchlist.ts
+│   ├── app
+│   │   ├── (app)
+│   │   │   ├── admin
+│   │   │   │   ├── analytics
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── audit
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── layout.tsx
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── users
+│   │   │   │       └── page.tsx
+│   │   │   ├── dashboard
+│   │   │   │   ├── error.tsx
+│   │   │   │   ├── loading.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── invitations
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── properties
+│   │   │   │   ├── [id]
+│   │   │   │   │   ├── edit
+│   │   │   │   │   │   └── page.tsx
+│   │   │   │   │   ├── error.tsx
+│   │   │   │   │   ├── layout.tsx
+│   │   │   │   │   ├── loading.tsx
+│   │   │   │   │   ├── not-found.tsx
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── compare
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── create
+│   │   │   │   │   ├── error.tsx
+│   │   │   │   │   ├── loading.tsx
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── error.tsx
+│   │   │   │   ├── loading.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── settings
+│   │   │   │   └── page.tsx
+│   │   │   ├── tasks
+│   │   │   │   └── page.tsx
+│   │   │   └── watchlist
+│   │   │       └── page.tsx
+│   │   ├── (public)
+│   │   │   ├── auth
+│   │   │   │   ├── login
+│   │   │   │   │   ├── login-form.tsx
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── register
+│   │   │   │       ├── page.tsx
+│   │   │   │       └── register-form.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── p
+│   │   │   │   └── [slug]
+│   │   │   │       └── page.tsx
+│   │   │   ├── page.tsx
+│   │   │   ├── search
+│   │   │   │   └── page.tsx
+│   │   │   └── test
+│   │   │       └── login
+│   │   │           └── page.tsx
+│   │   ├── api
+│   │   │   ├── me
+│   │   │   │   └── route.ts
+│   │   │   ├── property-access
+│   │   │   │   └── [propertyId]
+│   │   │   │       └── route.ts
+│   │   │   └── test
+│   │   │       └── reset
+│   │   │           └── route.ts
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── providers.tsx
+│   ├── components
+│   │   ├── admin
+│   │   │   └── AdminRouteGuard.tsx
+│   │   ├── app
+│   │   │   ├── AppAvatar.tsx
+│   │   │   ├── AppKPI.tsx
+│   │   │   ├── AppPageHeader.tsx
+│   │   │   ├── AppSection.tsx
+│   │   │   ├── InvitationsList.tsx
+│   │   │   ├── PropertyLayout.tsx
+│   │   │   ├── SettingsForm.tsx
+│   │   │   └── TasksList.tsx
+│   │   ├── dashboard
+│   │   │   ├── access-card.tsx
+│   │   │   ├── activity-timeline.tsx
+│   │   │   ├── kpi-card.tsx
+│   │   │   ├── property-card.tsx
+│   │   │   └── recent-activity.tsx
+│   │   ├── home
+│   │   │   ├── BeforeAfter.tsx
+│   │   │   ├── CTASection.tsx
+│   │   │   ├── FAQ.tsx
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── HowItWorks.tsx
+│   │   │   ├── LogoCloud.tsx
+│   │   │   ├── PageWrapper.tsx
+│   │   │   ├── Personas.tsx
+│   │   │   ├── ProductPreview.tsx
+│   │   │   ├── StatsStrip.tsx
+│   │   │   └── WhyUKNeedsPassports.tsx
+│   │   ├── layout
+│   │   │   ├── app-shell.tsx
+│   │   │   ├── app-sidebar.tsx
+│   │   │   ├── app-topbar.tsx
+│   │   │   ├── footer.tsx
+│   │   │   ├── global-search.tsx
+│   │   │   ├── navbar.tsx
+│   │   │   └── sidebar.tsx
+│   │   ├── property
+│   │   │   ├── cards
+│   │   │   │   ├── crime-card.tsx
+│   │   │   │   ├── epc-card-integrated.tsx
+│   │   │   │   ├── epc-card.tsx
+│   │   │   │   ├── flood-card-integrated.tsx
+│   │   │   │   ├── flood-card.tsx
+│   │   │   │   ├── planning-card.tsx
+│   │   │   │   ├── title-card-integrated.tsx
+│   │   │   │   └── title-card.tsx
+│   │   │   ├── create-property-form.tsx
+│   │   │   ├── delete-document-dialog.tsx
+│   │   │   ├── delete-media-button.tsx
+│   │   │   ├── delete-media-dialog.tsx
+│   │   │   ├── edit-property-form.tsx
+│   │   │   ├── gallery-image.tsx
+│   │   │   ├── grant-access-dialog.tsx
+│   │   │   ├── property-access.tsx
+│   │   │   ├── property-card.tsx
+│   │   │   ├── property-documents-section.tsx
+│   │   │   ├── property-documents.tsx
+│   │   │   ├── property-events.tsx
+│   │   │   ├── property-flags-section.tsx
+│   │   │   ├── property-flags.tsx
+│   │   │   ├── property-gallery.tsx
+│   │   │   ├── property-header.tsx
+│   │   │   ├── property-key-facts.tsx
+│   │   │   ├── property-list.tsx
+│   │   │   ├── property-meta.tsx
+│   │   │   ├── property-overview-card.tsx
+│   │   │   ├── property-stakeholders-section.tsx
+│   │   │   ├── property-timeline-section.tsx
+│   │   │   ├── remove-access-dialog.tsx
+│   │   │   ├── stakeholders
+│   │   │   │   ├── invite-dialog.tsx
+│   │   │   │   ├── stakeholder-role-badge.tsx
+│   │   │   │   ├── stakeholder-row.tsx
+│   │   │   │   └── stakeholder-status.tsx
+│   │   │   ├── tasks
+│   │   │   │   ├── create-task-dialog.tsx
+│   │   │   │   └── task-list.tsx
+│   │   │   ├── timeline
+│   │   │   │   ├── event-card.tsx
+│   │   │   │   ├── event-create-dialog.tsx
+│   │   │   │   └── event-list.tsx
+│   │   │   ├── upload-document-dialog.tsx
+│   │   │   ├── upload-photo-dialog.tsx
+│   │   │   └── watchlist-button.tsx
+│   │   ├── protected-route.tsx
+│   │   ├── public-passport
+│   │   │   ├── public-documents.tsx
+│   │   │   ├── public-gallery.tsx
+│   │   │   ├── public-hero.tsx
+│   │   │   └── public-metadata.tsx
+│   │   ├── ui
+│   │   │   ├── badge.tsx
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   ├── skeleton.tsx
+│   │   │   ├── textarea.tsx
+│   │   │   └── use-toast.tsx
+│   │   └── components.json
+│   ├── components.json
+│   ├── eslint.config.mjs
+│   ├── hooks
+│   │   ├── use-crime-data.ts
+│   │   ├── use-epc-data.ts
+│   │   ├── use-flood-risk.ts
+│   │   ├── use-hmlr-data.ts
+│   │   ├── useSupabase.ts
+│   │   └── useUser.ts
+│   ├── lib
+│   │   ├── auth
+│   │   │   ├── actions.ts
+│   │   │   ├── middleware-helpers.ts
+│   │   │   └── server-user.ts
+│   │   ├── document-utils.ts
+│   │   ├── env.ts
+│   │   ├── property-facts.ts
+│   │   ├── role-utils.ts
+│   │   ├── signed-url-cache.ts
+│   │   ├── signed-url.ts
+│   │   ├── supabase
+│   │   │   ├── client.ts
+│   │   │   └── server.ts
+│   │   └── utils.ts
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── playwright.config.ts
+│   ├── postcss.config.mjs
+│   ├── providers
+│   │   ├── query-provider.tsx
+│   │   └── supabase-provider.tsx
+│   ├── proxy.ts
+│   ├── public
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── next.svg
+│   │   ├── placeholder.svg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   ├── README.md
+│   ├── scripts
+│   │   └── create-test-users.mjs
+│   ├── tailwind.config.ts
+│   ├── tests
+│   │   ├── e2e
+│   │   │   ├── auth.spec.ts
+│   │   │   ├── create-property.spec.ts
+│   │   │   ├── dashboard.spec.ts
+│   │   │   ├── demo-flow.spec.ts
+│   │   │   ├── key-facts.spec.ts
+│   │   │   ├── passport-overview.spec.ts
+│   │   │   ├── public-passport.spec.ts
+│   │   │   ├── settings.spec.ts
+│   │   │   ├── stakeholders-invitations.spec.ts
+│   │   │   ├── tasks-flags.spec.ts
+│   │   │   └── timeline.spec.ts
+│   │   ├── helpers
+│   │   │   ├── fixtures.ts
+│   │   │   ├── login.ts
+│   │   │   ├── rls-test-helpers.ts
+│   │   │   └── test-helpers.ts
+│   │   ├── integration
+│   │   │   ├── grant-role.spec.ts
+│   │   │   ├── set-visibility.spec.ts
+│   │   │   ├── tasks.spec.ts
+│   │   │   └── upload-document.spec.ts
+│   │   ├── rls
+│   │   │   ├── admin-permissions.spec.ts
+│   │   │   ├── buyer-permissions.spec.ts
+│   │   │   ├── expired-access.spec.ts
+│   │   │   ├── owner-permissions.spec.ts
+│   │   │   ├── public-visibility.spec.ts
+│   │   │   └── viewer-vs-editor.spec.ts
+│   │   └── rls.spec.ts
+│   ├── tsconfig.json
+│   └── types
+│       ├── auth.ts
+│       ├── forms.ts
+│       └── supabase.ts
+├── lovable
+│   └── original
+│       └── property-passport-ui-1619a988
+│           ├── bun.lockb
+│           ├── components.json
+│           ├── eslint.config.js
+│           ├── index.html
+│           ├── package-lock.json
+│           ├── package.json
+│           ├── postcss.config.js
+│           ├── public
+│           │   ├── favicon.ico
+│           │   ├── placeholder.svg
+│           │   └── robots.txt
+│           ├── README.md
+│           ├── tailwind.config.ts
+│           ├── tsconfig.app.json
+│           ├── tsconfig.json
+│           ├── tsconfig.node.json
+│           └── vite.config.ts
+├── lovable-components
+│   ├── bun.lockb
+│   ├── components.json
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── placeholder.svg
+│   │   └── robots.txt
+│   ├── README.md
+│   ├── tailwind.config.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── package.json
+├── scripts
+│   ├── create-test-users.js
+│   ├── create-test-users.mjs
+│   └── create-test-users.ts
+├── supabase
+│   ├── config.toml
+│   ├── functions
+│   │   ├── _shared
+│   │   │   ├── cache.ts
+│   │   │   ├── errors.ts
+│   │   │   ├── types.ts
+│   │   │   └── validation.ts
+│   │   ├── api-crime
+│   │   │   └── index.ts
+│   │   ├── api-epc
+│   │   │   └── index.ts
+│   │   ├── api-flood
+│   │   │   └── index.ts
+│   │   └── api-hmlr
+│   │       └── index.ts
+│   ├── migrations
+│   │   ├── 20241201000000_initial_schema.sql
+│   │   ├── 20241201000001_rls_helper_functions.sql
+│   │   ├── 20241201000002_rls_policies.sql
+│   │   ├── 20241201000003_featured_media_rpc.sql
+│   │   ├── 20241201000004_property_create_rpc.sql
+│   │   ├── 20241201000005_storage_buckets.sql
+│   │   ├── 20241201000006_update_property_rpc.sql
+│   │   ├── 20241201000007_search_properties_rpc.sql
+│   │   ├── 20241201000008_get_user_properties_rpc.sql
+│   │   ├── 20241202000001_dashboard_rpcs.sql
+│   │   ├── 20241202000002_public_passport.sql
+│   │   ├── 20241202000003_tasks_notes.sql
+│   │   ├── 20241202000004_fix_set_public_visibility.sql
+│   │   ├── 20241202000005_reset_rpcs.sql
+│   │   ├── 20241202000006_recreate_rpcs.sql
+│   │   ├── 20250101000000_ppuk_v7_schema.sql
+│   │   ├── 20250101000100_ppuk_v7_rls_policies.sql
+│   │   ├── 20250101000200_ppuk_drop_legacy_v6.sql
+│   │   ├── 20250314000000_ppuk_v7_backend_alignment.sql
+│   │   ├── 20250315000000_ppuk_v7_roles_permissions.sql
+│   │   ├── 20250320000000_ppuk_v7_roles_status_permission.sql
+│   │   ├── 20250321000000_storage_policies_property_scoped.sql
+│   │   ├── 20250322000000_performance_indexes.sql
+│   │   ├── 20250322000001_batch_completion_rpc.sql
+│   │   ├── 20250323000000_fts_indexes.sql
+│   │   ├── 20250323000001_search_properties_fts_pagination.sql
+│   │   ├── 20250325000000_api_cache_table.sql
+│   │   ├── 20250326000000_property_flags.sql
+│   │   ├── 20250327000000_watchlist.sql
+│   │   └── 20250328000000_admin_rpcs.sql
+│   └── seed.sql
+├── tsconfig.json
+├── tsconfig.tsbuildinfo
+├── verify_schema.sql
+└── vitest.config.ts

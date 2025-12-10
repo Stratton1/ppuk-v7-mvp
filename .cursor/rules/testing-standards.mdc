@@ -1,0 +1,33 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — Testing Standards (Cursor)
+
+Source: docs/engineering/TESTING_STANDARDS.md
+
+- Encourage tests for any non-trivial change.
+
+- Vitest:
+
+  - Unit tests for utilities.
+
+  - Integration tests for server actions and RPC calls.
+
+  - RLS tests for roles (owner, buyer, tenant, editor, viewer, admin).
+
+- Playwright:
+
+  - E2E tests for core flows (login, dashboard, property navigation, document upload, tasks, flags, public passport, admin).
+
+  - Use `data-testid` for selectors.
+
+  - Use `/api/test/reset` before each test to ensure a clean state.
+
+  - Use `/test/login` for deterministic logins.
+
+- When AI generates or significantly changes behaviour:
+
+  - Propose corresponding tests.
+
+  - Update existing tests if behaviour changes.

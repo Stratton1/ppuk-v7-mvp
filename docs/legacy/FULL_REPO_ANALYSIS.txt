@@ -1,0 +1,112 @@
+Deprecated: see docs/reports/ENGINEERING_AUDIT_V7.md for the canonical audit.
+# FULL REPO ANALYSIS — Stratton1/ppuk-v7-mvp
+
+## A) High-Level Overview
+- **Purpose**: Property Passport UK v7 — Next.js App Router frontend with Supabase backend (Postgres + RLS) providing property passports, roles, documents/media, tasks/notes, public views, and admin/role-aware UX.
+- **Architecture**: Frontend-only (Next.js) repo with Supabase migrations and RLS. Supabase SSR clients for server/client usage; server actions for auth; middleware for route/role protection. Layered docs and action/ component libs.
+- **Tech stack**: Next.js 16 (App Router), React 19, TypeScript, Tailwind/shadcn UI, Supabase (@supabase/ssr, supabase-js), React Query, ESLint/Prettier, Vitest placeholder. Supabase migrations SQL.
+- **Folder structure (key)**:
+  - `frontend/` (app, actions, components, hooks, lib, providers, types, public, configs, middleware)
+  - `supabase/` (migrations, config, seed)
+  - `docs/` (architecture, RLS, roadmap, specs)
+  - Root configs: tsconfig, eslint, husky, workflows.
+
+## B) Detailed File-by-File Commentary (representative/critical files)
+_Due to repository size, commentary covers all functional files; static assets/duplicate patterns noted collectively._
+
+- `.env`, `.env.example`, `frontend/.env.local`, `frontend/.env.example`: Env placeholders; root .env still contains real service role key (security risk). Frontend templates are now empty placeholders.
+- `.github/workflows/ci.yml`: Two jobs (backend/frontend) but backend references removed scripts; currently frontend-only project. Uses Node 20 cache. Needs alignment with root scripts after package move.
+- `package.json` (root): Next.js app metadata, scripts use `next dev/build/start frontend` (incorrect; Next expects project root). Dependencies: Next 16, React 19, Supabase SSR, Tailwind, etc. Engines Node >=20.9. Lockfile exists under frontend (referenced).
+- `tsconfig.json` (root): Minimal CommonJS config, includes empty includes; likely unused by Next build (Next uses frontend/tsconfig). Risk of confusion.
+- `eslint.config.js`: Flat config for TS/Prettier; references tsconfig at root (likely unused).
+- `frontend/package.json`: Exists with dependencies/scripts matching Next; root also has package.json with similar deps; duplication risk.
+- `frontend/tsconfig.json`: Proper Next config with baseUrl ".", paths @/* -> ./*. Should be primary.
+- `frontend/tailwind.config.ts`: Content paths updated to app/components/actions/lib/providers/types/hooks/utils.
+- `frontend/components.json`: shadcn config; css path now app/globals.css.
+- `frontend/middleware.ts`: Auth/ACL middleware. Uses supabase server client. Allows public/static/API; redirects unauthenticated from protected routes; admin check via user_roles; property access via API; enriches headers. Uses fetch to origin; potential extra latency but acceptable. Uses req.cookies for supabase client; passes cookie header to property-access API.
+- `frontend/lib/supabase/client.ts`: createBrowserClient via @supabase/ssr using env vars.
+- `frontend/lib/supabase/server.ts`: createServerClient with cookies; includes no-op set/remove. Accepts optional cookie store.
+- `frontend/lib/auth/middleware-helpers.ts`: Helpers to classify routes.
+- `frontend/lib/auth/server-user.ts`: getServerUser loads auth user, users, profiles, user_roles; builds ServerUserSession. No error handling beyond null; uses maybeNull profile. Good.
+- `frontend/lib/auth/actions.ts`: Server actions login/register/logout/updateProfile. Register inserts users (primary_role) and profiles. No Zod validation; returns {error}. Update profile upserts profile. Potential missing sanitization and better error propagation.
+- `frontend/lib/auth/server-user.ts`: good but no caching.
+- `frontend/lib/auth/middleware-helpers.ts`: Static route lists; property detection simple split.
+- `frontend/hooks/useSupabase.ts`: Context getter.
+- `frontend/hooks/useUser.ts`: Fetches /api/me no-store; minimal error handling.
+- `frontend/app/api/me/route.ts`: Returns getServerUser JSON.
+- `frontend/app/api/property-access/[propertyId]/route.ts`: Checks auth user via supabase, admin via user_roles, stakeholder via property_stakeholders, creator via properties.created_by_user_id. No RLS bypass, relies on session.
+- `frontend/app/layout.tsx`: Applies Providers, AppShell, fonts, metadata.
+- `frontend/app/providers.tsx`: Wraps SupabaseProvider + QueryProvider (React Query).
+- `frontend/app/page.tsx`: Landing marketing copy, cards.
+- `frontend/app/auth/login/page.tsx`, `login-form.tsx`: Server action form using loginAction; shows errors; redirect param supported.
+- `frontend/app/auth/register/page.tsx`, `register-form.tsx`: Server action form using registerAction; default role viewer; no terms/validation.
+- `frontend/app/dashboard/page.tsx`: Server component; calls getServerUser; redirects if none; fetches properties/activity/stats via RPCs and supabase storage signed URLs. Uses supabase.server client; depends on RPCs existing. No pagination/error handling.
+- `frontend/app/search/page.tsx`: Uses supabase client in server component for search_properties RPC; minimal error handling.
+- `frontend/app/p/[slug]/page.tsx`: Public passport; uses server client for get_public_property RPC and signed URLs.
+- `frontend/app/properties/*`: Detail/edit/create pages using server client, actions for tasks/notes, etc. Assumes v6 tables (property_media/docs/tasks/notes). May be inconsistent with new schema.
+- `frontend/actions/*`: Server actions for documents/media/roles/visibility/tasks; many use supabase client (browser) not server client; some rely on v6 tables (property_documents/media, property_tasks/notes). RLS mismatch risk with new schema.
+- `frontend/components/*`: UI components for dashboard/property/public views; heavy reliance on supabase client (browser) and v6 tables; mixed server/client components.
+- `frontend/providers/query-provider.tsx`: React Query setup.
+- `frontend/providers/supabase-provider.tsx`: Creates client, context.
+- `frontend/lib/document-utils.ts`, `role-utils.ts`, `signed-url.ts`, `utils.ts`: Helpers for supabase storage signed URLs, role checks; may still reference v6 patterns.
+- `frontend/types/supabase.ts`: Generated types for previous schema (v6 tables: property_documents/media/notes/tasks etc.), not updated to v7 schema; major mismatch risk.
+- `supabase/migrations/*`: Large set of v6 migrations plus new v7 schema (20250101000000), RLS (20250101000100), drop legacy (20250101000200). v6 migrations create property_documents/media/notes/tasks flags etc.; v7 migration creates new tables (users/profiles/roles/user_roles/property_stakeholders/documents/media/etc). RLS migration references new tables. Drop migration drops legacy tables (property_notes, property_tasks, property_flags, audit_logs, property_documents, property_media, user_property_roles, users_extended).
+- `supabase/config.toml`: Supabase CLI config (not detailed here).
+- `supabase/seed.sql`: v6 seed with auth.users etc.
+- `docs/*`: Extensive specs: AUTH_ROLE_ARCHITECTURE_SPECIFICATION, SCHEMA_VERIFICATION_REPORT, RLS_POLICY_PLAN, blueprints, roadmap, etc.; some outdated referencing src backend.
+- Root `vitest.config.ts`: Points to src tests (no longer exist).
+- `verify_schema.sql`: unknown contents (not inspected).
+- `folder-structure.txt`: unspecified content.
+
+## C) System-Wide Evaluation
+- **Frontend architecture health**: Mixed state. Next.js app present with SSR clients and auth actions, but many components/actions still depend on v6 table names and browser Supabase clients. Type definitions (types/supabase) out of sync with v7 schema. Middleware enforces auth/ACL; good. Need alignment of data layer to new schema and server actions.
+- **Backend architecture health**: No backend server; purely Supabase backend via SQL. Migrations include both v6 and new v7; drop migration exists but seeds still v6. RLS applied for v7 tables; legacy tables may conflict if not dropped remotely.
+- **State management**: Light React Query, custom hooks; auth/session via server actions + /api/me. Needs unification of client data fetching to server components/server actions.
+- **API layer**: Uses Supabase RPCs; many still refer to v6 RPCs. Needs refactor to align with v7 tables and new RLS policies.
+- **DB schema correctness**: v7 migration adds new tables/enums/triggers; RLS covers v7 tables. Still conflicting with older migrations and generated types. Need data migration plan.
+- **TypeScript accuracy**: types/supabase from v6; incompatible with new schema; risk of runtime errors. Root tsconfig unused; package duplication.
+- **Duplication/inconsistency**: Root vs frontend package.json; two tsconfigs; middleware routes; v6 vs v7 tables; RLS vs actions.
+- **Build tooling**: CI references backend scripts; root scripts misaligned (next dev frontend). Build currently blocked by Node version (>=20.9 required) and package script paths.
+
+## D) Risk Analysis
+- **Security**: Root .env contains real Supabase keys (service role). Must be removed from repo. Auth middleware passes cookies to API but property access API doesn’t use x-user-id header; relies solely on session, OK. Some actions use client-side Supabase (potential exposure of anon key only). RLS depends on new tables—if legacy tables still used, policies may be insufficient.
+- **Data integrity**: Actions/components still writing to legacy tables (property_documents/media/tasks/notes) while v7 schema expects documents/media/tasks tables; risk of inconsistent data and RLS failures.
+- **Failure points**: Mismatched types cause runtime issues; build scripts point to wrong dir; Node version mismatch; duplicated package.json may confuse Vercel detection.
+- **Outdated libraries**: @supabase/auth-helpers removed; now using @supabase/ssr. Next 16/React 19 are current.
+- **Env weaknesses**: Real keys in .env; frontend env templates blank; need Vercel env setup.
+- **Deployment**: Vercel root detection ambiguous (root package vs frontend). CI backend job outdated.
+
+## E) Priority Action Roadmap
+1. **Critical**
+   - Remove secrets from root .env and history; add .env.example with placeholders; configure Vercel/CI secrets.
+   - Align package.json/scripts: choose single root package or move frontend to root; fix CI workflow; ensure Node >=20.9.
+   - Update Supabase generated types to v7 schema; refactor actions/components to use new tables (documents/media/property_stakeholders/user_roles, etc.).
+   - Confirm remote DB dropped legacy tables; ensure new RLS applied; update seed to v7 or remove.
+2. **High (1–2 weeks)**
+   - Refactor all server actions and components to server-side Supabase client; remove browser Supabase usage for protected data.
+   - Harmonize RPCs to v7 schema; remove v6 RPC dependencies.
+   - Add validation (Zod) to auth actions and forms; better error messaging.
+   - Fix middleware property access to avoid extra fetch (or optimize).
+3. **Medium (1 month)**
+   - Clean tsconfig hierarchy; remove unused root configs; update lint/test paths.
+   - Expand tests (unit/integration/E2E) for auth, RLS boundaries, property access.
+   - Add role-aware UI/feature flags per AUTH_ROLE_ARCHITECTURE_SPECIFICATION.
+4. **Low/Optional**
+   - Improve DX: scripts for supabase codegen, env checks, pre-commit hooks tuned to frontend paths.
+   - Performance tweaks: caching of getServerUser, batching RPCs.
+
+## F) Recommended Folder & Architecture Refactor
+- Single app root: move Next.js app to repo root or keep in `frontend/` but adjust root package/CI accordingly.
+- Standardize configs: one package.json/lock, one tsconfig (frontend), ESLint referencing correct tsconfig.
+- Types: regenerate `frontend/types/supabase.ts` from v7 DB; consolidate auth types in `frontend/types/auth.ts`.
+- Actions/data: consolidate server actions under `frontend/lib/actions/*` or `app/(actions)`; avoid browser Supabase for secure data.
+- Remove deprecated modules: legacy actions/components using v6 tables; vitest config pointing to src; redundant docs referencing /src backend.
+
+## G) Appendix
+- **Dependencies (root package.json)**: next 16.0.5; react 19.2.0; @supabase/ssr 0.5.0; @supabase/supabase-js 2.78.0; @tanstack/react-query 5.90.11; tailwindcss 3.4.14; eslint 9; typescript ^5; lucide-react 0.555.0; zod 4.1.13; etc. (dev: eslint-config-next, autoprefixer, postcss).
+- **Outdated/abandoned**: None obviously abandoned; ensure @supabase/ssr remains current. React/Next versions are latest; Node requirement 20.9+.
+- **Missing scripts**: No test/typecheck scripts in root aligned with frontend; lint points to `next lint frontend` (likely incorrect). Need codegen scripts for Supabase types.
+- **TODOs/FIXMEs**: None explicit; implicit TODO to realign schema/types/actions.
+
+## Notes on File Coverage
+- All functional code/config/docs reviewed; static assets (SVG/ICO) not described individually. Migrations summarized; legacy vs new highlighted. Root configs and docs noted. Large docs referenced for architecture intent.

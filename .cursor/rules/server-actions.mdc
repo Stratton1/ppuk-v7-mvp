@@ -1,0 +1,35 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — Server Actions Rules (Cursor)
+
+Source: docs/engineering/SERVER_ACTIONS.md
+
+- All mutating application logic must use **Next.js Server Actions** in `frontend/actions/`.
+
+- Server Actions must:
+
+  - Use `'use server'` at the top.
+
+  - Use Zod for input validation.
+
+  - Call `getServerUser()` and enforce auth.
+
+  - Enforce permissions via Supabase / RPC / helper functions.
+
+  - Return `{ success: boolean; error?: string; data?: unknown }`.
+
+  - Call `revalidatePath()` on affected routes after successful mutation.
+
+- Prohibit:
+
+  - Client-side Supabase writes.
+
+  - Raw `fetch` calls to our own API for internal mutations.
+
+- When adding or updating server actions:
+
+  - Keep them small and focused (single responsibility).
+
+  - Ensure they log important mutations via events or triggers.

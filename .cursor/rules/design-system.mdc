@@ -1,0 +1,41 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — Design System Rules (Cursor)
+
+Source: docs/engineering/DESIGN_SYSTEM.md
+
+- Follow the defined layout:
+
+  - Top nav, sidebar, main content, footer.
+
+- Use the provided typography scale:
+
+  - Page titles, section titles, card titles, labels, body, captions.
+
+- Use the defined color system:
+
+  - Primary, neutral, and semantic colors.
+
+- Use components consistently:
+
+  - Buttons → variants and sizes from the system.
+
+  - Cards → title + content + actions, with consistent padding.
+
+  - Tables → support sorting, filtering, and responsive behaviour.
+
+- Forms:
+
+  - Use labeled inputs.
+
+  - Inline validation messages.
+
+- Respect domain visuals:
+
+  - Completion score → consistent visual representation (e.g., progress/circle).
+
+  - Timeline events → icon + text + timestamp.
+
+- Ensure all new components fit into this system; do NOT invent arbitrary styles.

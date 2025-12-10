@@ -1,0 +1,264 @@
+---
+alwaysApply: true
+---
+
+The complete engineering rulebook — architecture, backend, frontend, testing, performance, and workflows.
+Property Passport UK v7 — Engineering Ruleset
+
+Version: 1.0
+Maintainers: CTO, Senior Engineers
+Audience: Engineers, AI tools, reviewers
+
+1. Architectural Principles
+
+PPUK v7 is built around five core pillars:
+
+Determinism
+
+All processes must produce repeatable results
+
+Test environments reset using /api/test/reset
+
+Playwright runs in isolated state
+
+Property-Scoped Access Control
+
+All sensitive data tied to a property
+
+RLS enforces property relationships
+
+Global roles augment but do not replace property roles
+
+Server-Heavy Architecture
+
+Data mutations through Server Actions
+
+Server Components for initial loads
+
+Client Components only where interactive
+
+API Boundary Discipline
+
+Supabase: core DB + RLS
+
+Edge Functions: external API integrations
+
+Next.js: presentation, orchestration, actions
+
+Type Safety First
+
+TS strict mode
+
+Zod validation
+
+Supabase generated types
+
+2. Backend Rules
+2.1 Schema & Tables
+
+The required tables include:
+
+properties
+
+property_stakeholders
+
+documents
+
+media
+
+tasks
+
+property_events
+
+property_metadata
+
+invitations
+
+notifications
+
+activity_log
+
+api_cache
+
+property_flags
+
+watchlist
+
+Rules:
+
+Never perform hard deletes. Use deleted_at.
+
+Always include created_at, updated_at.
+
+Enforce foreign key cascades where appropriate.
+
+2.2 Permissions Model
+Global roles:
+
+consumer
+
+agent
+
+conveyancer
+
+surveyor
+
+admin
+
+Property roles:
+
+owner
+
+buyer
+
+tenant
+
+Permissions:
+
+viewer
+
+editor
+
+Editors: owner, agent, conveyancer, surveyor (where permitted)
+
+2.3 RLS Policies
+MUST test:
+
+admin bypass
+
+owner full access
+
+editor limited access
+
+viewer restricted access
+
+buyer/tenant view-only
+
+public passport read-only
+
+property-scoped filtering
+
+BY LAW OF THE PROJECT:
+
+❗ AI must never generate SQL that exposes data to unintended users.
+❗ All policies must use helper functions.
+
+2.4 RPC Functions
+
+Rules for RPC creation:
+
+Always SECURITY DEFINER
+
+Always grant execute to authenticated
+
+Always reference helpers
+
+Always return typed objects
+
+3. Frontend Rules
+3.1 Components
+
+Server by default
+
+Client only when necessary
+
+Use shadcn/ui for UI primitives
+
+No inline styles except grid math
+
+External API displays use React Query
+
+3.2 Routing
+/app/(public)
+/app/(app)
+/app/admin
+/app/test/login
+/app/home
+
+3.3 Forms & Input
+
+Use Shadcn form components
+
+Validate with Zod
+
+Use server actions for submission
+
+3.4 UI Principles
+
+Mobile-first
+
+Property pages grouped by: Overview, Documents, Media, Tasks, Events, Stakeholders
+
+Breadcrumbs where needed
+
+Declarative data-testid for all actionable items
+
+4. Testing Ruleset
+4.1 E2E (Playwright)
+
+Use /test/login panel
+
+Use /api/test/reset before each test
+
+Use deterministic IDs
+
+Use data-testid attributes exclusively
+
+4.2 Integration (Vitest)
+
+Test server actions for:
+
+authenticated failure
+
+permission failure
+
+success case
+
+4.3 RLS Tests
+
+Located in:
+
+frontend/tests/rls/*
+
+
+Must test:
+
+owner
+
+viewer
+
+editor
+
+buyer
+
+tenant
+
+admin
+
+5. Performance Rules
+
+No N+1 fetches
+
+Use batch RPCs
+
+Use signed URL caching system
+
+Use cursor pagination
+
+Create indexes for heavy queries
+
+6. Documentation Rules
+
+Every feature MUST include updates to:
+
+engineering rulebook
+
+design system (if UI affected)
+
+schema docs (if DB affected)
+
+.cursorrules if standards change
+
+This file contains the complete engineering rulebook for Property Passport UK v7. It defines architecture principles, database conventions, RLS policies, server actions patterns, UI patterns, performance rules, naming conventions, and test standards. This will be the master engineering ruleset for the entire project.
+
+✔ END — PropertyPassportV7 Engineering Ruleset

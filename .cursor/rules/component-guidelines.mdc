@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — Component Guidelines (Cursor)
+
+Source: docs/engineering/COMPONENT_GUIDELINES.md
+
+- Default to **Server Components**. Use Client Components only for:
+
+  - Forms
+
+  - React Query data fetching
+
+  - Interactive controls (dialogs, drawers, tabs)
+
+- Use Shadcn UI primitives and TailwindCSS.
+
+- Component organization:
+
+  - `components/ui` → UI primitives.
+
+  - `components/app` → app shell/layout components.
+
+  - `components/property` → property domain components.
+
+  - `components/dashboard` → dashboard domain components.
+
+  - `components/public-passport` → public view components.
+
+  - `components/admin` → admin components.
+
+- Props:
+
+  - No `any`.
+
+  - Use explicit interfaces.
+
+  - Mark optional props clearly (`?`) and provide sensible defaults where applicable.
+
+- Every interactive element must have `data-testid` for testing.
+
+- Include loading, empty, and error states for components that depend on data.

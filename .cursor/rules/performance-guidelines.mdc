@@ -1,0 +1,25 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — Performance Rules (Cursor)
+
+Source: docs/engineering/PERFORMANCE_GUIDELINES.md
+
+- Avoid N+1 queries:
+
+  - Use RPCs and batched queries instead of repeated selects in loops.
+
+- Make sure foreign keys and frequent filters have indexes.
+
+- Use cursor-based pagination for large lists.
+
+- Use signed URL caching for media/documents; do NOT generate signed URLs individually for each render where batching is possible.
+
+- Prefer Server Components for initial data loads and React Query for interactive widgets.
+
+- For public passport and dashboard:
+
+  - Be mindful of TTFB and number of queries.
+
+- Do not fetch more data than necessary; explicitly select required columns.

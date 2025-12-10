@@ -1,0 +1,39 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — Architecture Rules (Cursor)
+
+Source: docs/engineering/ARCHITECTURE.md
+
+- The app is a Next.js 16 App Router + Supabase stack.
+
+- Respect the folder layout:
+
+  - `frontend/app` for routes.
+
+  - `frontend/components` for UI.
+
+  - `frontend/actions` for Server Actions.
+
+  - `supabase/` for migrations, functions, and config.
+
+- Use **Server Components by default**. Only use Client Components when interaction is required.
+
+- All sensitive data flows must respect:
+
+  - Supabase Auth.
+
+  - Supabase RLS.
+
+  - Property-scoped access control.
+
+- `properties`, `property_stakeholders`, `documents`, `media`, `tasks`, `property_events`, `property_flags`, `watchlist`, `api_cache` are core tables. Do not casually change them.
+
+- All mutating operations must go via:
+
+  - Supabase RPC + RLS, and/or
+
+  - Next.js Server Actions.
+
+- Do not invent new top-level architectural patterns without explicit user approval.

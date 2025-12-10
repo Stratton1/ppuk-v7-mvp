@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+---
+
+# PPUK v7 — Domain Language Rules (Cursor)
+
+Source: docs/engineering/DOMAIN_LANGUAGE.md
+
+Use these terms exactly, everywhere:
+
+- "Property Passport"
+
+- "Property"
+
+- "Stakeholder"
+
+- "Owner", "Buyer", "Tenant"
+
+- "Viewer", "Editor"
+
+- "Completion Score"
+
+- "Document" (not "file" or "upload")
+
+- "Media" (photos and videos)
+
+- "Task"
+
+- "Event"
+
+- "Flag" (not "issue"/"problem")
+
+- "Watchlist"
+
+- "Public Passport"
+
+Do NOT:
+
+- Invent synonyms for these concepts.
+
+- Shorten or rename them (e.g., "prop", "doc", "card", "home").
+
+Button labels and headings MUST match the patterns from the design system and domain language docs.
