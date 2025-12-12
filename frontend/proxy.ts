@@ -1,96 +1,128 @@
-import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { getServerUser } from '@/lib/auth/server-user';
-import { canEditProperty, canViewProperty, isAdmin } from '@/lib/role-utils';
+import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import type { Database } from '@/types/supabase';
 
-const PUBLIC_PATHS = ['/auth/login', '/auth/register'];
-const PUBLIC_PREFIXES = ['/p/', '/assets/', '/favicon.ico', '/_next/'];
-const PROTECTED_PATHS = ['/dashboard'];
-const PROTECTED_PREFIXES = ['/properties/', '/api/property-access/'];
+const logAuth = (...args: unknown[]) => {
+  console.info('[auth-proxy]', ...args);
+};
 
-function isPublic(pathname: string) {
-  return (
-    PUBLIC_PATHS.includes(pathname) ||
-    PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))
-  );
-}
+const PROTECTED_PATHS = [
+  '/dashboard',
+  '/admin',
+  '/properties',
+  '/settings',
+  '/tasks',
+  '/watchlist',
+  '/dev/test-users',
+];
 
 function isProtected(pathname: string) {
-  if (PROTECTED_PATHS.includes(pathname)) return true;
-  return PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+  return PROTECTED_PATHS.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
-function getPropertyId(pathname: string): string | null {
-  const segments = pathname.split('/').filter(Boolean);
-  const idx = segments.indexOf('properties');
-  if (idx !== -1 && segments[idx + 1]) return segments[idx + 1];
-  return null;
-}
+export default async function proxy(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-export default async function proxy(request: NextRequest) {
-  const { pathname, searchParams } = request.nextUrl;
-
-  if (isPublic(pathname)) {
+  // Bypass all auth routes (GET/POST)
+  if (pathname.startsWith('/auth')) {
+    logAuth('bypass auth route', { pathname });
     return NextResponse.next();
   }
+
+  const res = NextResponse.next({ request: { headers: req.headers } });
+  const incomingCookieNames = req.cookies.getAll().map((c) => c.name);
+  logAuth('request', { pathname, method: req.method, incomingCookieNames });
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/213ad833-5127-434d-abea-fccdfab15098', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: 'debug-session',
+      runId: 'pre-fix',
+      hypothesisId: 'H-proxy-cookies',
+      location: 'proxy.ts:request',
+      message: 'Proxy request received',
+      data: { pathname, method: req.method, incomingCookieNames },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion agent log
+
+  // For non-protected routes, allow through but still return the Supabase-aware response
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: (name: string) => req.cookies.get(name)?.value,
+        set: (name: string, value: string, options) => {
+          res.cookies.set({ name, value, ...options });
+        },
+        remove: (name: string, options) => {
+          res.cookies.set({ name, value: '', ...options, maxAge: 0 });
+        },
+      },
+    }
+  );
 
   if (!isProtected(pathname)) {
-    return NextResponse.next();
+    return res;
   }
 
-  const session = await getServerUser();
-  if (!session) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
-    url.searchParams.set('redirect', pathname + (searchParams.toString() ? `?${searchParams.toString()}` : ''));
-    return NextResponse.redirect(url);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    const redirectUrl = new URL('/auth/login', req.url);
+    redirectUrl.searchParams.set('redirect', pathname);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/213ad833-5127-434d-abea-fccdfab15098', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: 'debug-session',
+        runId: 'pre-fix',
+        hypothesisId: 'H-proxy-no-session',
+        location: 'proxy.ts:no-session',
+        message: 'No session, redirecting',
+      data: { pathname, redirectTo: redirectUrl.toString(), incomingCookieNames },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion agent log
+    return NextResponse.redirect(redirectUrl);
   }
 
-  const supabase = createClient();
-  const admin = isAdmin(session);
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/213ad833-5127-434d-abea-fccdfab15098', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: 'debug-session',
+      runId: 'pre-fix',
+      hypothesisId: 'H-proxy-session',
+      location: 'proxy.ts:session-ok',
+      message: 'Session detected',
+      data: { pathname, hasUser: Boolean(user), incomingCookieNames },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion agent log
 
-  // Property-scoped checks
-  const propertyId = getPropertyId(pathname);
-  if (propertyId) {
-    const editing = pathname.includes('/edit');
-    const { data: property } = await supabase
-      .from('properties')
-      .select('public_visibility')
-      .eq('id', propertyId)
-      .maybeSingle();
-    const isPublic = property?.public_visibility ?? false;
-    const ok = admin
-      ? true
-      : editing
-      ? canEditProperty(session, propertyId)
-      : canViewProperty(session, propertyId, { isPublic });
-    if (!ok) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/dashboard';
-      url.searchParams.set('error', 'no-access');
-      return NextResponse.redirect(url);
-    }
-  }
-
-  // API property-access check
-  if (pathname.startsWith('/api/property-access/')) {
-    const pid = pathname.split('/').filter(Boolean).pop();
-    if (!pid) return NextResponse.json({ access: false }, { status: 403 });
-    const { data: property } = await supabase
-      .from('properties')
-      .select('public_visibility')
-      .eq('id', pid)
-      .maybeSingle();
-    const isPublic = property?.public_visibility ?? false;
-    const ok = admin ? true : canViewProperty(session, pid, { isPublic });
-    if (!ok) return NextResponse.json({ access: false }, { status: 403 });
-    return NextResponse.next();
-  }
-
-  return NextResponse.next();
+  logAuth('session ok', { pathname, hasUser: Boolean(user) });
+  return res;
 }
 
 export const config = {
-  matcher: '/:path*',
+  matcher: [
+    '/dashboard/:path*',
+    '/admin/:path*',
+    '/properties/:path*',
+    '/settings/:path*',
+    '/tasks/:path*',
+    '/watchlist/:path*',
+    '/dev/test-users/:path*',
+  ],
 };

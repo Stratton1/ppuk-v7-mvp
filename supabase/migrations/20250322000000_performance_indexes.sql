@@ -69,6 +69,10 @@ WHERE deleted_at IS NULL;
 -- ============================================================================
 -- Property queries: property_id + deleted_at + media_type
 
+-- Add missing column for v7 schema
+ALTER TABLE public.media
+ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT FALSE;
+
 CREATE INDEX IF NOT EXISTS idx_media_property_active_type
 ON public.media(property_id, deleted_at, media_type, created_at)
 WHERE deleted_at IS NULL;

@@ -17,7 +17,7 @@ test('Full investor demo flow', async ({ page }) => {
   await page.getByTestId('task-submit').click();
 
   await page.getByTestId('invite-button').click();
-  await page.getByTestId('invite-email').fill('buyer@test.com');
+  await page.getByTestId('invite-email').fill('buyer@ppuk.test');
   await page.getByTestId('invite-submit').click();
 
   await page.screenshot({ path: 'screenshots/final-passport.png', fullPage: true });

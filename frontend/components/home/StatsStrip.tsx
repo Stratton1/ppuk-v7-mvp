@@ -8,8 +8,8 @@ const stats = [
 
 export function StatsStrip() {
   return (
-    <Section className="py-8">
-      <Container>
+    <Section className="py-8" dataTestId="public-stats-strip">
+      <Container dataTestId="public-stats-strip-container">
         <div className="grid gap-4 rounded-2xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur md:grid-cols-3">
           {stats.map((s) => (
             <div key={s.label} className="rounded-xl bg-background/70 p-4 shadow-xs">

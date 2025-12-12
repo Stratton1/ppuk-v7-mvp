@@ -1,0 +1,33 @@
+name: "Self-Healing Workflow"
+version: 1
+description: "Automatically reproduce and fix UI/runtime errors using browser automation + patching"
+
+triggers:
+  - command: "ui:self-heal"
+    description: "Heal broken UI by reproducing error states in browser"
+
+steps:
+  - id: "open_app"
+    action: playwright.open
+    params:
+      url: "http://localhost:3000"
+
+  - id: "capture_console"
+    action: playwright.get_console_logs
+
+  - id: "capture_dom"
+    action: playwright.get_dom_snapshot
+
+  - id: "analyse_failure"
+    action: claude.ask
+    params:
+      prompt_file: "self_heal.md"
+      inputs:
+        console: "{{capture_console.logs}}"
+        dom: "{{capture_dom.dom}}"
+
+  - id: "apply_fix"
+    action: claude.apply_patch
+    params:
+      plan_from_step: "analyse_failure"
+

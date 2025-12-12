@@ -1,3 +1,5 @@
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { PropertyPermission, PropertyStatus, ServerUserSession } from '@/types/auth';
 
@@ -22,8 +24,24 @@ export async function getServerUser(): Promise<ServerUserSession | null> {
     .eq('id', authUser.id)
     .maybeSingle();
 
+  const baseSession: ServerUserSession = {
+    id: authUser.id,
+    email: authUser.email ?? null,
+    full_name: authUser.user_metadata?.full_name ?? null,
+    primary_role: (authUser.user_metadata as Record<string, unknown> | null)?.['primary_role'] as
+      | ServerUserSession['primary_role']
+      | null
+      | undefined,
+    property_roles: {},
+    isAdmin: false,
+  };
+
   if (!userRow) {
-    return null;
+    return {
+      ...baseSession,
+      primary_role: baseSession.primary_role ?? null,
+      isAdmin: baseSession.primary_role === 'admin',
+    };
   }
 
   const { data: profileRow } = await supabase
@@ -75,10 +93,47 @@ export async function getServerUser(): Promise<ServerUserSession | null> {
 
   return {
     id: userRow.id,
-    email: userRow.email ?? null,
-    full_name: userRow.full_name ?? null,
-    primary_role: userRow.primary_role ?? null,
+    email: userRow.email ?? authUser.email ?? null,
+    full_name: userRow.full_name ?? baseSession.full_name ?? null,
+    primary_role: userRow.primary_role ?? baseSession.primary_role ?? null,
     property_roles,
     isAdmin,
   };
+}
+
+/**
+ * Enforce authentication for server components/pages.
+ * Redirects to login with the provided path (or best-effort current path) if no session exists.
+ */
+export async function getSessionOrRedirect(options?: { redirectTo?: string }): Promise<ServerUserSession> {
+  const session = await getServerUser();
+  if (session) return session;
+
+  const hdrs = await headers();
+  const hintedPath =
+    options?.redirectTo ??
+    hdrs.get('x-pathname') ??
+    hdrs.get('next-url') ??
+    hdrs.get('referer') ??
+    '/dashboard';
+  const safePath = hintedPath?.startsWith('/') ? hintedPath : '/dashboard';
+
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/213ad833-5127-434d-abea-fccdfab15098', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: 'debug-session',
+      runId: 'pre-fix',
+      hypothesisId: 'H-server-user-redirect',
+      location: 'server-user.ts:getSessionOrRedirect',
+      message: 'No session, redirecting',
+      data: { hintedPath: safePath },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion agent log
+
+  console.info('[auth-session]', 'no session, redirecting', { hintedPath: safePath });
+  redirect(`/auth/login?redirect=${encodeURIComponent(safePath)}`);
 }

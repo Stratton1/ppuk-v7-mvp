@@ -52,7 +52,9 @@ export function EpcCardIntegrated({
       <Card data-testid="epc-card">
         <CardHeader>
           <CardTitle className="text-base">EPC</CardTitle>
-          <Badge variant="destructive">Error</Badge>
+          <Badge variant="outline" className="border-destructive/60 text-destructive">
+            Error
+          </Badge>
         </CardHeader>
         <CardContent className="text-sm text-destructive">
           {error instanceof Error ? error.message : 'Failed to load EPC data'}
@@ -97,18 +99,23 @@ export function EpcCardIntegrated({
   const lodgementDate = latestEpc['lodgement-date'] || null;
 
   // Rating badge variant based on rating
-  const getRatingVariant = (rating: string) => {
+  const getRatingVariant = (rating: string): 'default' | 'secondary' | 'outline' => {
     if (['A', 'B'].includes(rating)) return 'default';
     if (['C', 'D'].includes(rating)) return 'secondary';
-    if (['E', 'F'].includes(rating)) return 'outline';
-    return 'destructive';
+    return 'outline';
   };
+  const ratingVariant = getRatingVariant(rating);
+  const ratingClassName = ['E', 'F', 'G', 'N/A'].includes(rating)
+    ? 'border-destructive/60 text-destructive'
+    : undefined;
 
   return (
     <Card data-testid="epc-card">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="text-base">EPC</CardTitle>
-        <Badge variant={getRatingVariant(rating)}>{rating}</Badge>
+        <Badge variant={ratingVariant} className={ratingClassName}>
+          {rating}
+        </Badge>
         {data.cached && (
           <Badge variant="outline" className="text-xs">Cached</Badge>
         )}
@@ -146,4 +153,3 @@ export function EpcCardIntegrated({
     </Card>
   );
 }
-

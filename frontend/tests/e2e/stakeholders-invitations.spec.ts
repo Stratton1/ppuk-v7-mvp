@@ -7,8 +7,8 @@ test('User can invite stakeholders', async ({ page }) => {
   await createProperty(page, '22 Stakeholder Way');
 
   await page.getByTestId('invite-button').click();
-  await page.getByTestId('invite-email').fill('buyer@test.com');
+  await page.getByTestId('invite-email').fill('buyer@ppuk.test');
   await page.getByTestId('invite-submit').click();
 
-  await expect(page.getByTestId('invite-row').first()).toContainText('buyer@test.com');
+  await expect(page.getByTestId('invite-row').first()).toContainText('buyer@ppuk.test');
 });

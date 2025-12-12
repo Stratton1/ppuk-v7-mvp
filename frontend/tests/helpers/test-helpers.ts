@@ -1,6 +1,6 @@
 import { Page, expect } from '@playwright/test';
 
-export async function loginAs(page: Page, email: string, password: string = 'TestPassword123!') {
+export async function loginAs(page: Page, email: string, password: string = 'password123') {
   await page.goto('/auth/login');
   await page.getByTestId('login-email').fill(email);
   await page.getByTestId('login-password').fill(password);

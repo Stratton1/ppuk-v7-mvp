@@ -12,6 +12,7 @@ import { AppSection } from '@/components/app/AppSection';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { AccessUnavailable } from '@/components/ui/AccessUnavailable';
 import type { Database } from '@/types/supabase';
 
 type PropertyRow = Database['public']['Tables']['properties']['Row'];
@@ -39,14 +40,11 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           description="Compare multiple properties side-by-side."
         />
         <AppSection>
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-lg font-semibold">No properties selected</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Select properties to compare by adding ?ids=property-id-1,property-id-2 to the URL
-              </p>
-            </CardContent>
-          </Card>
+          <AccessUnavailable
+            title="No properties selected"
+            description="Add ?ids=property-id-1,property-id-2 to the URL to compare properties."
+            dataTestId="compare-no-properties"
+          />
         </AppSection>
       </div>
     );
@@ -64,7 +62,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       .is('deleted_at', null)
       .maybeSingle();
 
-    if (error || !data) return null;
+    if (error || !data) return { property: null, restrictedId: id };
 
     // Check user can view property
     const canViewArgs: Database['public']['Functions']['can_view_property']['Args'] = {
@@ -72,14 +70,14 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
     };
     const { data: canView } = await supabase.rpc('can_view_property', canViewArgs);
 
-    if (!canView) return null;
+    if (!canView) return { property: null, restrictedId: id };
 
-    return data as PropertyRow;
+    return { property: data as PropertyRow, restrictedId: null };
   });
 
-  const properties = (await Promise.all(propertyPromises)).filter(
-    (p): p is PropertyRow => p !== null
-  );
+  const propertyResults = await Promise.all(propertyPromises);
+  const properties = propertyResults.flatMap((result) => (result.property ? [result.property] : []));
+  const restrictedIds = propertyResults.flatMap((result) => (result.restrictedId ? [result.restrictedId] : []));
 
   if (properties.length === 0) {
     return (
@@ -89,14 +87,11 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           description="Compare multiple properties side-by-side."
         />
         <AppSection>
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-lg font-semibold">No accessible properties found</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                You don't have access to the selected properties.
-              </p>
-            </CardContent>
-          </Card>
+          <AccessUnavailable
+            title="No accessible properties found"
+            description="You don't have permission to view any of the selected properties."
+            dataTestId="compare-all-restricted"
+          />
         </AppSection>
       </div>
     );
@@ -105,15 +100,14 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   // Fetch completion scores
   const completionMap = new Map<string, number>();
   if (properties.length > 0) {
-    const batchCompletionArgs: Database['public']['Functions']['get_properties_completion']['Args'] = {
-      property_ids: properties.map((p) => p.id),
-    };
-    const { data: completionData } = await supabase.rpc(
+    // Note: get_properties_completion RPC function may not exist in schema yet - using any to bypass type check
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: completionData } = await (supabase as any).rpc(
       'get_properties_completion',
-      batchCompletionArgs
+      { property_ids: properties.map((p) => p.id) }
     );
 
-    completionData?.forEach((row) => {
+    (completionData as { property_id: string; completion: number }[] | null)?.forEach((row) => {
       completionMap.set(row.property_id, row.completion);
     });
   }
@@ -201,12 +195,12 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
       <AppSection>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse" data-testid="compare-table">
             <thead>
               <tr className="border-b">
                 <th className="p-4 text-left font-semibold">Property</th>
                 {properties.map((property) => (
-                  <th key={property.id} className="p-4 text-left">
+                  <th key={property.id} className="p-4 text-left" data-testid={`compare-col-${property.id}`}>
                     <div className="space-y-2">
                       <div className="font-semibold">{property.display_address}</div>
                       <Badge variant={property.status === 'active' ? 'default' : 'secondary'}>
@@ -218,33 +212,46 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
               </tr>
             </thead>
             <tbody>
-              <ComparisonRow label="UPRN" values={properties.map((p) => p.uprn)} />
+              <ComparisonRow label="UPRN" values={properties.map((p) => p.uprn)} propertyIds={properties.map((p) => p.id)} />
               <ComparisonRow
                 label="Completion"
                 values={properties.map((p) => `${completionMap.get(p.id) || 0}%`)}
+                propertyIds={properties.map((p) => p.id)}
               />
               <ComparisonRow
                 label="Documents"
                 values={properties.map((p) => (documentCounts.get(p.id) || 0).toString())}
+                propertyIds={properties.map((p) => p.id)}
               />
               <ComparisonRow
                 label="Media"
                 values={properties.map((p) => (mediaCounts.get(p.id) || 0).toString())}
+                propertyIds={properties.map((p) => p.id)}
               />
               <ComparisonRow
                 label="Status"
                 values={properties.map((p) => p.status)}
+                propertyIds={properties.map((p) => p.id)}
               />
               <ComparisonRow
                 label="Public"
                 values={properties.map((p) => (p.public_visibility ? 'Yes' : 'No'))}
+                propertyIds={properties.map((p) => p.id)}
               />
               <ComparisonRow
                 label="Created"
                 values={properties.map((p) =>
                   new Date(p.created_at).toLocaleDateString('en-GB')
                 )}
+                propertyIds={properties.map((p) => p.id)}
               />
+              {restrictedIds.map((restrictedId) => (
+                <tr key={restrictedId} className="border-b bg-muted/30" data-testid={`compare-row-restricted-${restrictedId}`}>
+                  <td className="p-4 font-medium" colSpan={properties.length + 1}>
+                    Limited access: property {restrictedId} could not be compared because viewing is restricted.
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -253,7 +260,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       <AppSection title="Property Details">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {properties.map((property) => (
-            <Card key={property.id}>
+            <Card key={property.id} data-testid={`compare-card-${property.id}`}>
               <CardContent className="p-4 space-y-2">
                 <div className="font-semibold">{property.display_address}</div>
                 <div className="text-sm text-muted-foreground">
@@ -274,12 +281,23 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   );
 }
 
-function ComparisonRow({ label, values }: { label: string; values: string[] }) {
+function ComparisonRow({
+  label,
+  values,
+  propertyIds,
+}: {
+  label: string;
+  values: string[];
+  propertyIds: string[];
+}) {
+  const labelKey = label.toLowerCase().replace(/\s+/g, '-');
   return (
-    <tr className="border-b">
-      <td className="p-4 font-medium">{label}</td>
+    <tr className="border-b" data-testid={`compare-row-${labelKey}`}>
+      <td className="p-4 font-medium" data-testid={`compare-cell-${labelKey}-label`}>
+        {label}
+      </td>
       {values.map((value, idx) => (
-        <td key={idx} className="p-4">
+        <td key={idx} className="p-4" data-testid={`compare-cell-${labelKey}-${propertyIds[idx]}`}>
           {value}
         </td>
       ))}

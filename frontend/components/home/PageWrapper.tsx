@@ -1,11 +1,38 @@
 import React from 'react';
 
-export function Container({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>;
+export function Container({
+  children,
+  className = '',
+  dataTestId,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  dataTestId?: string;
+}) {
+  return (
+    <div
+      className={`mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 ${className}`}
+      data-testid={dataTestId}
+    >
+      {children}
+    </div>
+  );
 }
 
-export function Section({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <section className={`py-12 sm:py-16 ${className}`}>{children}</section>;
+export function Section({
+  children,
+  className = '',
+  dataTestId,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  dataTestId?: string;
+}) {
+  return (
+    <section className={`py-12 sm:py-16 ${className}`} data-testid={dataTestId}>
+      {children}
+    </section>
+  );
 }
 
 export const GradientBlob = ({ className = '' }: { className?: string }) => (

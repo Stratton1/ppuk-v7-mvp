@@ -6,8 +6,8 @@ import { FloatingCard, Section, Container } from './PageWrapper';
 
 export function HeroSection() {
   return (
-    <Section className="pb-6 pt-14 sm:pt-20">
-      <Container className="grid items-center gap-10 lg:grid-cols-[1.1fr,0.9fr]">
+    <Section className="pb-6 pt-14 sm:pt-20" dataTestId="public-hero">
+      <Container className="grid items-center gap-10 lg:grid-cols-[1.1fr,0.9fr]" dataTestId="public-hero-container">
         <div className="space-y-6">
           <Badge variant="secondary" className="w-fit bg-accent-soft text-accent-foreground">
             The Digital Passport for UK Properties

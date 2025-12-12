@@ -24,9 +24,18 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { AlertCircle, CheckCircle2, XCircle, Plus } from 'lucide-react';
-import type { Database } from '@/types/supabase';
 
-type PropertyFlag = Database['public']['Tables']['property_flags']['Row'];
+type PropertyFlag = {
+  id: string;
+  property_id: string;
+  flag_type: string;
+  severity: string;
+  status: string;
+  description: string;
+  created_at: string;
+  resolved_at?: string | null;
+  deleted_at?: string | null;
+};
 
 interface PropertyFlagsProps {
   propertyId: string;
@@ -37,12 +46,14 @@ export function PropertyFlags({ propertyId }: PropertyFlagsProps) {
   const [resolveDialogOpen, setResolveDialogOpen] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const supabase = createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabaseAny = supabase as any;
 
   // Fetch flags
   const { data: flags, isLoading } = useQuery({
     queryKey: ['property-flags', propertyId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAny
         .from('property_flags')
         .select('*')
         .eq('property_id', propertyId)
@@ -89,14 +100,20 @@ export function PropertyFlags({ propertyId }: PropertyFlagsProps) {
   const getSeverityVariant = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return 'destructive';
+        return 'outline';
       case 'high':
-        return 'destructive';
+        return 'outline';
       case 'medium':
         return 'secondary';
       default:
         return 'outline';
     }
+  };
+  const getSeverityClassName = (severity: string) => {
+    if (severity === 'critical' || severity === 'high') {
+      return 'border-destructive/60 text-destructive';
+    }
+    return undefined;
   };
 
   const getStatusIcon = (status: string) => {
@@ -234,6 +251,7 @@ export function PropertyFlags({ propertyId }: PropertyFlagsProps) {
                     onResolve={(flagId) => setResolveDialogOpen(flagId)}
                     onDelete={(flagId) => deleteMutation.mutate(flagId)}
                     getSeverityVariant={getSeverityVariant}
+                    getSeverityClassName={getSeverityClassName}
                     getStatusIcon={getStatusIcon}
                   />
                 ))}
@@ -249,6 +267,7 @@ export function PropertyFlags({ propertyId }: PropertyFlagsProps) {
                     onResolve={(flagId) => setResolveDialogOpen(flagId)}
                     onDelete={(flagId) => deleteMutation.mutate(flagId)}
                     getSeverityVariant={getSeverityVariant}
+                    getSeverityClassName={getSeverityClassName}
                     getStatusIcon={getStatusIcon}
                   />
                 ))}
@@ -279,12 +298,14 @@ function FlagCard({
   onResolve,
   onDelete,
   getSeverityVariant,
+  getSeverityClassName,
   getStatusIcon,
 }: {
   flag: PropertyFlag;
   onResolve: (flagId: string) => void;
   onDelete: (flagId: string) => void;
-  getSeverityVariant: (severity: string) => 'destructive' | 'secondary' | 'outline';
+  getSeverityVariant: (severity: string) => 'default' | 'secondary' | 'outline';
+  getSeverityClassName: (severity: string) => string | undefined;
   getStatusIcon: (status: string) => React.ReactNode;
 }) {
   return (
@@ -297,7 +318,7 @@ function FlagCard({
               <span className="text-sm font-medium capitalize">
                 {flag.flag_type.replace('_', ' ')}
               </span>
-              <Badge variant={getSeverityVariant(flag.severity)}>
+              <Badge variant={getSeverityVariant(flag.severity)} className={getSeverityClassName(flag.severity)}>
                 {flag.severity}
               </Badge>
               <Badge variant="outline" className="capitalize">

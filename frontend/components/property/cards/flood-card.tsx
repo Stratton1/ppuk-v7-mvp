@@ -31,7 +31,9 @@ export function FloodCard({ data, loading, error }: FloodCardProps) {
       <Card data-testid="keyfacts-flood">
         <CardHeader>
           <CardTitle className="text-base">Flood risk</CardTitle>
-          <Badge variant="destructive">Error</Badge>
+          <Badge variant="outline" className="border-destructive/60 text-destructive">
+            Error
+          </Badge>
         </CardHeader>
         <CardContent className="text-sm text-destructive">{error}</CardContent>
       </Card>

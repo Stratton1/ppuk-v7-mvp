@@ -9,8 +9,8 @@ const painPoints = [
 
 export function WhyUKNeedsPassports() {
   return (
-    <Section>
-      <Container className="space-y-8">
+    <Section dataTestId="public-why-passports">
+      <Container className="space-y-8" dataTestId="public-why-passports-container">
         <div className="space-y-3">
           <h2 className="text-3xl font-semibold tracking-tight text-primary">Why the UK needs property passports</h2>
           <p className="text-muted-foreground">

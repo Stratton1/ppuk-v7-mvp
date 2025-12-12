@@ -12,50 +12,50 @@ Passwords DO NOT have trailing spaces.
 -------------------------------------------------------------
 
 ### Owner
-- Email: owner@test.local
-- Password: Test123!
+- Email: owner@ppuk.test
+- Password: password123
 - Primary Role: consumer
 - Property Status: owner
 - Permission: editor
 - Purpose: full flows, document upload, editing, dashboard
 
 ### Buyer
-- Email: buyer@test.local
-- Password: Test123!
+- Email: buyer@ppuk.test
+- Password: password123
 - Primary Role: consumer
 - Property Status: buyer
 - Permission: viewer
 - Purpose: fall-through testing, limited access flows
 
 ### Tenant
-- Email: tenant@test.local
-- Password: Test123!
+- Email: tenant@ppuk.test
+- Password: password123
 - Primary Role: consumer
 - Property Status: tenant
 - Permission: viewer
 
 ### Agent / Editor
-- Email: agent@test.local
-- Password: Test123!
+- Email: agent@ppuk.test
+- Password: password123
 - Primary Role: agent
 - Gains editor permission after invitation
 - Purpose: access control and agent workflows
 
 ### Conveyancer
-- Email: conveyancer@test.local
-- Password: Test123!
+- Email: conveyancer@ppuk.test
+- Password: password123
 - Primary Role: conveyancer
 - Editor after invite
 - Purpose: legal handover flows
 
 ### Surveyor
-- Email: surveyor@test.local
-- Password: Test123!
+- Email: surveyor@ppuk.test
+- Password: password123
 - Primary Role: surveyor
 
 ### Admin
-- Email: admin@test.local
-- Password: Admin123!
+- Email: admin@ppuk.test
+- Password: password123
 - Primary Role: admin
 - Full access to admin panel
 
@@ -66,8 +66,8 @@ Passwords DO NOT have trailing spaces.
 Use Supabase CLI:
 
 supabase auth admin createuser \
-  --email owner@test.local \
-  --password "Test123!" \
+  --email owner@ppuk.test \
+  --password "password123" \
   --email-confirm
 
 Then insert corresponding rows into `public.users` with the correct primary_role.

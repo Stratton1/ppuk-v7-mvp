@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { getRuntimeEnv } from '@/lib/env';
 import type { Database } from '@/types/supabase';
 
@@ -16,53 +16,63 @@ type SeedUser = {
   };
 };
 
+type SupabaseDbClient = SupabaseClient<Database>;
+
 const SEED_USERS: SeedUser[] = [
   {
     id: '00000000-0000-0000-0000-000000000001',
-    email: 'owner.test@ppuk.test',
-    password: 'TestPassword123!',
+    email: 'owner@ppuk.test',
+    password: 'password123',
     full_name: 'Owner Test',
     primary_role: 'consumer',
     stakeholder: { role: 'owner', status: 'owner', permission: 'editor' },
   },
   {
     id: '00000000-0000-0000-0000-000000000002',
-    email: 'buyer.test@ppuk.test',
-    password: 'TestPassword123!',
+    email: 'buyer@ppuk.test',
+    password: 'password123',
     full_name: 'Buyer Test',
     primary_role: 'consumer',
     stakeholder: { role: 'viewer', status: 'buyer', permission: 'viewer' },
   },
   {
     id: '00000000-0000-0000-0000-000000000003',
-    email: 'agent.test@ppuk.test',
-    password: 'TestPassword123!',
+    email: 'agent@ppuk.test',
+    password: 'password123',
     full_name: 'Agent Test',
     primary_role: 'agent',
     stakeholder: { role: 'editor', status: 'buyer', permission: 'editor' },
   },
   {
     id: '00000000-0000-0000-0000-000000000004',
-    email: 'conveyancer.test@ppuk.test',
-    password: 'TestPassword123!',
+    email: 'conveyancer@ppuk.test',
+    password: 'password123',
     full_name: 'Conveyancer Test',
     primary_role: 'conveyancer',
     stakeholder: { role: 'editor', status: 'buyer', permission: 'editor' },
   },
   {
     id: '00000000-0000-0000-0000-000000000005',
-    email: 'surveyor.test@ppuk.test',
-    password: 'TestPassword123!',
+    email: 'surveyor@ppuk.test',
+    password: 'password123',
     full_name: 'Surveyor Test',
     primary_role: 'surveyor',
     stakeholder: { role: 'editor', status: 'buyer', permission: 'editor' },
   },
   {
     id: '00000000-0000-0000-0000-000000000006',
-    email: 'admin.test@ppuk.test',
-    password: 'TestPassword123!',
+    email: 'admin@ppuk.test',
+    password: 'password123',
     full_name: 'Admin Test',
     primary_role: 'admin',
+  },
+  {
+    id: '00000000-0000-0000-0000-000000000007',
+    email: 'tenant@ppuk.test',
+    password: 'password123',
+    full_name: 'Tenant Test',
+    primary_role: 'consumer',
+    stakeholder: { role: 'viewer', status: 'tenant', permission: 'viewer' },
   },
 ];
 
@@ -84,11 +94,12 @@ const TABLES_IN_ORDER: Array<{ name: keyof Database['public']['Tables']; column:
   { name: 'users', column: 'id' },
 ];
 
-function isTestMode(env: ReturnType<typeof getRuntimeEnv>) {
-  return env.NODE_ENV === 'test' || env.PLAYWRIGHT_TEST === 'true';
+function isAllowed(env: ReturnType<typeof getRuntimeEnv>) {
+  const allowFlag = process.env.ALLOW_TEST_API === 'true';
+  return env.NODE_ENV !== 'production' || allowFlag;
 }
 
-async function clearTables(supabase: ReturnType<typeof createClient>, serviceRoleUserId?: string) {
+async function clearTables(supabase: SupabaseDbClient, serviceRoleUserId?: string) {
   for (const table of TABLES_IN_ORDER) {
     let query = supabase.from(table.name).delete();
     if (table.name === 'users' && serviceRoleUserId) {
@@ -107,7 +118,7 @@ async function clearTables(supabase: ReturnType<typeof createClient>, serviceRol
 }
 
 async function deleteSeedAuthUsers(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseDbClient,
   seedUsers: SeedUser[],
   serviceRoleUserId?: string
 ) {
@@ -131,7 +142,7 @@ async function deleteSeedAuthUsers(
 }
 
 async function createSeedAuthUsers(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseDbClient,
   seedUsers: SeedUser[],
   now: string
 ): Promise<Record<string, string>> {
@@ -196,11 +207,11 @@ async function createSeedAuthUsers(
 
 export async function POST() {
   const env = getRuntimeEnv();
-  if (!isTestMode(env)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!isAllowed(env)) {
+    return NextResponse.json({ ok: false, error: 'Forbidden' }, { status: 403 });
   }
 
-  const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
   const now = new Date().toISOString();
   const serviceRoleUserId = process.env.SUPABASE_SERVICE_ROLE_USER_ID;
 
@@ -215,7 +226,7 @@ export async function POST() {
       public_visibility: true,
       public_slug: DEMO_PROPERTY_SLUG,
       uprn: DEMO_UPRN,
-      created_by_user_id: userMap['owner.test@ppuk.test'],
+      created_by_user_id: userMap['owner@ppuk.test'],
       status: 'active' as Database['public']['Enums']['property_status_type'],
       created_at: now,
       updated_at: now,

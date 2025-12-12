@@ -64,15 +64,15 @@ async function main() {
   try {
     const users = {};
 
-    users.owner = await ensureUser("owner@test.local", "Test123!");
-    users.buyer = await ensureUser("buyer@test.local", "Test123!");
-    users.tenant = await ensureUser("tenant@test.local", "Test123!");
+    users.owner = await ensureUser("owner@ppuk.test", "password123");
+    users.buyer = await ensureUser("buyer@ppuk.test", "password123");
+    users.tenant = await ensureUser("tenant@ppuk.test", "password123");
 
-    users.agent = await ensureUser("agent@test.local", "Test123!");
-    users.conveyancer = await ensureUser("conveyancer@test.local", "Test123!");
-    users.surveyor = await ensureUser("surveyor@test.local", "Test123!");
+    users.agent = await ensureUser("agent@ppuk.test", "password123");
+    users.conveyancer = await ensureUser("conveyancer@ppuk.test", "password123");
+    users.surveyor = await ensureUser("surveyor@ppuk.test", "password123");
 
-    users.admin = await ensureUser("admin@test.local", "Admin123!");
+    users.admin = await ensureUser("admin@ppuk.test", "password123");
 
     console.log("\n📄 User IDs:");
     console.log(users);

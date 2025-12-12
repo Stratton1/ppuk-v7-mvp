@@ -108,11 +108,12 @@ export async function PropertyList({ page = 1, pageSize = 20 }: PropertyListProp
   return (
     <div className="space-y-6 p-4 sm:p-6">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {properties?.map((property) => (
-          <PropertyCard 
-            key={property.id} 
-            property={property} 
-            signedUrl={signedUrlMap.get(property.id) || null} 
+        {properties?.map((property, index) => (
+          <PropertyCard
+            key={property.id}
+            property={property}
+            signedUrl={signedUrlMap.get(property.id) || null}
+            priority={index === 0}
           />
         ))}
       </div>

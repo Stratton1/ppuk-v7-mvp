@@ -12,6 +12,11 @@ type DashboardPropertyCardProps = {
   property: Property;
   completion: number;
   imageUrl?: string | null;
+  /**
+   * Use eager loading for the first, above-the-fold image to avoid LCP warnings.
+   * Defaults to false to prevent over-fetching.
+   */
+  priority?: boolean;
 };
 
 const statusStyles: Record<string, string> = {
@@ -32,13 +37,20 @@ const CompletionBar = ({ value }: { value: number }) => (
   </div>
 );
 
-export const DashboardPropertyCard = ({ property, completion, imageUrl }: DashboardPropertyCardProps) => {
+export const DashboardPropertyCard = ({ property, completion, imageUrl, priority = false }: DashboardPropertyCardProps) => {
   const statusClass = statusStyles[property.status ?? ''] ?? 'bg-slate-200 text-slate-800';
 
   return (
     <Card className="overflow-hidden transition hover:shadow-md">
       <div className="relative h-40 w-full bg-muted">
-        <Image src={imageUrl || '/placeholder.svg'} alt={property.display_address ?? 'Property'} fill className="object-cover" />
+        <Image
+          src={imageUrl || '/placeholder.svg'}
+          alt={property.display_address ?? 'Property'}
+          fill
+          className="object-cover"
+          loading={priority ? 'eager' : 'lazy'}
+          priority={priority}
+        />
       </div>
       <CardHeader>
         <CardTitle className="text-base">{property.display_address}</CardTitle>

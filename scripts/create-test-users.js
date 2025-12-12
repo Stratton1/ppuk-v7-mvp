@@ -7,7 +7,7 @@
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '.env.local' });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_SERVICE_ROLE_KEY) {
@@ -23,13 +23,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 });
 
 const TEST_USERS = [
-  { email: 'owner@test.local', password: 'Test123!', primary_role: 'consumer' },
-  { email: 'buyer@test.local', password: 'Test123!', primary_role: 'consumer' },
-  { email: 'tenant@test.local', password: 'Test123!', primary_role: 'consumer' },
-  { email: 'agent@test.local', password: 'Test123!', primary_role: 'agent' },
-  { email: 'conveyancer@test.local', password: 'Test123!', primary_role: 'conveyancer' },
-  { email: 'surveyor@test.local', password: 'Test123!', primary_role: 'surveyor' },
-  { email: 'admin@test.local', password: 'Admin123!', primary_role: 'admin' },
+  { email: 'owner@ppuk.test', password: 'password123', primary_role: 'consumer' },
+  { email: 'buyer@ppuk.test', password: 'password123', primary_role: 'consumer' },
+  { email: 'tenant@ppuk.test', password: 'password123', primary_role: 'consumer' },
+  { email: 'agent@ppuk.test', password: 'password123', primary_role: 'agent' },
+  { email: 'conveyancer@ppuk.test', password: 'password123', primary_role: 'conveyancer' },
+  { email: 'surveyor@ppuk.test', password: 'password123', primary_role: 'surveyor' },
+  { email: 'admin@ppuk.test', password: 'password123', primary_role: 'admin' },
 ];
 
 async function createTestUsers() {
@@ -103,10 +103,10 @@ async function assignPropertyRoles(userIds) {
   console.log('\n🔗 Assigning property-scoped roles...\n');
 
   // Owner: editor
-  if (userIds['owner@test.local']) {
+  if (userIds['owner@ppuk.test']) {
     const { error } = await supabase.rpc('grant_property_role', {
       property_id: PROPERTY_ID,
-      target_user_id: userIds['owner@test.local'],
+      target_user_id: userIds['owner@ppuk.test'],
       status: 'owner',
       permission: 'editor',
       expires_at: null,
@@ -114,15 +114,15 @@ async function assignPropertyRoles(userIds) {
     if (error) {
       console.error(`❌ Failed to grant owner role:`, error.message);
     } else {
-      console.log(`✅ Granted owner role to owner@test.local`);
+      console.log(`✅ Granted owner role to owner@ppuk.test`);
     }
   }
 
   // Buyer: viewer
-  if (userIds['buyer@test.local']) {
+  if (userIds['buyer@ppuk.test']) {
     const { error } = await supabase.rpc('grant_property_role', {
       property_id: PROPERTY_ID,
-      target_user_id: userIds['buyer@test.local'],
+      target_user_id: userIds['buyer@ppuk.test'],
       status: 'buyer',
       permission: 'viewer',
       expires_at: null,
@@ -130,15 +130,15 @@ async function assignPropertyRoles(userIds) {
     if (error) {
       console.error(`❌ Failed to grant buyer role:`, error.message);
     } else {
-      console.log(`✅ Granted buyer role to buyer@test.local`);
+      console.log(`✅ Granted buyer role to buyer@ppuk.test`);
     }
   }
 
   // Tenant: viewer
-  if (userIds['tenant@test.local']) {
+  if (userIds['tenant@ppuk.test']) {
     const { error } = await supabase.rpc('grant_property_role', {
       property_id: PROPERTY_ID,
-      target_user_id: userIds['tenant@test.local'],
+      target_user_id: userIds['tenant@ppuk.test'],
       status: 'tenant',
       permission: 'viewer',
       expires_at: null,
@@ -146,7 +146,7 @@ async function assignPropertyRoles(userIds) {
     if (error) {
       console.error(`❌ Failed to grant tenant role:`, error.message);
     } else {
-      console.log(`✅ Granted tenant role to tenant@test.local`);
+      console.log(`✅ Granted tenant role to tenant@ppuk.test`);
     }
   }
 }

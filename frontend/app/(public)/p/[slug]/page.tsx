@@ -28,13 +28,14 @@ async function getSignedUrl(
   return data?.signedUrl ?? null;
 }
 
-export default async function PublicPassportPage({ params }: { params: { slug: string } }) {
+export default async function PublicPassportPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const supabase = createServerClient();
 
   const { data: property, error: propertyError } = await supabase
     .from('properties')
     .select('id, display_address, uprn, status, public_slug, public_visibility, deleted_at')
-    .eq('public_slug', params.slug)
+    .eq('public_slug', slug)
     .eq('public_visibility', true)
     .is('deleted_at', null)
     .maybeSingle();
@@ -87,13 +88,19 @@ export default async function PublicPassportPage({ params }: { params: { slug: s
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-6" data-testid="public-passport-root">
-      <PublicHero address={publicProperty.display_address} status={publicProperty.status} imageUrl={featuredUrl} />
-      <PublicMetadata uprn={publicProperty.uprn} status={publicProperty.status} />
-      <div className="space-y-3">
+      <div data-testid="public-passport-hero">
+        <PublicHero address={publicProperty.display_address} status={publicProperty.status} imageUrl={featuredUrl} />
+      </div>
+      <div data-testid="public-passport-metadata">
+        <PublicMetadata uprn={publicProperty.uprn} status={publicProperty.status} />
+      </div>
+      <div className="space-y-3" data-testid="public-passport-gallery">
         <h2 className="text-xl font-semibold text-primary">Gallery</h2>
         <PublicGallery images={gallerySigned} />
       </div>
-      <PublicDocuments documents={documents} />
+      <div data-testid="public-passport-docs">
+        <PublicDocuments documents={documents} />
+      </div>
     </div>
   );
 }

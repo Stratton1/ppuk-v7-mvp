@@ -52,7 +52,9 @@ export function FloodCardIntegrated({
       <Card data-testid="flood-card">
         <CardHeader>
           <CardTitle className="text-base">Flood Risk</CardTitle>
-          <Badge variant="destructive">Error</Badge>
+          <Badge variant="outline" className="border-destructive/60 text-destructive">
+            Error
+          </Badge>
         </CardHeader>
         <CardContent className="text-sm text-destructive">
           {error instanceof Error ? error.message : 'Failed to load flood risk data'}
@@ -78,10 +80,16 @@ export function FloodCardIntegrated({
   const riskLevel = data.data.risk_level || 'low';
   
   // Risk level badge variant
-  const getRiskVariant = (level: string) => {
-    if (level === 'very_high' || level === 'high') return 'destructive';
+  const getRiskVariant = (level: string): 'default' | 'secondary' | 'outline' => {
     if (level === 'medium') return 'secondary';
+    if (level === 'very_high' || level === 'high') return 'outline';
     return 'default';
+  };
+  const getRiskClassName = (level: string) => {
+    if (level === 'very_high' || level === 'high') {
+      return 'border-destructive/60 text-destructive';
+    }
+    return undefined;
   };
 
   const getRiskLabel = (level: string) => {
@@ -94,7 +102,7 @@ export function FloodCardIntegrated({
     <Card data-testid="flood-card">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="text-base">Flood Risk</CardTitle>
-        <Badge variant={getRiskVariant(riskLevel)}>
+        <Badge variant={getRiskVariant(riskLevel)} className={getRiskClassName(riskLevel)}>
           {getRiskLabel(riskLevel)}
         </Badge>
         {data.cached && (
@@ -120,4 +128,3 @@ export function FloodCardIntegrated({
     </Card>
   );
 }
-

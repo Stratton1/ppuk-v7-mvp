@@ -31,7 +31,9 @@ export function TitleCard({ data, loading, error }: TitleCardProps) {
       <Card data-testid="keyfacts-title">
         <CardHeader>
           <CardTitle className="text-base">Title / Land Registry</CardTitle>
-          <Badge variant="destructive">Error</Badge>
+          <Badge variant="outline" className="border-destructive/60 text-destructive">
+            Error
+          </Badge>
         </CardHeader>
         <CardContent className="text-sm text-destructive">{error}</CardContent>
       </Card>

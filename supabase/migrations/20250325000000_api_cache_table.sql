@@ -36,10 +36,9 @@ CREATE INDEX IF NOT EXISTS idx_api_cache_property_provider
 ON public.api_cache(property_id, api_provider)
 WHERE property_id IS NOT NULL;
 
--- For expiration cleanup
+-- Index for expiration queries
 CREATE INDEX IF NOT EXISTS idx_api_cache_expires
-ON public.api_cache(expires_at)
-WHERE expires_at > NOW();
+ON public.api_cache(expires_at);
 
 -- For cache key lookups
 CREATE INDEX IF NOT EXISTS idx_api_cache_key_provider

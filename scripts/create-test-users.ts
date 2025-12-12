@@ -12,7 +12,7 @@ import { join } from 'path';
 // Load .env.local
 dotenv.config({ path: '.env.local' });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_SERVICE_ROLE_KEY) {
@@ -28,13 +28,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 });
 
 const TEST_USERS = [
-  { email: 'owner@test.local', password: 'Test123!', primary_role: 'consumer' as const },
-  { email: 'buyer@test.local', password: 'Test123!', primary_role: 'consumer' as const },
-  { email: 'tenant@test.local', password: 'Test123!', primary_role: 'consumer' as const },
-  { email: 'agent@test.local', password: 'Test123!', primary_role: 'agent' as const },
-  { email: 'conveyancer@test.local', password: 'Test123!', primary_role: 'conveyancer' as const },
-  { email: 'surveyor@test.local', password: 'Test123!', primary_role: 'surveyor' as const },
-  { email: 'admin@test.local', password: 'Admin123!', primary_role: 'admin' as const },
+  { email: 'owner@ppuk.test', password: 'password123', primary_role: 'consumer' as const },
+  { email: 'buyer@ppuk.test', password: 'password123', primary_role: 'consumer' as const },
+  { email: 'tenant@ppuk.test', password: 'password123', primary_role: 'consumer' as const },
+  { email: 'agent@ppuk.test', password: 'password123', primary_role: 'agent' as const },
+  { email: 'conveyancer@ppuk.test', password: 'password123', primary_role: 'conveyancer' as const },
+  { email: 'surveyor@ppuk.test', password: 'password123', primary_role: 'surveyor' as const },
+  { email: 'admin@ppuk.test', password: 'password123', primary_role: 'admin' as const },
 ];
 
 async function createTestUsers() {
@@ -108,10 +108,10 @@ async function assignPropertyRoles(userIds: Record<string, string>) {
   console.log('\n🔗 Assigning property-scoped roles...\n');
 
   // Owner: editor
-  if (userIds['owner@test.local']) {
+  if (userIds['owner@ppuk.test']) {
     const { error } = await supabase.rpc('grant_property_role', {
       property_id: PROPERTY_ID,
-      target_user_id: userIds['owner@test.local'],
+      target_user_id: userIds['owner@ppuk.test'],
       status: 'owner',
       permission: 'editor',
       expires_at: null,
@@ -119,15 +119,15 @@ async function assignPropertyRoles(userIds: Record<string, string>) {
     if (error) {
       console.error(`❌ Failed to grant owner role:`, error.message);
     } else {
-      console.log(`✅ Granted owner role to owner@test.local`);
+      console.log(`✅ Granted owner role to owner@ppuk.test`);
     }
   }
 
   // Buyer: viewer
-  if (userIds['buyer@test.local']) {
+  if (userIds['buyer@ppuk.test']) {
     const { error } = await supabase.rpc('grant_property_role', {
       property_id: PROPERTY_ID,
-      target_user_id: userIds['buyer@test.local'],
+      target_user_id: userIds['buyer@ppuk.test'],
       status: 'buyer',
       permission: 'viewer',
       expires_at: null,
@@ -135,15 +135,15 @@ async function assignPropertyRoles(userIds: Record<string, string>) {
     if (error) {
       console.error(`❌ Failed to grant buyer role:`, error.message);
     } else {
-      console.log(`✅ Granted buyer role to buyer@test.local`);
+      console.log(`✅ Granted buyer role to buyer@ppuk.test`);
     }
   }
 
   // Tenant: viewer
-  if (userIds['tenant@test.local']) {
+  if (userIds['tenant@ppuk.test']) {
     const { error } = await supabase.rpc('grant_property_role', {
       property_id: PROPERTY_ID,
-      target_user_id: userIds['tenant@test.local'],
+      target_user_id: userIds['tenant@ppuk.test'],
       status: 'tenant',
       permission: 'viewer',
       expires_at: null,
@@ -151,7 +151,7 @@ async function assignPropertyRoles(userIds: Record<string, string>) {
     if (error) {
       console.error(`❌ Failed to grant tenant role:`, error.message);
     } else {
-      console.log(`✅ Granted tenant role to tenant@test.local`);
+      console.log(`✅ Granted tenant role to tenant@ppuk.test`);
     }
   }
 }

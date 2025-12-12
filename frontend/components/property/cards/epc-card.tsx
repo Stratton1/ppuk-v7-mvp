@@ -31,7 +31,9 @@ export function EpcCard({ data, loading, error }: EpcCardProps) {
       <Card data-testid="keyfacts-epc">
         <CardHeader>
           <CardTitle className="text-base">EPC</CardTitle>
-          <Badge variant="destructive">Error</Badge>
+          <Badge variant="outline" className="border-destructive/60 text-destructive">
+            Error
+          </Badge>
         </CardHeader>
         <CardContent className="text-sm text-destructive">{error}</CardContent>
       </Card>

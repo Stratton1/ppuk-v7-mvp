@@ -3,6 +3,16 @@
 -- Date: 2025-03-28
 
 -- ============================================================================
+-- Normalize auth user token columns (GoTrue expects non-null strings)
+-- ============================================================================
+
+UPDATE auth.users
+SET
+  confirmation_token = COALESCE(confirmation_token, ''),
+  recovery_token = COALESCE(recovery_token, ''),
+  email_change_token_new = COALESCE(email_change_token_new, '');
+
+-- ============================================================================
 -- RPC Function: get_admin_dashboard_stats
 -- ============================================================================
 
@@ -171,12 +181,12 @@ SECURITY DEFINER
 STABLE
 AS $$
   SELECT
-    source::TEXT as provider,
+    api_provider::TEXT as provider,
     COUNT(*) as count,
     MAX(fetched_at) as last_fetched
   FROM public.api_cache
   WHERE expires_at > NOW()
-  GROUP BY source
+  GROUP BY api_provider
   ORDER BY count DESC;
 $$;
 

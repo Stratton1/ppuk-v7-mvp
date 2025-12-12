@@ -26,7 +26,7 @@ export function RegisterForm({ action }: RegisterFormProps) {
         <form className="space-y-4" action={formAction}>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" required placeholder="you@example.com" />
+            <Input id="email" name="email" type="email" required placeholder="owner@ppuk.test" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>

@@ -93,3 +93,25 @@ export function getTitleDataForProperty(_uprn: string | null | undefined): FactR
     error: undefined,
   };
 }
+
+/**
+ * Get all property facts as a combined object.
+ * This is a convenience function that aggregates all fact sources.
+ */
+export async function getPropertyFacts(_propertyId: string): Promise<{
+  epc: FactResponse<EPCData>;
+  flood: FactResponse<FloodData>;
+  planning: FactResponse<PlanningData>;
+  title: FactResponse<TitleData>;
+}> {
+  // In a real implementation, you would fetch the property's UPRN first
+  // and then use it to fetch data from each API
+  const uprn = null; // Would be fetched from property data
+
+  return {
+    epc: getEpcDataForProperty(uprn),
+    flood: getFloodDataForProperty(uprn),
+    planning: getPlanningDataForProperty(uprn),
+    title: getTitleDataForProperty(uprn),
+  };
+}

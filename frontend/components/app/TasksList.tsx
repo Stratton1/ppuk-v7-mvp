@@ -127,7 +127,7 @@ export function TasksList({ tasks, onCreate, onUpdate }: TasksListProps) {
                         </Badge>
                         {task.property_id && (
                           <Button
-                            size="xs"
+                            size="sm"
                             variant="outline"
                             onClick={() => handleToggle(task)}
                             disabled={isPending}
@@ -137,7 +137,7 @@ export function TasksList({ tasks, onCreate, onUpdate }: TasksListProps) {
                           </Button>
                         )}
                         {onUpdate && (
-                          <Button size="xs" variant="ghost" onClick={() => onUpdate(task)}>
+                          <Button size="sm" variant="ghost" onClick={() => onUpdate(task)}>
                             Edit
                           </Button>
                         )}

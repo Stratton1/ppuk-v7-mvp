@@ -1,6 +1,5 @@
 import { PropertyFlags } from '@/components/property/property-flags';
 import { CreateTaskDialog } from '@/components/property/tasks/create-task-dialog';
-import { createTaskAction } from '@/actions/tasks';
 import { TasksList } from '@/components/app/TasksList';
 import type { Database } from '@/types/supabase';
 
@@ -16,7 +15,7 @@ export function PropertyFlagsSection({ propertyId, tasks }: PropertyFlagsSection
     <div className="space-y-6">
       <PropertyFlags propertyId={propertyId} />
       <div className="space-y-4">
-        <CreateTaskDialog propertyId={propertyId} onSubmit={createTaskAction} />
+        <CreateTaskDialog propertyId={propertyId} />
         <TasksList tasks={tasks} />
       </div>
     </div>

@@ -1,0 +1,31 @@
+name: "Playwright Auto-Test Generator"
+version: 1
+description: "Generate, update and self-heal Playwright tests based on real UI flows"
+
+triggers:
+  - command: "tests:auto"
+    description: "Generate or fix Playwright tests"
+
+steps:
+  - id: "launch_app"
+    action: playwright.open
+    params:
+      url: "http://localhost:3000"
+
+  - id: "record_flow"
+    action: playwright.record_user_flow
+    params:
+      timeout_ms: 45000
+
+  - id: "write_tests"
+    action: claude.ask
+    params:
+      prompt_file: "test_generator.md"
+      inputs:
+        flow: "{{record_flow.json}}"
+
+  - id: "apply_test_patches"
+    action: claude.apply_patch
+    params:
+      plan_from_step: "write_tests"
+

@@ -38,6 +38,15 @@ values
 ('22222222-2222-2222-2222-222222222222', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'robert.agent@ppuk.test', '$2a$10$rKvVw2KJYJYk5FVYHq7OL.HqNp0YXwTVqGYzBqKJ4LmJC1pxK8qwi', now(), now(), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Robert Agent"}', false),
 ('33333333-3333-3333-3333-333333333333', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'clara.admin@ppuk.test', '$2a$10$rKvVw2KJYJYk5FVYHq7OL.HqNp0YXwTVqGYzBqKJ4LmJC1pxK8qwi', now(), now(), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Clara Admin"}', false);
 
+-- Ensure auth token columns are non-null for GoTrue admin queries
+update auth.users
+set
+  confirmation_token = COALESCE(confirmation_token, ''),
+  recovery_token = COALESCE(recovery_token, ''),
+  email_change_token_new = COALESCE(email_change_token_new, ''),
+  email_change = COALESCE(email_change, '')
+where email like '%@ppuk.test';
+
 -- Public.users (using new primary_role enum: consumer, agent, conveyancer, surveyor, admin)
 insert into public.users (id, email, full_name, avatar_url, organisation, primary_role, created_at, updated_at) values
 ('11111111-1111-1111-1111-111111111111', 'alice.owner@ppuk.test', 'Alice Johnson', null, 'PPUK Test', 'consumer', now(), now()),

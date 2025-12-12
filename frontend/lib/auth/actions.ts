@@ -11,7 +11,46 @@ export async function loginAction(_prevState: ActionResult, formData: FormData):
   const redirectTo = formData.get('redirectTo')?.toString() || '/dashboard';
 
   const supabase = createClient();
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/213ad833-5127-434d-abea-fccdfab15098', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: 'debug-session',
+      runId: 'pre-fix',
+      hypothesisId: 'H3',
+      location: 'auth/actions.ts:loginAction:before',
+      message: 'loginAction invoked',
+      data: {
+        hasEmail: Boolean(email),
+        emailDomain: email.split('@')[1] ?? null,
+        redirectTo,
+      },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion agent log
+
   const { error } = await supabase.auth.signInWithPassword({ email, password });
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/213ad833-5127-434d-abea-fccdfab15098', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: 'debug-session',
+      runId: 'pre-fix',
+      hypothesisId: 'H4',
+      location: 'auth/actions.ts:loginAction:after',
+      message: 'loginAction result',
+      data: {
+        error: error?.message ?? null,
+        redirectTo,
+      },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion agent log
+
   if (error) {
     return { error: error.message };
   }
@@ -56,6 +95,90 @@ export async function logoutAction(): Promise<void> {
   const supabase = createClient();
   await supabase.auth.signOut();
   redirect('/auth/login');
+}
+
+export async function forgotPasswordAction(_prevState: ActionResult, formData: FormData): Promise<ActionResult> {
+  const email = formData.get('email')?.toString() ?? '';
+
+  if (!email) {
+    return { error: 'Email is required' };
+  }
+
+  const supabase = createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/reset-password`,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return {};
+}
+
+export async function resetPasswordAction(_prevState: ActionResult, formData: FormData): Promise<ActionResult> {
+  const password = formData.get('password')?.toString() ?? '';
+  const confirmPassword = formData.get('confirmPassword')?.toString() ?? '';
+
+  if (!password || password.length < 8) {
+    return { error: 'Password must be at least 8 characters' };
+  }
+
+  if (password !== confirmPassword) {
+    return { error: 'Passwords do not match' };
+  }
+
+  const supabase = createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  redirect('/auth/login?reset=success');
+  return {};
+}
+
+export async function updatePasswordAction(_prevState: ActionResult, formData: FormData): Promise<ActionResult> {
+  const currentPassword = formData.get('currentPassword')?.toString() ?? '';
+  const newPassword = formData.get('newPassword')?.toString() ?? '';
+  const confirmPassword = formData.get('confirmPassword')?.toString() ?? '';
+
+  if (!newPassword || newPassword.length < 8) {
+    return { error: 'New password must be at least 8 characters' };
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { error: 'Passwords do not match' };
+  }
+
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user || !user.email) {
+    return { error: 'Not authenticated' };
+  }
+
+  // Verify current password by re-authenticating
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+
+  if (signInError) {
+    return { error: 'Current password is incorrect' };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return {};
 }
 
 export async function updateProfileAction(_prevState: ActionResult, formData: FormData): Promise<ActionResult> {

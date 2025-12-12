@@ -48,7 +48,7 @@ export async function createTestUser(
   adminClient: ReturnType<typeof createAdminClient>,
   email: string,
   primaryRole: 'consumer' | 'agent' | 'conveyancer' | 'surveyor' | 'admin',
-  password: string = 'TestPassword123!'
+  password: string = 'password123'
 ): Promise<{ id: string; email: string }> {
   const { data, error } = await adminClient.auth.admin.createUser({
     email,
@@ -75,7 +75,7 @@ export async function createTestUser(
  */
 export async function signInUser(
   email: string,
-  password: string = 'TestPassword123!'
+  password: string = 'password123'
 ): Promise<TestUser> {
   const anonClient = createAnonClient();
   const { data, error } = await anonClient.auth.signInWithPassword({

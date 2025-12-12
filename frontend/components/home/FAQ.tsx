@@ -22,8 +22,8 @@ const faqItems = [
 
 export function FAQ() {
   return (
-    <Section>
-      <Container className="space-y-6">
+    <Section dataTestId="public-faq">
+      <Container className="space-y-6" dataTestId="public-faq-container">
         <div className="space-y-2">
           <h2 className="text-3xl font-semibold tracking-tight text-primary">FAQ</h2>
           <p className="text-muted-foreground">What founders, conveyancers, and agents ask first.</p>

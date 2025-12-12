@@ -52,7 +52,9 @@ export function CrimeCard({
       <Card data-testid="crime-card">
         <CardHeader>
           <CardTitle className="text-base">Crime Statistics</CardTitle>
-          <Badge variant="destructive">Error</Badge>
+          <Badge variant="outline" className="border-destructive/60 text-destructive">
+            Error
+          </Badge>
         </CardHeader>
         <CardContent className="text-sm text-destructive">
           {error instanceof Error ? error.message : 'Failed to load crime data'}
@@ -115,4 +117,3 @@ export function CrimeCard({
     </Card>
   );
 }
-

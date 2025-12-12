@@ -1,0 +1,31 @@
+name: "UI Modernisation Workflow"
+version: 1
+description: "Iteratively improve UI/UX using Playwright MCP screenshots + DOM context"
+
+triggers:
+  - command: "ui:modernise"
+    description: "Improve the UI of the running application"
+
+steps:
+  - id: "open_app"
+    action: playwright.open
+    params:
+      url: "http://localhost:3000"
+
+  - id: "screenshot"
+    action: playwright.screenshot
+    params:
+      path: ".claude/screens/ui-current.png"
+
+  - id: "analyse_ui"
+    action: claude.ask
+    params:
+      prompt_file: "ui_analyser.md"
+      inputs:
+        screenshot_path: ".claude/screens/ui-current.png"
+
+  - id: "apply_patches"
+    action: claude.apply_patch
+    params:
+      plan_from_step: "analyse_ui"
+

@@ -87,15 +87,6 @@ USING (
 -- Comments
 -- ============================================================================
 
-COMMENT ON POLICY "property_scoped_read_documents" ON storage.objects IS 
-'Property-scoped document read: Only authenticated users who can view the property can access documents. Uses can_view_property helper function.';
-
-COMMENT ON POLICY "property_scoped_read_photos_public" ON storage.objects IS 
-'Public photo read: Anonymous users can view photos only for public_visibility=true active properties.';
-
-COMMENT ON POLICY "property_scoped_read_photos_authenticated" ON storage.objects IS 
-'Authenticated photo read: Authenticated users can view photos for properties they can access via can_view_property helper function.';
-
 -- ============================================================================
 -- End of Storage Policies Migration
 -- ============================================================================

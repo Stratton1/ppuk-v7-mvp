@@ -11,8 +11,8 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <Section>
-      <Container className="space-y-6">
+    <Section dataTestId="public-how-it-works">
+      <Container className="space-y-6" dataTestId="public-how-it-works-container">
         <div className="space-y-2">
           <h2 className="text-3xl font-semibold tracking-tight text-primary">How it works</h2>
           <p className="text-muted-foreground">Four steps to a transaction-ready passport.</p>

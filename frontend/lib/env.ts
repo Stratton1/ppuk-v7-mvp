@@ -61,9 +61,6 @@ export function getRuntimeEnv(): RuntimeEnv {
     PLAYWRIGHT_TEST: isPlaywright ? "true" : process.env.PLAYWRIGHT_TEST === "true" ? "true" : "false",
   };
 
-  process.env.NODE_ENV = runtimeEnv.NODE_ENV;
-  process.env.PLAYWRIGHT_TEST = runtimeEnv.PLAYWRIGHT_TEST;
-
   cachedEnv = runtimeEnv;
   return runtimeEnv;
 }
@@ -76,4 +73,3 @@ export function maskSecret(value?: string | null) {
   const visible = value.slice(0, 4);
   return `${visible}${"*".repeat(Math.max(0, value.length - 4))}`;
 }
-

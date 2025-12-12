@@ -31,7 +31,9 @@ export function PlanningCard({ data, loading, error }: PlanningCardProps) {
       <Card data-testid="keyfacts-planning">
         <CardHeader>
           <CardTitle className="text-base">Planning</CardTitle>
-          <Badge variant="destructive">Error</Badge>
+          <Badge variant="outline" className="border-destructive/60 text-destructive">
+            Error
+          </Badge>
         </CardHeader>
         <CardContent className="text-sm text-destructive">{error}</CardContent>
       </Card>

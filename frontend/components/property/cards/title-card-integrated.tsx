@@ -52,7 +52,9 @@ export function TitleCardIntegrated({
       <Card data-testid="title-card">
         <CardHeader>
           <CardTitle className="text-base">Title / Land Registry</CardTitle>
-          <Badge variant="destructive">Error</Badge>
+          <Badge variant="outline" className="border-destructive/60 text-destructive">
+            Error
+          </Badge>
         </CardHeader>
         <CardContent className="text-sm text-destructive">
           {error instanceof Error ? error.message : 'Failed to load title data'}
@@ -118,4 +120,3 @@ export function TitleCardIntegrated({
     </Card>
   );
 }
-

@@ -1,6 +1,6 @@
  'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,20 +14,29 @@ type TestUser = {
 };
 
 const TEST_USERS: TestUser[] = [
-  { label: 'Owner', email: 'owner.test@ppuk.test', password: 'TestPassword123!', testId: 'test-login-owner' },
-  { label: 'Buyer', email: 'buyer.test@ppuk.test', password: 'TestPassword123!', testId: 'test-login-buyer' },
-  { label: 'Agent', email: 'agent.test@ppuk.test', password: 'TestPassword123!', testId: 'test-login-agent' },
+  { label: 'Owner', email: 'owner@ppuk.test', password: 'password123', testId: 'test-login-owner' },
+  { label: 'Buyer', email: 'buyer@ppuk.test', password: 'password123', testId: 'test-login-buyer' },
+  { label: 'Tenant', email: 'tenant@ppuk.test', password: 'password123', testId: 'test-login-tenant' },
+  { label: 'Agent', email: 'agent@ppuk.test', password: 'password123', testId: 'test-login-agent' },
   {
     label: 'Conveyancer',
-    email: 'conveyancer.test@ppuk.test',
-    password: 'TestPassword123!',
+    email: 'conveyancer@ppuk.test',
+    password: 'password123',
     testId: 'test-login-conveyancer',
   },
-  { label: 'Surveyor', email: 'surveyor.test@ppuk.test', password: 'TestPassword123!', testId: 'test-login-surveyor' },
-  { label: 'Admin', email: 'admin.test@ppuk.test', password: 'TestPassword123!', testId: 'test-login-admin' },
+  { label: 'Surveyor', email: 'surveyor@ppuk.test', password: 'password123', testId: 'test-login-surveyor' },
+  { label: 'Admin', email: 'admin@ppuk.test', password: 'password123', testId: 'test-login-admin' },
 ];
 
 export default function TestLoginPage() {
+  return (
+    <Suspense fallback={<div className="text-sm text-muted-foreground">Loading test login…</div>}>
+      <TestLoginContent />
+    </Suspense>
+  );
+}
+
+function TestLoginContent() {
   const router = useRouter();
   const search = useSearchParams();
   const supabase = useMemo(() => createClient(), []);
@@ -84,4 +93,3 @@ export default function TestLoginPage() {
     </div>
   );
 }
-

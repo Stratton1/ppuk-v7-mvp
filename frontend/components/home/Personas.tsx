@@ -10,8 +10,8 @@ const personas = [
 
 export function Personas() {
   return (
-    <Section className="bg-card/60">
-      <Container className="space-y-6">
+    <Section className="bg-card/60" dataTestId="public-personas">
+      <Container className="space-y-6" dataTestId="public-personas-container">
         <div className="space-y-2">
           <h2 className="text-3xl font-semibold tracking-tight text-primary">Built for every stakeholder</h2>
           <p className="text-muted-foreground">Owners, buyers, agents, and conveyancers work from one source of truth.</p>

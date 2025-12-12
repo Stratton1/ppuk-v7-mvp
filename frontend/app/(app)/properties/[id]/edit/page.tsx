@@ -1,60 +1,69 @@
-/**
- * File: properties/[id]/edit/page.tsx
- * Purpose: Edit property page
- * Type: Server Component
- */
-
 import { notFound, redirect } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/types/supabase';
-import { EditPropertyForm } from '@/components/property/edit-property-form';
+import { AccessUnavailable } from '@/components/app/AccessUnavailable';
 import { AppPageHeader } from '@/components/app/AppPageHeader';
 import { AppSection } from '@/components/app/AppSection';
+import { PropertyEditForm, type EditableProperty } from '@/components/property/PropertyEditForm';
+import { getServerUser } from '@/lib/auth/server-user';
+import { canEditProperty } from '@/lib/property-utils';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 
 interface EditPropertyPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditPropertyPage({ params }: EditPropertyPageProps) {
-  const { id } = params;
+  const { id } = await params;
 
-  const supabase = createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  // Check if user is authenticated
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    // Redirect to login if not authenticated
+  const user = await getServerUser();
+  if (!user) {
     redirect('/auth/login');
   }
 
-  // Check if user has permission to edit (owner or admin only)
-  const hasPropertyRoleArgs: Database['public']['Functions']['has_property_role']['Args'] = {
-    property_id: id,
-    allowed_roles: ['owner', 'editor'],
-  };
-  const { data: canEdit } = await supabase.rpc('has_property_role', hasPropertyRoleArgs);
-
-  if (!canEdit) {
-    // Redirect to property page if no edit permission
-    redirect(`/properties/${id}`);
-  }
-
-  // Fetch property data
-  const { data: property, error: propertyError } = await supabase
+  const supabase = createServerClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: property, error: propertyError } = await (supabase as any)
     .from('properties')
     .select('*')
     .eq('id', id)
-    .single();
+    .maybeSingle();
 
   if (propertyError || !property) {
     notFound();
   }
+
+  const canEdit = user.isAdmin || (await canEditProperty(id));
+  if (!canEdit) {
+    return (
+      <div className="mx-auto max-w-5xl space-y-6 px-4 py-6">
+        <AppPageHeader
+          title="Edit Property"
+          description="Update property details and keep the passport data fresh."
+          breadcrumbs={[
+            { label: 'Properties', href: '/properties' },
+            { label: property.display_address || 'Property', href: `/properties/${property.id}` },
+            { label: 'Edit' },
+          ]}
+        />
+        <AccessUnavailable
+          title="You cannot edit this property"
+          description="Your account does not have permission to make changes here."
+          optionalActionHref={`/properties/${id}`}
+          optionalActionLabel="Back to property"
+        />
+      </div>
+    );
+  }
+
+  const editableProperty: EditableProperty = {
+    id: property.id,
+    display_address: property.display_address,
+    uprn: property.uprn,
+    public_visibility: property.public_visibility,
+    property_type: property.property_type,
+    tenure: property.tenure,
+    title: property.title,
+    tags: property.tags,
+  };
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-6">
@@ -68,7 +77,7 @@ export default async function EditPropertyPage({ params }: EditPropertyPageProps
         ]}
       />
       <AppSection>
-        <EditPropertyForm property={property} />
+        <PropertyEditForm property={editableProperty} />
       </AppSection>
     </div>
   );

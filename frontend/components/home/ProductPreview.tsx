@@ -3,8 +3,8 @@ import { FloatingCard, Container, Section } from './PageWrapper';
 
 export function ProductPreview() {
   return (
-    <Section>
-      <Container className="space-y-6">
+    <Section dataTestId="public-product-preview">
+      <Container className="space-y-6" dataTestId="public-product-preview-container">
         <div className="space-y-2">
           <h2 className="text-3xl font-semibold tracking-tight text-primary">Product preview</h2>
           <p className="text-muted-foreground">

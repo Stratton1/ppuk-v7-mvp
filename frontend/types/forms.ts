@@ -1,1 +1,1 @@
-export type ActionResult = { error?: string };
+export type ActionResult = { success?: boolean; error?: string };

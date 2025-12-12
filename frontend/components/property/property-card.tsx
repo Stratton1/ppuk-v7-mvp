@@ -17,9 +17,13 @@ type Property = Database['public']['Tables']['properties']['Row'];
 interface PropertyCardProps {
   property: Property;
   signedUrl?: string | null;
+  /**
+   * Mark above-the-fold cards as priority to satisfy LCP guidance.
+   */
+  priority?: boolean;
 }
 
-export function PropertyCard({ property, signedUrl }: PropertyCardProps) {
+export function PropertyCard({ property, signedUrl, priority = false }: PropertyCardProps) {
   // Determine status badge variant
   const statusVariant = property.status === 'active' 
     ? 'default' 
@@ -34,7 +38,14 @@ export function PropertyCard({ property, signedUrl }: PropertyCardProps) {
     <Card className="flex flex-col overflow-hidden transition-shadow hover:shadow-lg">
       {/* Featured Image */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
-        <Image src={imageUrl} alt={property.display_address} fill className="object-cover" />
+        <Image
+          src={imageUrl}
+          alt={property.display_address}
+          fill
+          className="object-cover"
+          loading={priority ? 'eager' : 'lazy'}
+          priority={priority}
+        />
         {/* Status Badge Overlay */}
         <div className="absolute right-2 top-2">
           <Badge variant={statusVariant} className="capitalize">

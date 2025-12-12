@@ -3,8 +3,8 @@ import { Dot, Container, Section } from './PageWrapper';
 
 export function BeforeAfter() {
   return (
-    <Section className="bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <Container className="space-y-6">
+    <Section className="bg-gradient-to-br from-primary/5 via-background to-accent/5" dataTestId="public-before-after">
+      <Container className="space-y-6" dataTestId="public-before-after-container">
         <div className="space-y-2">
           <h2 className="text-3xl font-semibold tracking-tight text-primary">Before vs. After Property Passport</h2>
           <p className="text-muted-foreground">See how workflows compress when evidence is ready on day one.</p>

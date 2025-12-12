@@ -31,13 +31,11 @@ const mockEvents: TimelineEvent[] = [
 ];
 
 export function PropertyTimelineSection({ propertyId }: PropertyTimelineSectionProps) {
-  void propertyId; // placeholder until wired to backend
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-base font-semibold">Recent events</h3>
-        <EventCreateDialog />
+        <EventCreateDialog propertyId={propertyId} />
       </div>
       <EventList events={mockEvents} loading={false} />
       <Card>

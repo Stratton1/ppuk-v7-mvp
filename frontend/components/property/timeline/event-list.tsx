@@ -2,6 +2,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EventCard, TimelineEvent } from './event-card';
 import { Card, CardContent } from '@/components/ui/card';
 
+export type { TimelineEvent };
+
 type EventListProps = {
   events: TimelineEvent[] | null;
   loading?: boolean;

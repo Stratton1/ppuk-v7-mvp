@@ -126,7 +126,7 @@ export function GrantAccessDialog({ propertyId, children }: GrantAccessDialogPro
             <Input
               id="email"
               name="email"
-              placeholder="e.g., user@example.com"
+              placeholder="e.g., agent@ppuk.test"
               required
               disabled={loading || success}
             />

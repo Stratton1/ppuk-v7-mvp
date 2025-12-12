@@ -11,9 +11,10 @@ import { useRouter } from 'next/navigation';
 
 type InviteDialogProps = {
   propertyId: string;
+  canInvite?: boolean;
 };
 
-export function InviteDialog({ propertyId }: InviteDialogProps) {
+export function InviteDialog({ propertyId, canInvite = true }: InviteDialogProps) {
   const [open, setOpen] = useState(false);
   const [permission, setPermission] = useState<'viewer' | 'editor'>('viewer');
   const [isPending, startTransition] = useTransition();
@@ -24,6 +25,10 @@ export function InviteDialog({ propertyId }: InviteDialogProps) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const email = String(formData.get('email') || '').trim();
+    if (!canInvite) {
+      toast({ title: 'Cannot invite', description: 'You do not have permission to invite stakeholders.', variant: 'destructive' });
+      return;
+    }
     if (!email) {
       toast({ title: 'Email required', description: 'Please enter an email.', variant: 'destructive' });
       return;
@@ -48,7 +53,12 @@ export function InviteDialog({ propertyId }: InviteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" data-testid="invite-button">
+        <Button
+          size="sm"
+          data-testid={canInvite ? 'invite-button' : 'invite-disabled'}
+          disabled={!canInvite}
+          variant={canInvite ? 'default' : 'outline'}
+        >
           Invite
         </Button>
       </DialogTrigger>
@@ -60,7 +70,14 @@ export function InviteDialog({ propertyId }: InviteDialogProps) {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" required placeholder="name@example.com" data-testid="invite-email" />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder="buyer@ppuk.test"
+              data-testid="invite-email"
+            />
           </div>
           <div className="space-y-2">
             <Label>Permission</Label>
