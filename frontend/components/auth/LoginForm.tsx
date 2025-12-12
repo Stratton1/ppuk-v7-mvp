@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function LoginForm() {
   const supabase = createClient();
@@ -11,9 +14,12 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     // #region agent log
     fetch('http://127.0.0.1:7242/ingest/213ad833-5127-434d-abea-fccdfab15098', {
@@ -54,6 +60,7 @@ export default function LoginForm() {
 
     if (error) {
       setError(error.message);
+      setIsLoading(false);
       return;
     }
 
@@ -63,31 +70,35 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
 
-      <input
-        type="email"
-        placeholder="Email"
-        className="w-full rounded border p-2"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        className="w-full rounded border p-2"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <button
-        type="submit"
-        className="w-full rounded bg-black py-2 text-white hover:bg-gray-700"
-      >
-        Sign In
-      </button>
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Signing in..." : "Sign in"}
+      </Button>
     </form>
   );
 }
-

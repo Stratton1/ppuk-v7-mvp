@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getServerUser } from '@/lib/auth/server-user';
 import { canEditProperty } from '@/lib/property-utils';
-import { createClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import type { ServerUserSession } from '@/types/auth';
 import type { ActionResult } from '@/types/forms';
 
@@ -69,7 +69,7 @@ export async function createPropertyAction(formData: FormData): Promise<Property
       return { success: false, error: parsed.error.issues[0]?.message || 'Invalid property data' };
     }
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const insertPayload = {
       display_address: parsed.data.address,
       uprn: parsed.data.uprn,
@@ -118,7 +118,7 @@ export async function updatePropertyAction(formData: FormData): Promise<Property
     const canEdit = user.isAdmin || (await canEditProperty(parsed.data.propertyId));
     if (!canEdit) return { success: false, error: 'You do not have permission to edit this property' };
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const updatePayload = {
       display_address: parsed.data.address,
       uprn: parsed.data.uprn,

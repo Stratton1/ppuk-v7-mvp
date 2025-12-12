@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import { DEFAULT_MOCK_USER_ID, MOCK_DOCUMENTS, MOCK_ISSUES, MOCK_MEDIA, MOCK_PROPERTIES, MOCK_USERS } from '@/lib/mock-data';
 import type { SupabaseClient } from '@supabase/supabase-js';
 

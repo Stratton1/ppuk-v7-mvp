@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getServerUser } from '@/lib/auth/server-user';
-import { createClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import { canEditProperty } from '@/lib/property-utils';
 import { documentToEvents, eventRowToEntry, flagToEvents, mediaToEvents, propertyToEvents, type TimelineEntry } from '@/lib/events/types';
 import type { ActionResult } from '@/types/forms';
@@ -36,7 +36,7 @@ export async function createEventAction(input: {
     const canEdit = await canEditProperty(parsed.data.propertyId);
     if (!canEdit) return { success: false, error: 'No permission' };
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any)
       .from('property_events')
@@ -74,7 +74,7 @@ export async function createCommentAction(input: {
     const canEdit = await canEditProperty(parsed.data.propertyId);
     if (!canEdit) return { success: false, error: 'No permission to comment' };
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const { error } = await supabase.from('property_events').insert({
       property_id: parsed.data.propertyId,
       event_type: 'comment.added',
@@ -99,7 +99,7 @@ export async function getEventsForProperty(propertyId: string): Promise<Timeline
   try {
     const user = await getServerUser();
     if (!user) return [];
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const { data: canView } = await supabase.rpc('can_view_property', { property_id: propertyId });
     if (!canView && !user.isAdmin) return [];
 
@@ -153,7 +153,7 @@ export async function getEventsForProperty(propertyId: string): Promise<Timeline
 
 export async function getCommentsFor(targetType: string, targetId: string): Promise<TimelineEntry[]> {
   try {
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: rows } = await (supabase as any)
       .from('property_events')

@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { AppSection } from '@/components/app/AppSection';
@@ -20,7 +21,7 @@ interface PropertyDetailPageProps {
 }
 
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
-  const { id } = await params;
+  const { id } = use(params);
   const supabase = createServerClient();
 
   const { data: property, error: propertyError } = await supabase
@@ -59,8 +60,9 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
       .limit(6),
   ]);
 
-  const mediaPreview: UidMedia[] = allMedia ? await Promise.all(allMedia.slice(0, 6).map((row) => mediaRowToUidMedia(row as any))) : [];
-  const documentPreview: UidDocument[] = documents ? await Promise.all(documents.slice(0, 3).map((row) => docRowToUidDocument(row as any))) : [];
+  const mediaPreview: UidMedia[] = allMedia ? await Promise.all(allMedia.slice(0, 6).map((row) => mediaRowToUidMedia(row))) : [];
+  const documentPreview: UidDocument[] =
+    documents ? await Promise.all(documents.slice(0, 3).map((row) => docRowToUidDocument(row))) : [];
 
   // Related properties (simple recency, excluding current)
   const { data: relatedRows } = await supabase
@@ -69,7 +71,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
     .neq('id', id)
     .order('updated_at', { ascending: false })
     .limit(3);
-  const related: SearchResult[] = relatedRows ? relatedRows.map((row) => propertyRowToSearchResult(row as any)) : [];
+  const related: SearchResult[] = relatedRows ? relatedRows.map((row) => propertyRowToSearchResult(row)) : [];
 
   return (
     <div className="space-y-6" data-testid="property-loaded">

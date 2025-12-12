@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { AppSection } from '@/components/app/AppSection';
@@ -8,14 +9,13 @@ import { uploadMediaAction } from '@/actions/media';
 import { canUploadMedia } from '@/lib/permissions/documents';
 import { TimelineList } from '@/components/events/TimelineList';
 import { getEventsForProperty } from '@/actions/events';
-import type { Database } from '@/types/supabase';
 
 interface PropertyMediaPageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function PropertyMediaPage({ params }: PropertyMediaPageProps) {
-  const { id } = await params;
+  const { id } = use(params);
   const supabase = createServerClient();
 
   const { data: property, error: propertyError } = await supabase
@@ -29,8 +29,7 @@ export default async function PropertyMediaPage({ params }: PropertyMediaPagePro
   }
 
   // Fetch all media for this property
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: allMedia } = await (supabase as any)
+  const { data: allMedia } = await supabase
     .from('media')
     .select('*')
     .eq('property_id', id)
@@ -38,7 +37,7 @@ export default async function PropertyMediaPage({ params }: PropertyMediaPagePro
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
-  const media: UidMedia[] = allMedia ? await Promise.all(allMedia.map((row: unknown) => mediaRowToUidMedia(row as any))) : [];
+  const media: UidMedia[] = allMedia ? await Promise.all(allMedia.map((row) => mediaRowToUidMedia(row))) : [];
   const canUpload = await canUploadMedia(id);
   const events = await getEventsForProperty(id);
 

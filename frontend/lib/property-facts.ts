@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Stub helpers for property facts integrations (EPC, flood, planning, title).
  * Replace return values with real API calls when wiring integrations.

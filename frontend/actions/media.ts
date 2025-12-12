@@ -3,7 +3,7 @@
 import { Buffer } from 'buffer';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import { getServerUser } from '@/lib/auth/server-user';
 import type { ActionResult } from '@/types/forms';
 
@@ -30,7 +30,7 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionResul
     if (!file) return { success: false, error: 'File is required' };
     if (!mediaMimeWhitelist.includes(file.type)) return { success: false, error: 'Unsupported media type' };
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const { data: canEdit } = await supabase.rpc('can_edit_property', { property_id: parsed.data.propertyId });
     if (!canEdit && !user.isAdmin) return { success: false, error: 'No permission to upload media' };
 
@@ -79,7 +79,7 @@ export async function deleteMediaAction(mediaId: string, propertyId: string): Pr
   try {
     const user = await getServerUser();
     if (!user) return { success: false, error: 'Not authenticated' };
-    const supabase = await createClient();
+    const supabase = await createActionClient();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: mediaRow, error } = await (supabase as any)

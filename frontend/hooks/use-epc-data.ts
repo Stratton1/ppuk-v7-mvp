@@ -5,7 +5,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
-import type { Database } from '@/types/supabase';
 
 export interface EpcData {
   success: boolean;

@@ -38,12 +38,12 @@ export function ForgotPasswordForm({ action }: ForgotPasswordFormProps) {
         <CardHeader>
           <CardTitle>Check your email</CardTitle>
           <CardDescription>
-            If an account exists with that email, we've sent a password reset link.
+            If an account exists with that email, we&apos;ve sent a password reset link.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            The link will expire in 24 hours. If you don't see the email, check your spam folder.
+            The link will expire in 24 hours. If you don&apos;t see the email, check your spam folder.
           </p>
         </CardContent>
       </Card>

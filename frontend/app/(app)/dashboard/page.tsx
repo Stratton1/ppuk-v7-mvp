@@ -159,33 +159,31 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
     }
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type PropertyEventRow = Database['public']['Tables']['property_events']['Row'];
   const { data: eventRows } = propertyIds.length
-    ? await (supabase as any)
+    ? await supabase
         .from('property_events')
         .select('property_id, event_type, created_at, actor_user_id, event_payload')
         .in('property_id', propertyIds)
         .order('created_at', { ascending: false })
         .limit(100)
     : {
-        data: [] as any[],
+        data: [] as PropertyEventRow[],
       };
 
   const activity: ActivityItem[] =
-    (eventRows ?? []).map((event: any) => ({
+    (eventRows ?? []).map((event) => ({
       property_id: event.property_id,
       property_address: 'Property',
       event_type: event.event_type,
       created_at: event.created_at,
     })) ?? [];
-  const timelineEntries: TimelineEntry[] = (eventRows || []).map((row: unknown) => eventRowToEntry(row as any));
+  const timelineEntries: TimelineEntry[] = (eventRows || []).map((row) => eventRowToEntry(row as PropertyEventRow));
 
   // Batch fetch completion scores for all properties
   const completionMap = new Map<string, number>();
   if (propertyIds.length > 0) {
-    // Note: get_properties_completion RPC function may not exist in schema yet - using any to bypass type check
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: completionData, error: completionError } = await (supabase as any).rpc(
+    const { data: completionData, error: completionError } = await supabase.rpc(
       'get_properties_completion',
       { property_ids: propertyIds }
     );
@@ -208,7 +206,7 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
   
   // Map signed URLs back to properties
   const signedUrlMap = new Map<string, string>();
-  signedUrlPaths.forEach(({ bucket, path, propertyId }, index) => {
+  signedUrlPaths.forEach(({ bucket, path, propertyId }) => {
     const key = `${bucket}:${path}`;
     const url = signedUrls.get(key);
     if (url) {
@@ -248,9 +246,8 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
     .slice(0, 5);
 
   // Fetch issues for accessible properties (UI-level mapping over property_flags)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: issueRows } = propertyIds.length
-    ? await (supabase as any)
+    ? await supabase
         .from('property_flags')
         .select('*')
         .in('property_id', propertyIds)
@@ -262,23 +259,23 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
   const issues: Issue[] = (issueRows || []).map(flagRowToIssue);
 
   // Documents & media for dashboard widgets
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type DocumentRow = Database['public']['Tables']['documents']['Row'];
   const { data: documentRows } = propertyIds.length
-    ? await (supabase as any)
+    ? await supabase
         .from('documents')
         .select('*')
         .in('property_id', propertyIds)
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(20)
-    : { data: [] as UidDocument[] };
+    : { data: [] as DocumentRow[] };
 
   const documents: UidDocument[] = documentRows
-    ? await Promise.all(documentRows.map((row: unknown) => docRowToUidDocument(row as any)))
+    ? await Promise.all(documentRows.map((row) => docRowToUidDocument(row as DocumentRow)))
     : [];
 
   const recentMedia: UidMedia[] = mediaRows
-    ? await Promise.all(mediaRows.slice(0, 6).map((row) => mediaRowToUidMedia(row as any)))
+    ? await Promise.all(mediaRows.slice(0, 6).map((row) => mediaRowToUidMedia(row)))
     : [];
 
   return (

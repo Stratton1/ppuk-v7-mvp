@@ -6,7 +6,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import { getServerUser } from '@/lib/auth/server-user';
 import { z } from 'zod';
 import type { Database } from '@/types/supabase';
@@ -45,7 +45,7 @@ export async function addToWatchlist(
       return { success: false, error: 'Not authenticated' };
     }
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const userId = user.id;
 
     // Parse and validate form data
@@ -132,7 +132,7 @@ export async function removeFromWatchlist(
       return { success: false, error: 'Not authenticated' };
     }
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const userId = user.id;
 
     // Delete watchlist entry
@@ -176,7 +176,7 @@ export async function updateWatchlistEntry(
       return { success: false, error: 'Not authenticated' };
     }
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const userId = user.id;
 
     // Parse and validate form data

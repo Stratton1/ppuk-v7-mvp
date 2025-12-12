@@ -11,6 +11,7 @@ export function SavedSearchList() {
   const [saved, setSaved] = useState<SavedItem[]>([]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSaved(getSavedSearches());
   }, []);
 

@@ -42,7 +42,7 @@ export function SettingsForm({
       const result = await updateProfileAction({
         full_name: fullName,
         organisation: organisation || null,
-        primary_role: primaryRole as any,
+        primary_role: primaryRole,
       });
       if (!result.success) {
         setError(result.error || 'Failed to update profile');

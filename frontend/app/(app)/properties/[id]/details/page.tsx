@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { AppSection } from '@/components/app/AppSection';
@@ -10,7 +11,7 @@ interface PropertyDetailsPageProps {
 }
 
 export default async function PropertyDetailsPage({ params }: PropertyDetailsPageProps) {
-  const { id } = await params;
+  const { id } = use(params);
   const supabase = createServerClient();
 
   const { data: property, error: propertyError } = await supabase

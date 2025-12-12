@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { AccessUnavailable } from '@/components/app/AccessUnavailable';
 import { AppPageHeader } from '@/components/app/AppPageHeader';
@@ -12,7 +13,7 @@ interface EditPropertyPageProps {
 }
 
 export default async function EditPropertyPage({ params }: EditPropertyPageProps) {
-  const { id } = await params;
+  const { id } = use(params);
 
   const user = await getServerUser();
   if (!user) {

@@ -1,5 +1,4 @@
-import type { ReactNode } from 'react';
-import { Suspense } from 'react';
+import { Suspense, use, type ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { PropertyHeader } from '@/components/property/property-header';
@@ -15,7 +14,7 @@ type PropertyLayoutProps = {
 };
 
 export default async function PropertyLayout({ children, params }: PropertyLayoutProps) {
-  const { id } = await params;
+  const { id } = use(params);
   const supabase = createServerClient();
   const user = await getSessionOrRedirect({ redirectTo: `/properties/${id}` });
   const role: DashboardRole = user?.isAdmin

@@ -1,5 +1,4 @@
 import { getServerUser } from '@/lib/auth/server-user';
-import type { Database } from '@/types/supabase';
 import { createClient } from '@/lib/supabase/server';
 
 export async function canUploadDocuments(propertyId: string): Promise<boolean> {

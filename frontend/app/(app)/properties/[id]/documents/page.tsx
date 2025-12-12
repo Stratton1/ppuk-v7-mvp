@@ -1,5 +1,7 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import { createClient as createServerClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/supabase';
 import { AppPageHeader } from '@/components/app/AppPageHeader';
 import { AppSection } from '@/components/app/AppSection';
 import { DocumentCard } from '@/components/documents/DocumentCard';
@@ -16,21 +18,24 @@ type PropertyDocumentsPageProps = {
 };
 
 export default async function PropertyDocumentsPage({ params }: PropertyDocumentsPageProps) {
-  const { id } = await params;
+  const { id } = use(params);
   const supabase = await createServerClient();
 
   const { data: property } = await supabase.from('properties').select('id').eq('id', id).maybeSingle();
   if (!property) notFound();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: documentRows } = await (supabase as any)
+  const { data: documentRows } = await supabase
     .from('documents')
     .select('*')
     .eq('property_id', id)
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
-  const documents: UidDocument[] = documentRows ? await Promise.all(documentRows.map((row: unknown) => docRowToUidDocument(row as any))) : [];
+  const documents: UidDocument[] = documentRows
+    ? await Promise.all(
+        documentRows.map((row) => docRowToUidDocument(row as Database['public']['Tables']['documents']['Row']))
+      )
+    : [];
   const canUpload = await canUploadDocuments(id);
   const events = await getEventsForProperty(id);
 

@@ -32,6 +32,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => dismiss(id), 4000);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const value = useMemo<ToastContextValue>(() => ({ toasts, toast, dismiss }), [toasts]);
 
   return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>;

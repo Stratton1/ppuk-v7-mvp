@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import { getServerUser } from '@/lib/auth/server-user';
 import { flagRowToIssue, mapSeverity, type IssueCategory, type IssueSeverity, type IssueStatus } from '@/lib/issues/types';
 import type { ActionResult } from '@/types/forms';
@@ -95,7 +95,7 @@ export async function createIssueAction(formData: FormData): Promise<ActionResul
 
     const { propertyId, title, category, severity, description, dueDate } = parsed.data;
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const { data: canEdit } = await supabase.rpc('can_edit_property', { property_id: propertyId });
 
     if (!canEdit && !user.isAdmin) {
@@ -161,7 +161,7 @@ export async function updateIssueAction(formData: FormData): Promise<ActionResul
 
     const { issueId, title, category, severity, description, dueDate } = parsed.data;
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing, error: fetchError } = await (supabase as any)
       .from('property_flags')
@@ -241,7 +241,7 @@ export async function changeIssueStatusAction(formData: FormData): Promise<Actio
     }
 
     const { issueId, status } = parsed.data;
-    const supabase = await createClient();
+    const supabase = await createActionClient();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing, error: fetchError } = await (supabase as any)
@@ -310,7 +310,7 @@ export async function deleteIssueAction(issueId: string): Promise<ActionResult> 
     const user = await getServerUser();
     if (!user) return { success: false, error: 'Not authenticated' };
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing, error: fetchError } = await (supabase as any)
       .from('property_flags')
@@ -370,7 +370,7 @@ export async function addIssueCommentAction(formData: FormData): Promise<ActionR
     }
 
     const { issueId, comment } = parsed.data;
-    const supabase = await createClient();
+    const supabase = await createActionClient();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing, error: fetchError } = await (supabase as any)

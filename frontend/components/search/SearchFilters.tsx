@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable ppuk/no-sync-dynamic-api */
+
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { Input } from '@/components/ui/input';

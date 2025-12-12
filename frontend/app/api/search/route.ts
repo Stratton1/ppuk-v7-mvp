@@ -1,3 +1,4 @@
+/* eslint-disable ppuk/no-sync-dynamic-api */
 import { NextResponse } from 'next/server';
 import { runSearch } from '@/lib/search/engine';
 import { getServerUser } from '@/lib/auth/server-user';

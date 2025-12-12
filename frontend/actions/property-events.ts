@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from 'next/cache';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import type { ActionResult } from '@/types/forms';
 
 interface CreateEventInput {
@@ -14,7 +14,7 @@ interface CreateEventInput {
 export async function createPropertyEventAction(
   input: CreateEventInput
 ): Promise<ActionResult & { eventId?: string }> {
-  const supabase = createServerClient();
+  const supabase = createActionClient();
 
   const {
     data: { user },

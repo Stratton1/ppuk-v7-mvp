@@ -3,6 +3,7 @@
  * Purpose: Audit log viewer for admins
  */
 
+import { use } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { AppSection } from '@/components/app/AppSection';
 import { Card, CardContent } from '@/components/ui/card';
@@ -31,7 +32,7 @@ interface AuditPageProps {
 
 export default async function AdminAuditPage({ searchParams }: AuditPageProps) {
   const supabase = await createClient();
-  const resolvedParams = await searchParams;
+  const resolvedParams = use(searchParams);
   const page = parseInt(resolvedParams.page || '1', 10);
   const limit = 100;
   const offset = (page - 1) * limit;

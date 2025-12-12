@@ -1,16 +1,16 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { AppSection } from '@/components/app/AppSection';
 import { TimelineList } from '@/components/events/TimelineList';
 import { getEventsForProperty } from '@/actions/events';
-import type { Database } from '@/types/supabase';
 
 interface PropertyHistoryPageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function PropertyHistoryPage({ params }: PropertyHistoryPageProps) {
-  const { id } = await params;
+  const { id } = use(params);
   const supabase = createServerClient();
 
   const { data: property, error: propertyError } = await supabase
@@ -22,8 +22,6 @@ export default async function PropertyHistoryPage({ params }: PropertyHistoryPag
   if (propertyError || !property) {
     notFound();
   }
-
-  const propertyTyped = property as Database['public']['Tables']['properties']['Row'];
 
   const events = await getEventsForProperty(id);
 

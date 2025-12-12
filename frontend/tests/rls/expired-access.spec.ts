@@ -67,7 +67,7 @@ if (!url || !serviceKey || !anonKey) {
 
   describe('Expired Access', () => {
     it('viewer cannot access property after expires_at', async () => {
-      const { data, error } = await viewer.client
+      const { data } = await viewer.client
         .from('properties')
         .select('id')
         .eq('id', property.id)
@@ -78,7 +78,7 @@ if (!url || !serviceKey || !anonKey) {
     });
 
     it('editor cannot access property after expires_at', async () => {
-      const { data, error } = await editor.client
+      const { data } = await editor.client
         .from('properties')
         .select('id')
         .eq('id', property.id)

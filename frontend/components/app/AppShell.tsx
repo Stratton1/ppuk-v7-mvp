@@ -5,7 +5,7 @@ import { AppAvatar } from '@/components/app/AppAvatar';
 import { Button } from '@/components/ui/button';
 import { Toaster, ToastProvider } from '@/components/ui/use-toast';
 import { getServerUser } from '@/lib/auth/server-user';
-import { canSeeAdminPanel, canViewDocumentsUI, canViewMediaUI, type DashboardRole } from '@/lib/roles/domain';
+import { canViewDocumentsUI, canViewMediaUI, type DashboardRole } from '@/lib/roles/domain';
 import type { IconName } from '@/components/ui/icon';
 import { GlobalSearchBar } from '@/components/search/GlobalSearchBar';
 import { AppShellSidebar, type AppShellNavItem } from './AppShellSidebar';

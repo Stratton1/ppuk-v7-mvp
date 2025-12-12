@@ -407,6 +407,10 @@
   .interactive:active {
     @apply scale-[0.98];
   }
+
+  .hero-title-chip {
+    animation: hero-entrance var(--duration-slow) var(--ease-out) forwards;
+  }
 }
 
 @keyframes fade-in {
@@ -448,6 +452,21 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes hero-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

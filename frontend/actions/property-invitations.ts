@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from 'next/cache';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import type { ActionResult } from '@/types/forms';
 import type { Database } from '@/types/supabase';
@@ -29,7 +29,7 @@ export async function sendPropertyInvitationAction({
   }
 
   const input = parsed.data;
-  const supabase = createServerClient();
+  const supabase = createActionClient();
 
   const {
     data: { user },

@@ -8,10 +8,18 @@ export function HeroSection() {
   return (
     <Section className="pb-6 pt-14 sm:pt-20" dataTestId="public-hero">
       <Container className="grid items-center gap-10 lg:grid-cols-[1.1fr,0.9fr]" dataTestId="public-hero-container">
-        <div className="space-y-6">
-          <Badge variant="secondary" className="w-fit bg-accent-soft text-accent-foreground">
-            The Digital Passport for UK Properties
-          </Badge>
+        <div className="space-y-6 text-center lg:text-left">
+          <div className="flex justify-center lg:justify-start">
+            <div className="hero-title-chip inline-flex items-center gap-3 rounded-full border border-primary/30 bg-gradient-to-r from-primary/10 via-accent/15 to-success/10 px-6 py-3 text-lg font-semibold text-primary shadow-lg shadow-primary/15">
+              <span
+                className="h-3 w-3 rounded-full bg-primary shadow-[0_0_0_6px_rgba(59,130,246,0.18)]"
+                aria-hidden="true"
+              />
+              <span className="text-balance text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
+                The Digital Passport for UK Properties
+              </span>
+            </div>
+          </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-bold tracking-tight text-primary md:text-5xl lg:text-6xl">
               Make property transactions faster, safer, and transparent.

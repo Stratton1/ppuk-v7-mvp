@@ -7,7 +7,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
 const STATUSES = ['owner', 'buyer', 'tenant'] as const;
@@ -25,7 +25,7 @@ export type GrantRoleResult = { success: true } | { success: false; error: strin
 
 export async function grantPropertyRole(propertyId: string, formData: FormData): Promise<GrantRoleResult> {
   try {
-    const supabase = createServerClient();
+  const supabase = createActionClient();
 
     const {
       data: { user },

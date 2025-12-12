@@ -137,12 +137,10 @@ function StatCard({
   title,
   value,
   description,
-  variant = 'default',
 }: {
   title: string;
   value: number;
   description: string;
-  variant?: 'default' | 'warning';
 }) {
   return (
     <Card>

@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { getServerUser } from '@/lib/auth/server-user';
@@ -18,7 +19,7 @@ type PropertyIssuesPageProps = {
 };
 
 export default async function PropertyIssuesPage({ params }: PropertyIssuesPageProps) {
-  const { id } = await params;
+  const { id } = use(params);
   const supabase = await createServerClient();
   const user = await getServerUser();
 

@@ -4,7 +4,6 @@
  */
 
 import { describe, expect, it, beforeAll } from 'vitest';
-import { createClient } from '@supabase/supabase-js';
 import {
   createAdminClient,
   createTestUser,

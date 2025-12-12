@@ -78,7 +78,7 @@ export function PropertyFlags({ propertyId }: PropertyFlagsProps) {
 
   // Update flag mutation
   const updateMutation = useMutation({
-    mutationFn: async ({ flagId, formData }: { flagId: string; formData: FormData }) => {
+    mutationFn: async ({ formData }: { flagId: string; formData: FormData }) => {
       return updatePropertyFlag(formData);
     },
     onSuccess: () => {

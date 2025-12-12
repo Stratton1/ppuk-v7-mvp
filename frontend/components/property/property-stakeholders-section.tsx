@@ -34,19 +34,26 @@ export async function PropertyStakeholdersSection({ propertyId }: PropertyStakeh
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
+  type StakeholderWithUser = Database['public']['Tables']['property_stakeholders']['Row'] & {
+    users: { full_name: string | null; email: string | null } | null;
+  };
+
   const entries: StakeholderRowShape[] =
-    stakeholders?.map((s) => ({
-      user_id: s.user_id,
-      role: s.role,
-      status: s.status,
-      permission: s.permission,
-      full_name: (s as any).users?.full_name ?? null,
-      email: (s as any).users?.email ?? null,
-      invitation_status: 'accepted',
-      invitation_id: null,
-      kind: 'stakeholder',
-      id: s.user_id,
-    })) ?? [];
+    stakeholders?.map((s) => {
+      const casted = s as StakeholderWithUser;
+      return {
+        user_id: casted.user_id,
+        role: casted.role,
+        status: casted.status,
+        permission: casted.permission,
+        full_name: casted.users?.full_name ?? null,
+        email: casted.users?.email ?? null,
+        invitation_status: 'accepted',
+        invitation_id: null,
+        kind: 'stakeholder',
+        id: casted.user_id,
+      };
+    }) ?? [];
 
   const canInviteStakeholders = canInvite(user, propertyId);
 

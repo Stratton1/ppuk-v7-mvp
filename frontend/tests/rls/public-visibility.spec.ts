@@ -63,7 +63,7 @@ if (!url || !serviceKey || !anonKey) {
     });
 
     it('anonymous user cannot view private property', async () => {
-      const { data, error } = await anonClient
+      const { data } = await anonClient
         .from('properties')
         .select('id')
         .eq('id', privateProperty.id)
@@ -90,7 +90,7 @@ if (!url || !serviceKey || !anonKey) {
 
       if (media) {
         // Anonymous user should be able to see public property media
-        const { data: publicMedia, error } = await anonClient
+        const { error } = await anonClient
           .from('media')
           .select('id')
           .eq('property_id', publicProperty.id)
@@ -119,7 +119,7 @@ if (!url || !serviceKey || !anonKey) {
 
       if (doc) {
         // Documents should never be publicly accessible
-        const { data, error } = await anonClient
+        const { data } = await anonClient
           .from('documents')
           .select('id')
           .eq('id', doc.id)

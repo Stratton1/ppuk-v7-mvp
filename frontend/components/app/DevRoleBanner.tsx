@@ -13,6 +13,7 @@ export function DevRoleBanner({ userId, role, propertyCount }: DevRoleBannerProp
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisible(true);
     }
   }, []);

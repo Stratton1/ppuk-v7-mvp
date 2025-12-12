@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from 'next/cache';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import type { ActionResult } from '@/types/forms';
 import type { PrimaryRole } from '@/types/auth';
 
@@ -15,7 +15,7 @@ interface UpdateProfileInput {
 export async function updateProfileAction(
   input: UpdateProfileInput
 ): Promise<ActionResult> {
-  const supabase = createServerClient();
+  const supabase = createActionClient();
 
   const {
     data: { user },

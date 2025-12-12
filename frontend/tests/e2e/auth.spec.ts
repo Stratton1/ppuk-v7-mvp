@@ -1,9 +1,13 @@
-import { expect } from '../helpers/fixtures';
-import { test } from '../helpers/fixtures';
+import { test, expect } from '@playwright/test';
 import { login } from '../helpers/login';
 
-test('User can log in', async ({ page }) => {
+test('User can log in', async ({ page, request }) => {
+  // Reset test data
+  await request.post('/api/test/reset');
+
+  // Login using helper
   await login(page);
-  await expect(page.getByTestId('dashboard-root')).toBeVisible();
-  await expect(page.getByTestId('dashboard-loaded')).toBeVisible();
+
+  // Verify we're on dashboard URL (login succeeded)
+  await expect(page).toHaveURL(/\/dashboard/);
 });

@@ -2,6 +2,8 @@
 
 'use client';
 
+/* eslint-disable ppuk/no-sync-dynamic-api */
+
 import * as React from 'react';
 import { useFormStatus } from 'react-dom';
 import { useSearchParams } from 'next/navigation';

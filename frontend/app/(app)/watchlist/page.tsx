@@ -3,6 +3,7 @@
  * Purpose: User watchlist page showing saved properties
  */
 
+import { use } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getServerUser } from '@/lib/auth/server-user';
@@ -27,8 +28,8 @@ type WatchlistEntry = WatchlistRow & {
   alert_on_changes?: boolean | null;
 };
 
-export default async function WatchlistPage({ params }: { params: Promise<{}> }) {
-  const resolved = await params;
+export default async function WatchlistPage({ params }: { params: Promise<Record<string, never>> }) {
+  const resolved = use(params);
   void resolved;
 
   const user = await getServerUser();

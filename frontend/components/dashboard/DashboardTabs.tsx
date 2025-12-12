@@ -50,7 +50,7 @@ export type DashboardTabsProps = {
 };
 
 export function DashboardTabs({
-  role,
+  role: _role,
   config,
   stats,
   properties,
@@ -62,6 +62,7 @@ export function DashboardTabs({
   timeline,
   activity,
 }: DashboardTabsProps) {
+  void _role;
   const invitationsCount = invitations?.length ?? 0;
   const issuesCount = issues?.length ?? 0;
   const openIssues = (issues || []).filter((issue) => issue.status === 'open' || issue.status === 'in_progress');

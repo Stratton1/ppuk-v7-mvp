@@ -4,9 +4,8 @@ import { Buffer } from 'buffer';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getServerUser } from '@/lib/auth/server-user';
-import { createClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import type { ActionResult } from '@/types/forms';
-import type { Database } from '@/types/supabase';
 
 const documentCategories = [
   'ownership',
@@ -57,7 +56,7 @@ export async function createDocumentAction(formData: FormData): Promise<ActionRe
     if (file.size === 0) return { success: false, error: 'Empty file' };
     if (!mimeWhitelist.includes(file.type)) return { success: false, error: 'File type not allowed' };
 
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     const { data: canEdit } = await supabase.rpc('can_edit_property', { property_id: parsed.data.propertyId });
     if (!canEdit && !user.isAdmin) {
       return { success: false, error: 'No permission to upload documents' };
@@ -109,7 +108,7 @@ export async function deleteDocumentAction(documentId: string, propertyId: strin
   try {
     const user = await getServerUser();
     if (!user) return { success: false, error: 'Not authenticated' };
-    const supabase = await createClient();
+    const supabase = await createActionClient();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: doc, error } = await (supabase as any)
@@ -156,7 +155,7 @@ export async function updateDocumentCategoryAction(documentId: string, category:
     if (!documentCategories.includes(category as typeof documentCategories[number])) {
       return { success: false, error: 'Invalid category' };
     }
-    const supabase = await createClient();
+    const supabase = await createActionClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: doc, error } = await (supabase as any)
       .from('documents')

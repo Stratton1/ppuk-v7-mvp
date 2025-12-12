@@ -158,7 +158,7 @@ async function createSeedAuthUsers(
       id: user.id,
     };
 
-    const created = await supabase.auth.admin.createUser(createPayload as any);
+    const created = await supabase.auth.admin.createUser(createPayload);
     if (created.error) {
       const list = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
       const existing = list.data?.users.find((u) => u.email === user.email);

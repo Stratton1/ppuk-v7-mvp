@@ -3,6 +3,7 @@
  * Purpose: User management page for admins
  */
 
+import { use } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { AppSection } from '@/components/app/AppSection';
 import { Card, CardContent } from '@/components/ui/card';
@@ -26,7 +27,7 @@ export default async function AdminUsersPage({
   searchParams: Promise<{ page?: string }>;
 }) {
   const supabase = await createClient();
-  const resolvedParams = await searchParams;
+  const resolvedParams = use(searchParams);
   const page = parseInt(resolvedParams.page || '1', 10);
   const limit = 50;
   const offset = (page - 1) * limit;

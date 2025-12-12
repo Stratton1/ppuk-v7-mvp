@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import type { Database } from '@/types/supabase';
 import { createClient as createServerClient } from '@/lib/supabase/server';
@@ -29,7 +30,7 @@ async function getSignedUrl(
 }
 
 export default async function PublicPassportPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+  const { slug } = use(params);
   const supabase = createServerClient();
 
   const { data: property, error: propertyError } = await supabase

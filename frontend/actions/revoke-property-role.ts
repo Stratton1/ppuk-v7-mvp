@@ -6,7 +6,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
 export type RevokeRoleResult = { success: true } | { success: false; error: string };
@@ -22,7 +22,7 @@ export async function revokePropertyRole(
       return { success: false, error: 'Missing status or permission to revoke' };
     }
 
-    const supabase = createServerClient();
+  const supabase = createActionClient();
     const {
       data: { user },
       error: authError,

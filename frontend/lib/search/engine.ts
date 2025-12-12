@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/supabase';
 import { propertyRowToSearchResult, type SearchQuery, type SearchResult } from './types';
 
 export async function runSearch(query: SearchQuery): Promise<SearchResult[]> {
@@ -11,26 +12,24 @@ export async function runSearch(query: SearchQuery): Promise<SearchResult[]> {
   const filters = query.filters ?? {};
   const text = query.text?.trim() ?? '';
 
-  let rows: any[] = [];
+  type PropertyRow = Database['public']['Tables']['properties']['Row'];
+  let rows: PropertyRow[] = [];
   try {
     if (text.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data } = await (supabase as any)
-        .rpc('search_properties', {
+      const { data } =
+        (await supabase.rpc('search_properties', {
           query_text: text,
           result_limit: pageSize,
           result_offset: offset,
-        })
-        .catch(() => ({ data: [] }));
-      rows = data || [];
+        })) ?? {};
+      rows = (data as PropertyRow[] | null) || [];
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from('properties')
         .select('*')
         .order('updated_at', { ascending: false })
         .range(offset, offset + pageSize - 1);
-      rows = data || [];
+      rows = (data as PropertyRow[] | null) || [];
     }
   } catch (error) {
     console.error('runSearch error', error);

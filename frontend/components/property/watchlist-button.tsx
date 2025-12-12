@@ -11,7 +11,6 @@ import { createClient } from '@/lib/supabase/client';
 import { addToWatchlist, removeFromWatchlist } from '@/actions/watchlist';
 import { Button } from '@/components/ui/button';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
-import type { Database } from '@/types/supabase';
 
 interface WatchlistButtonProps {
   propertyId: string;
@@ -48,6 +47,7 @@ export function WatchlistButton({
   });
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsInWatchlist(!!watchlistEntry);
   }, [watchlistEntry]);
 

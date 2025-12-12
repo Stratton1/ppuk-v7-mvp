@@ -20,7 +20,7 @@ export default function TestDataControls() {
       } else {
         setStatus({ message: JSON.stringify(json), ok: true });
       }
-    } catch (error) {
+    } catch {
       setStatus({ message: 'Error running action', ok: false });
     } finally {
       setLoading(null);

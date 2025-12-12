@@ -3,6 +3,7 @@
  * Purpose: Property comparison page for side-by-side property comparison
  */
 
+import { use } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getServerUser } from '@/lib/auth/server-user';
@@ -18,19 +19,20 @@ import type { Database } from '@/types/supabase';
 type PropertyRow = Database['public']['Tables']['properties']['Row'];
 
 interface ComparePageProps {
-  searchParams: {
+  searchParams: Promise<{
     ids?: string;
-  };
+  }>;
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
+  const resolvedSearchParams = use(searchParams);
   const user = await getServerUser();
   if (!user) {
     redirect('/auth/login');
   }
 
   const supabase = await createClient();
-  const propertyIds = searchParams.ids?.split(',').filter(Boolean) || [];
+  const propertyIds = resolvedSearchParams.ids?.split(',').filter(Boolean) || [];
 
   if (propertyIds.length === 0) {
     return (
@@ -135,12 +137,6 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   }
 
   // Fetch featured media
-  const signedUrlPaths = properties.map((p) => ({
-    propertyId: p.id,
-    bucket: 'property-photos',
-    path: '', // Will be filled from media query
-  }));
-
   const { data: mediaRows } = await supabase
     .from('media')
     .select('property_id, storage_path, storage_bucket')

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from 'next/cache';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createActionClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
 export async function setPublicVisibilityAction(formData: FormData): Promise<void> {
@@ -12,7 +12,7 @@ export async function setPublicVisibilityAction(formData: FormData): Promise<voi
     throw new Error('propertyId is required');
   }
 
-  const supabase = createServerClient();
+  const supabase = createActionClient();
 
   const visibilityArgs: Database['public']['Functions']['set_public_visibility']['Args'] = {
     property_id: propertyId,

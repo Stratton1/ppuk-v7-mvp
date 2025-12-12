@@ -29,6 +29,7 @@ export function GlobalSearchBar() {
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (!query) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResults([]);
       setOpen(false);
       return;

@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, use } from 'react';
 import { AppPageHeader } from '@/components/app/AppPageHeader';
 import { AppSection } from '@/components/app/AppSection';
 import { SearchFilters } from '@/components/search/SearchFilters';
@@ -11,13 +11,14 @@ import { getServerUser } from '@/lib/auth/server-user';
 import type { DashboardRole } from '@/lib/roles/domain';
 
 interface SearchPageProps {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const text = typeof searchParams.q === 'string' ? searchParams.q : '';
-  const page = typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;
-  const filters = buildFilters(searchParams);
+  const resolvedSearchParams = use(searchParams);
+  const text = typeof resolvedSearchParams.q === 'string' ? resolvedSearchParams.q : '';
+  const page = typeof resolvedSearchParams.page === 'string' ? Number(resolvedSearchParams.page) : 1;
+  const filters = buildFilters(resolvedSearchParams);
   const user = await getServerUser();
   const role: DashboardRole = user?.isAdmin
     ? 'admin'
