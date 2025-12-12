@@ -37,7 +37,7 @@ export default defineConfig({
         video: 'on',
         trace: 'on',
         launchOptions: {
-          slowMo: 250,
+          slowMo: 300,
         },
       },
     },
