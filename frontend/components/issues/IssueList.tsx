@@ -8,7 +8,10 @@ type IssueListProps = {
 export function IssueList({ issues }: IssueListProps) {
   if (!issues || issues.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground" data-testid="issue-empty-state">
+      <div
+        className="rounded-xl border border-dashed border-border/60 bg-muted/30 p-8 text-center text-sm text-muted-foreground"
+        data-testid="issue-empty-state"
+      >
         No issues found.
       </div>
     );

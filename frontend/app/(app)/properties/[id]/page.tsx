@@ -105,18 +105,22 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
         id="related-properties"
         title="Related properties"
         description="Other recently updated properties."
-        data-testid="related-properties-section"
+        dataTestId="related-properties-section"
       >
         {related.length === 0 ? (
           <p className="text-sm text-muted-foreground" data-testid="related-properties-empty">
             No related properties available.
           </p>
         ) : (
-          <div className="space-y-3" data-testid="related-properties">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-testid="related-properties">
             {related.map((item) => (
-              <div key={item.id} className="rounded-lg border bg-card p-3" data-testid={`related-properties-${item.id}`}>
-                <p className="text-sm font-medium">{item.address}</p>
-                <p className="text-xs text-muted-foreground">
+              <div
+                key={item.id}
+                className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm"
+                data-testid={`related-properties-${item.id}`}
+              >
+                <p className="font-medium leading-snug text-foreground">{item.address}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
                   Updated {new Date(item.updatedAt).toLocaleDateString('en-GB')}
                 </p>
               </div>

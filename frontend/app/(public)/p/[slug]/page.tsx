@@ -88,20 +88,20 @@ export default async function PublicPassportPage({ params }: { params: Promise<{
   ).then((docs) => docs.filter((d): d is { name: string; url: string } => !!d));
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-4 py-6" data-testid="public-passport-root">
+    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 md:py-12" data-testid="public-passport-root">
       <div data-testid="public-passport-hero">
         <PublicHero address={publicProperty.display_address} status={publicProperty.status} imageUrl={featuredUrl} />
       </div>
       <div data-testid="public-passport-metadata">
         <PublicMetadata uprn={publicProperty.uprn} status={publicProperty.status} />
       </div>
-      <div className="space-y-3" data-testid="public-passport-gallery">
-        <h2 className="text-xl font-semibold text-primary">Gallery</h2>
+      <section className="space-y-4" data-testid="public-passport-gallery">
+        <h2 className="text-xl font-semibold text-foreground">Gallery</h2>
         <PublicGallery images={gallerySigned} />
-      </div>
-      <div data-testid="public-passport-docs">
+      </section>
+      <section data-testid="public-passport-docs">
         <PublicDocuments documents={documents} />
-      </div>
+      </section>
     </div>
   );
 }

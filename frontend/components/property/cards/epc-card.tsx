@@ -12,10 +12,10 @@ type EpcCardProps = {
 export function EpcCard({ data, loading, error }: EpcCardProps) {
   if (loading) {
     return (
-      <Card data-testid="keyfacts-epc">
+      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-epc">
         <CardHeader>
           <CardTitle className="text-base">EPC</CardTitle>
-          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-5 w-24" />
         </CardHeader>
         <CardContent className="space-y-3">
           <Skeleton className="h-4 w-3/4" />
@@ -28,7 +28,7 @@ export function EpcCard({ data, loading, error }: EpcCardProps) {
 
   if (error) {
     return (
-      <Card data-testid="keyfacts-epc">
+      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-epc">
         <CardHeader>
           <CardTitle className="text-base">EPC</CardTitle>
           <Badge variant="outline" className="border-destructive/60 text-destructive">
@@ -42,7 +42,7 @@ export function EpcCard({ data, loading, error }: EpcCardProps) {
 
   if (!data) {
     return (
-      <Card data-testid="keyfacts-epc">
+      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-epc">
         <CardHeader>
           <CardTitle className="text-base">EPC</CardTitle>
           <Badge variant="outline">Not connected</Badge>
@@ -55,23 +55,21 @@ export function EpcCard({ data, loading, error }: EpcCardProps) {
   }
 
   return (
-    <Card data-testid="keyfacts-epc">
+    <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-epc">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="text-base">EPC</CardTitle>
         <Badge variant="outline">{data.rating}</Badge>
       </CardHeader>
-      <CardContent className="space-y-2 text-sm">
-        <div className="flex items-center justify-between">
+      <CardContent className="space-y-3 text-sm">
+        <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
           <span className="text-muted-foreground">Certificate</span>
-          <span className="font-medium">{data.certificateNumber}</span>
+          <span className="font-medium text-foreground">{data.certificateNumber}</span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
           <span className="text-muted-foreground">Valid until</span>
-          <span className="font-medium">{data.validUntil ?? '—'}</span>
+          <span className="font-medium text-foreground">{data.validUntil ?? '—'}</span>
         </div>
-        <div className="text-muted-foreground">
-          <p>{data.summary}</p>
-        </div>
+        <p className="text-muted-foreground">{data.summary}</p>
       </CardContent>
     </Card>
   );

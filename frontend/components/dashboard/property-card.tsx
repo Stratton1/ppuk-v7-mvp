@@ -26,13 +26,16 @@ const statusStyles: Record<string, string> = {
 };
 
 const CompletionBar = ({ value }: { value: number }) => (
-  <div className="space-y-1">
+  <div className="space-y-1.5">
     <div className="flex items-center justify-between text-xs text-muted-foreground">
       <span>Completion</span>
-      <span>{value}%</span>
+      <span className="font-medium">{value}%</span>
     </div>
     <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-      <div className="h-full rounded-full bg-primary" style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
+      <div
+        className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+        style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+      />
     </div>
   </div>
 );
@@ -41,37 +44,37 @@ export const DashboardPropertyCard = ({ property, completion, imageUrl, priority
   const statusClass = statusStyles[property.status ?? ''] ?? 'bg-slate-200 text-slate-800';
 
   return (
-    <Card className="overflow-hidden transition hover:shadow-md">
-      <div className="relative h-40 w-full bg-muted">
+    <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-glow-sm">
+      <div className="relative h-40 w-full overflow-hidden bg-muted">
         <Image
           src={imageUrl || '/placeholder.svg'}
           alt={property.display_address ?? 'Property'}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
           loading={priority ? 'eager' : 'lazy'}
           priority={priority}
         />
-      </div>
-      <CardHeader>
-        <CardTitle className="text-base">{property.display_address}</CardTitle>
-        <div className="flex items-center gap-2">
-          <Badge className={cn(statusClass, 'capitalize')}>{property.status}</Badge>
+        <div className="absolute right-3 top-3">
+          <Badge className={cn(statusClass, 'capitalize shadow-sm')}>{property.status}</Badge>
         </div>
+      </div>
+      <CardHeader className="pb-3">
+        <CardTitle className="line-clamp-2 text-base leading-snug">{property.display_address}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 pt-0">
         <CompletionBar value={completion} />
       </CardContent>
-      <CardFooter className="grid gap-2 md:grid-cols-2">
-        <Button asChild variant="outline" size="sm">
+      <CardFooter className="grid grid-cols-2 gap-2 border-t border-border/40 bg-muted/30 px-4 py-3">
+        <Button asChild variant="outline" size="sm" className="w-full">
           <Link href={`/properties/${property.id}`}>View Passport</Link>
         </Button>
-        <Button asChild variant="ghost" size="sm" data-testid="property-edit-button">
+        <Button asChild variant="ghost" size="sm" className="w-full" data-testid="property-edit-button">
           <Link href={`/properties/${property.id}/edit`}>Edit</Link>
         </Button>
-        <Button asChild variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-foreground">
           <Link href={`/properties/${property.id}/documents/upload`}>Upload Doc</Link>
         </Button>
-        <Button asChild variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-foreground">
           <Link href={`/properties/${property.id}/media/upload`}>Upload Photo</Link>
         </Button>
       </CardFooter>

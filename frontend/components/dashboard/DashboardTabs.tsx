@@ -351,9 +351,9 @@ export function DashboardTabs({
 
 function StatPill({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border bg-muted/40 px-3 py-2 text-center">
-      <div className="text-xs uppercase text-muted-foreground">{label}</div>
-      <div className="text-xl font-semibold">{value}</div>
+    <div className="rounded-xl border border-border/60 bg-card/80 px-4 py-3 text-center shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm">
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="mt-1 text-2xl font-semibold text-primary">{value}</div>
     </div>
   );
 }
