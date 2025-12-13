@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -130,16 +131,28 @@ export function ProfileForm({ action, initialData }: ProfileFormProps) {
           </div>
 
           {state?.error && (
-            <p className="text-sm text-destructive">{state.error}</p>
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+              {state.error}
+            </div>
           )}
 
           {saved && (
-            <p className="text-sm text-green-600">Profile saved successfully</p>
+            <div className="flex items-center gap-2 rounded-lg border border-success/50 bg-success/10 p-3 text-sm text-success">
+              <CheckCircle className="h-4 w-4" />
+              Profile saved successfully
+            </div>
           )}
 
           <div className="flex justify-end">
             <Button type="submit" disabled={isPending} data-testid="profile-submit">
-              {isPending ? 'Saving...' : 'Save changes'}
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save changes'
+              )}
             </Button>
           </div>
         </form>

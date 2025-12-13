@@ -32,7 +32,7 @@ export function AppAvatar({ name, email, imageUrl, size = 'md', className }: App
   return (
     <div
       className={cn(
-        'inline-flex items-center justify-center rounded-full bg-gradient-to-br from-primary/80 via-accent/80 to-primary text-background shadow-glow-sm ring-2 ring-border/60',
+        'inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-border',
         sizeClass,
         className
       )}

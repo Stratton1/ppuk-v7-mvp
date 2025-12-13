@@ -141,8 +141,8 @@ export function UploadDocumentDialog({ propertyId }: UploadDocumentDialogProps) 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Success Message */}
           {success && (
-            <div className="rounded-md bg-green-50 p-4 text-sm text-green-800 dark:bg-green-900/20 dark:text-green-300">
-              ✓ Document uploaded successfully! Refreshing...
+            <div className="rounded-xl border border-success/50 bg-success/10 p-4 text-sm text-success">
+              Document uploaded successfully. Refreshing...
             </div>
           )}
 

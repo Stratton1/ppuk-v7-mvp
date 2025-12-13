@@ -118,7 +118,7 @@ export function DashboardTabs({
       </TabsList>
 
       <TabsContent value="overview" data-testid="tab-panel-overview" className="space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="stagger-children grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <AppKPI
             label="Owned Properties"
             value={stats?.ownedProperties ?? 0}
@@ -149,7 +149,7 @@ export function DashboardTabs({
             {properties.length === 0 ? (
               <p className="text-sm text-muted-foreground">No properties yet.</p>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="stagger-children grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {properties.slice(0, 6).map((prop, index) => (
                   <DashboardPropertyCard
                     key={prop.id}
@@ -291,10 +291,10 @@ export function DashboardTabs({
                 Monitor issues across your properties. Open items are shown below with severity breakdown.
               </p>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <StatPill label="Critical" value={severityCounts.critical ?? 0} />
-                <StatPill label="High" value={severityCounts.high ?? 0} />
-                <StatPill label="Medium" value={severityCounts.medium ?? 0} />
-                <StatPill label="Low" value={severityCounts.low ?? 0} />
+                <StatPill label="Critical" value={severityCounts.critical ?? 0} variant="critical" />
+                <StatPill label="High" value={severityCounts.high ?? 0} variant="high" />
+                <StatPill label="Medium" value={severityCounts.medium ?? 0} variant="medium" />
+                <StatPill label="Low" value={severityCounts.low ?? 0} variant="low" />
               </div>
               <Button asChild size="sm" data-testid="action-open-issues">
                 <Link href="/properties">Go to properties</Link>
@@ -349,11 +349,33 @@ export function DashboardTabs({
   );
 }
 
-function StatPill({ label, value }: { label: string; value: number }) {
+type StatPillVariant = 'default' | 'critical' | 'high' | 'medium' | 'low';
+
+const statPillColors: Record<StatPillVariant, string> = {
+  default: 'text-foreground',
+  critical: 'text-destructive',
+  high: 'text-destructive/80',
+  medium: 'text-warning',
+  low: 'text-muted-foreground',
+};
+
+function StatPill({
+  label,
+  value,
+  variant = 'default',
+}: {
+  label: string;
+  value: number;
+  variant?: StatPillVariant;
+}) {
+  const colorClass = statPillColors[variant] ?? statPillColors.default;
+
   return (
-    <div className="rounded-xl border border-border/60 bg-card/80 px-4 py-3 text-center shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm">
-      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="mt-1 text-2xl font-semibold text-primary">{value}</div>
+    <div className="rounded-lg border border-border bg-card px-4 py-3 text-center transition-colors hover:bg-muted/50">
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
+      <div className={`mt-1 text-xl font-semibold tabular-nums ${colorClass}`}>{value}</div>
     </div>
   );
 }

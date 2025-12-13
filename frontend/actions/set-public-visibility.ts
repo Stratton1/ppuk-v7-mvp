@@ -12,7 +12,7 @@ export async function setPublicVisibilityAction(formData: FormData): Promise<voi
     throw new Error('propertyId is required');
   }
 
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
 
   const visibilityArgs: Database['public']['Functions']['set_public_visibility']['Args'] = {
     property_id: propertyId,

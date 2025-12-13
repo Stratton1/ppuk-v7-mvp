@@ -5,29 +5,52 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import {
+  Home,
+  Pencil,
+  RefreshCw,
+  FileText,
+  Image as ImageIcon,
+  MessageSquare,
+  CheckSquare,
+  Flag,
+  CheckCircle,
+  type LucideIcon,
+} from 'lucide-react';
 import { Database } from '@/types/supabase';
 import { Card, CardContent } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
+import { cn } from '@/lib/utils';
 
 interface DashboardRecentActivityProps {
   userId: string;
 }
 
+type EventConfigItem = {
+  icon: LucideIcon;
+  label: string;
+  color: string;
+};
+
 /**
- * Event type icons and labels
+ * Event type icons and labels - using Lucide icons and semantic colors
  */
-const EVENT_CONFIG: Record<
-  string,
-  { icon: string; label: string; color: string }
-> = {
-  created: { icon: '🏠', label: 'Property Created', color: 'bg-blue-100 text-blue-800' },
-  updated: { icon: '✏️', label: 'Property Updated', color: 'bg-gray-100 text-gray-800' },
-  status_changed: { icon: '🔄', label: 'Status Changed', color: 'bg-yellow-100 text-yellow-800' },
-  document_uploaded: { icon: '📄', label: 'Document Uploaded', color: 'bg-green-100 text-green-800' },
-  media_uploaded: { icon: '🖼️', label: 'Media Uploaded', color: 'bg-purple-100 text-purple-800' },
-  note_added: { icon: '🗒️', label: 'Note Added', color: 'bg-indigo-100 text-indigo-800' },
-  task_created: { icon: '📌', label: 'Task Created', color: 'bg-orange-100 text-orange-800' },
-  flag_added: { icon: '🚩', label: 'Flag Added', color: 'bg-red-100 text-red-800' },
-  flag_resolved: { icon: '🕊️', label: 'Flag Resolved', color: 'bg-emerald-100 text-emerald-800' },
+const EVENT_CONFIG: Record<string, EventConfigItem> = {
+  created: { icon: Home, label: 'Property Created', color: 'text-primary bg-primary/10' },
+  updated: { icon: Pencil, label: 'Property Updated', color: 'text-muted-foreground bg-muted' },
+  status_changed: { icon: RefreshCw, label: 'Status Changed', color: 'text-warning bg-warning/10' },
+  document_uploaded: { icon: FileText, label: 'Document Uploaded', color: 'text-success bg-success/10' },
+  media_uploaded: { icon: ImageIcon, label: 'Media Uploaded', color: 'text-accent bg-accent/10' },
+  note_added: { icon: MessageSquare, label: 'Note Added', color: 'text-muted-foreground bg-muted' },
+  task_created: { icon: CheckSquare, label: 'Task Created', color: 'text-warning bg-warning/10' },
+  flag_added: { icon: Flag, label: 'Flag Added', color: 'text-destructive bg-destructive/10' },
+  flag_resolved: { icon: CheckCircle, label: 'Flag Resolved', color: 'text-success bg-success/10' },
+};
+
+const DEFAULT_EVENT_CONFIG: EventConfigItem = {
+  icon: RefreshCw,
+  label: 'Event',
+  color: 'text-muted-foreground bg-muted',
 };
 
 /**
@@ -107,11 +130,12 @@ export async function DashboardRecentActivity({ userId }: DashboardRecentActivit
 
   if (propertyIds.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-8 text-center text-sm text-muted-foreground">
-          No recent activity. Activity will appear here once you have properties.
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon={<RefreshCw className="h-5 w-5" />}
+        title="No recent activity"
+        description="Activity will appear here once you have properties."
+        variant="muted"
+      />
     );
   }
 
@@ -140,21 +164,23 @@ export async function DashboardRecentActivity({ userId }: DashboardRecentActivit
   if (error) {
     console.error('Error fetching recent activity:', error);
     return (
-      <Card>
-        <CardContent className="py-8 text-center text-sm text-destructive">
-          Unable to load recent activity. Please try again later.
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon={<RefreshCw className="h-5 w-5" />}
+        title="Unable to load activity"
+        description="Please try again later."
+        variant="error"
+      />
     );
   }
 
   if (!events || events.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-8 text-center text-sm text-muted-foreground">
-          No recent activity in the last 30 days.
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon={<RefreshCw className="h-5 w-5" />}
+        title="No recent activity"
+        description="No activity recorded in the last 30 days."
+        variant="muted"
+      />
     );
   }
 
@@ -180,13 +206,10 @@ export async function DashboardRecentActivity({ userId }: DashboardRecentActivit
   return (
     <Card>
       <CardContent className="p-0">
-        <div className="divide-y">
+        <div className="divide-y divide-border/60">
           {events.map((event) => {
-            const eventConfig = EVENT_CONFIG[event.event_type] || {
-              icon: '📋',
-              label: event.event_type,
-              color: 'bg-gray-100 text-gray-800',
-            };
+            const config = EVENT_CONFIG[event.event_type] || DEFAULT_EVENT_CONFIG;
+            const Icon = config.icon;
             const actor = event.actor_user_id ? actorsMap.get(event.actor_user_id) : null;
             const actorName = actor?.full_name ?? 'Unknown User';
             const property =
@@ -195,31 +218,39 @@ export async function DashboardRecentActivity({ userId }: DashboardRecentActivit
                 : null;
 
             return (
-              <div key={event.id} className="flex gap-4 p-4 hover:bg-muted/50 transition-colors">
+              <div
+                key={event.id}
+                className="flex gap-4 p-4 transition-colors duration-150 hover:bg-muted/30"
+              >
                 {/* Icon */}
                 <div className="flex-shrink-0">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-full ${eventConfig.color}`}>
-                    <span className="text-lg">{eventConfig.icon}</span>
+                  <div
+                    className={cn(
+                      'flex h-10 w-10 items-center justify-center rounded-full',
+                      config.color
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 space-y-1">
+                <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-medium">{eventConfig.label}</p>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground">{config.label}</p>
+                      <p className="text-xs text-muted-foreground truncate">
                         {getEventDetails(event.event_type, event.event_payload)}
                       </p>
                     </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    <span className="flex-shrink-0 text-xs text-muted-foreground">
                       {formatTimestamp(event.created_at)}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{property?.display_address || 'Unknown property'}</span>
-                    <span>•</span>
-                    <span>{actorName}</span>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
+                    <span className="truncate">{property?.display_address || 'Unknown property'}</span>
+                    <span>·</span>
+                    <span className="flex-shrink-0">{actorName}</span>
                   </div>
                 </div>
               </div>

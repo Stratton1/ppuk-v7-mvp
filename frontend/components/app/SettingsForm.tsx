@@ -6,12 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { updateProfileAction } from '@/actions/update-profile';
+import type { PrimaryRole } from '@/types/auth';
 
 type SettingsFormProps = {
   defaultName?: string | null;
   defaultOrganisation?: string | null;
   defaultEmail?: string | null;
-  defaultPrimaryRole?: string | null;
+  defaultPrimaryRole?: PrimaryRole | null;
 };
 
 const ROLE_OPTIONS = [
@@ -30,7 +31,7 @@ export function SettingsForm({
 }: SettingsFormProps) {
   const [fullName, setFullName] = useState(defaultName || '');
   const [organisation, setOrganisation] = useState(defaultOrganisation || '');
-  const [primaryRole, setPrimaryRole] = useState(defaultPrimaryRole || 'consumer');
+  const [primaryRole, setPrimaryRole] = useState<PrimaryRole>(defaultPrimaryRole || 'consumer');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +91,7 @@ export function SettingsForm({
             name="role"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             value={primaryRole}
-            onChange={(e) => setPrimaryRole(e.target.value)}
+            onChange={(e) => setPrimaryRole(e.target.value as PrimaryRole)}
           >
             {ROLE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

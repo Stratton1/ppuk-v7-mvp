@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { Loader2, CheckCircle, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,12 +28,19 @@ export function SecurityForm({ action }: SecurityFormProps) {
   }, [state]);
 
   return (
-    <Card>
+    <Card className="border-border">
       <CardHeader>
-        <CardTitle className="text-lg">Update password</CardTitle>
-        <CardDescription>
-          Enter your current password and choose a new one
-        </CardDescription>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <KeyRound className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-lg">Update password</CardTitle>
+            <CardDescription>
+              Enter your current password and choose a new one
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <form
@@ -85,16 +93,28 @@ export function SecurityForm({ action }: SecurityFormProps) {
           </div>
 
           {state?.error && (
-            <p className="text-sm text-destructive">{state.error}</p>
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+              {state.error}
+            </div>
           )}
 
           {saved && (
-            <p className="text-sm text-green-600">Password updated successfully</p>
+            <div className="flex items-center gap-2 rounded-lg border border-success/50 bg-success/10 p-3 text-sm text-success">
+              <CheckCircle className="h-4 w-4" />
+              Password updated successfully
+            </div>
           )}
 
           <div className="flex justify-end">
             <Button type="submit" disabled={isPending} data-testid="security-submit">
-              {isPending ? 'Updating...' : 'Update password'}
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                'Update password'
+              )}
             </Button>
           </div>
         </form>

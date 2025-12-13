@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 import { updatePropertyAction } from '@/actions/properties';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -164,11 +165,22 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
             <Label htmlFor="public_visibility">Publicly visible passport</Label>
           </div>
 
-          {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
+          {state?.error && (
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+              {state.error}
+            </div>
+          )}
 
           <div className="flex justify-end">
             <Button type="submit" disabled={pending} data-testid="property-edit-submit">
-              {pending ? 'Saving…' : 'Save changes'}
+              {pending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save changes'
+              )}
             </Button>
           </div>
         </form>

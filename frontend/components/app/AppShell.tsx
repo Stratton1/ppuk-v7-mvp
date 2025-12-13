@@ -57,7 +57,7 @@ export async function AppShell({ children, title = 'Property Passport', actions 
         <AppShellSidebar items={navItems} />
 
         <div className="flex flex-1 flex-col">
-          <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur">
+          <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background px-4">
             <div className="flex flex-1 items-center gap-4">
               <div className="hidden flex-col sm:flex">
                 <div className="text-base font-semibold text-primary">{title}</div>

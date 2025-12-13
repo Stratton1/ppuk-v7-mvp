@@ -1,6 +1,7 @@
 import { ShieldOff } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Button } from '@/components/ui/button';
 
 type AccessDeniedProps = {
   title?: string;
@@ -19,26 +20,22 @@ export function AccessDenied({
   actionHref,
   dataTestId,
 }: AccessDeniedProps) {
-  const displayIcon = icon ?? (
-    <div className="rounded-full bg-muted p-2">
-      <ShieldOff className="h-5 w-5" aria-hidden />
-    </div>
-  );
+  const displayIcon = icon ?? <ShieldOff className="h-5 w-5" aria-hidden />;
 
   return (
-    <Card data-testid={dataTestId}>
-      <CardHeader className="flex flex-row items-center gap-3">
-        {displayIcon}
-        <CardTitle className="text-base font-semibold">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="text-sm text-muted-foreground space-y-2">
-        <p>{description}</p>
-        {actionLabel && actionHref && (
-          <a className="text-primary underline" href={actionHref}>
-            {actionLabel}
-          </a>
-        )}
-      </CardContent>
-    </Card>
+    <EmptyState
+      dataTestId={dataTestId}
+      variant="error"
+      icon={displayIcon}
+      title={title}
+      description={description}
+      action={
+        actionLabel && actionHref ? (
+          <Button variant="outline" size="sm" asChild>
+            <a href={actionHref}>{actionLabel}</a>
+          </Button>
+        ) : undefined
+      }
+    />
   );
 }

@@ -19,7 +19,7 @@ export async function GET(
       return jsonResponse({ access: false, message: 'Unauthorized' }, 401);
     }
 
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const { data: property, error: propertyError } = await supabase
       .from('properties')
       .select('id, public_visibility')

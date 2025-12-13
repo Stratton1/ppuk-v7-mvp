@@ -24,7 +24,7 @@ type PropertyStakeholdersSectionProps = {
 };
 
 export async function PropertyStakeholdersSection({ propertyId }: PropertyStakeholdersSectionProps) {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const user = await getServerUser();
 
   const { data: stakeholders } = await supabase
@@ -34,13 +34,17 @@ export async function PropertyStakeholdersSection({ propertyId }: PropertyStakeh
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
-  type StakeholderWithUser = Database['public']['Tables']['property_stakeholders']['Row'] & {
+  type StakeholderWithUser = {
+    user_id: string;
+    role: Database['public']['Enums']['property_role_type'];
+    status: Database['public']['Enums']['property_status_type'] | null;
+    permission: Database['public']['Enums']['property_permission_type'] | null;
     users: { full_name: string | null; email: string | null } | null;
   };
 
   const entries: StakeholderRowShape[] =
     stakeholders?.map((s) => {
-      const casted = s as StakeholderWithUser;
+      const casted = s as unknown as StakeholderWithUser;
       return {
         user_id: casted.user_id,
         role: casted.role,

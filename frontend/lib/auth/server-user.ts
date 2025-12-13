@@ -3,12 +3,12 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { PropertyPermission, PropertyStatus, ServerUserSession } from '@/types/auth';
 
-export function getServerClient() {
-  return createClient();
+export async function getServerClient() {
+  return await createClient();
 }
 
 export async function getServerUser(): Promise<ServerUserSession | null> {
-  const supabase = getServerClient();
+  const supabase = await getServerClient();
   const {
     data: { user: authUser },
     error: authError,
@@ -24,14 +24,12 @@ export async function getServerUser(): Promise<ServerUserSession | null> {
     .eq('id', authUser.id)
     .maybeSingle();
 
+  const rawPrimaryRole = (authUser.user_metadata as Record<string, unknown> | null)?.['primary_role'];
   const baseSession: ServerUserSession = {
     id: authUser.id,
     email: authUser.email ?? null,
     full_name: authUser.user_metadata?.full_name ?? null,
-    primary_role: (authUser.user_metadata as Record<string, unknown> | null)?.['primary_role'] as
-      | ServerUserSession['primary_role']
-      | null
-      | undefined,
+    primary_role: (rawPrimaryRole as ServerUserSession['primary_role']) ?? null,
     property_roles: {},
     isAdmin: false,
   };

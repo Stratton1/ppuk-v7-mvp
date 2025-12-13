@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ImageOff } from 'lucide-react';
 import { PLACEHOLDER_IMAGE } from '@/lib/signed-url';
 
 type PublicGalleryProps = {
@@ -8,8 +9,14 @@ type PublicGalleryProps = {
 export const PublicGallery = ({ images }: PublicGalleryProps) => {
   if (!images || images.length === 0) {
     return (
-      <div className="rounded-xl border border-border/60 bg-card/80 p-6 text-center text-sm text-muted-foreground shadow-sm">
-        No public images available.
+      <div className="rounded-xl border border-dashed border-border bg-muted/30 p-10 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+          <ImageOff className="h-6 w-6 text-muted-foreground" />
+        </div>
+        <h3 className="mt-4 text-sm font-medium text-foreground">No photos available</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          This property passport has no public images.
+        </p>
       </div>
     );
   }
@@ -19,7 +26,7 @@ export const PublicGallery = ({ images }: PublicGalleryProps) => {
       {images.map((src, idx) => (
         <div
           key={`${src}-${idx}`}
-          className="group relative h-44 w-full overflow-hidden rounded-xl border border-border/60 bg-muted shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm"
+          className="group relative h-44 w-full overflow-hidden rounded-xl border border-border bg-muted transition-colors hover:border-primary/50"
         >
           <Image
             src={src || PLACEHOLDER_IMAGE}

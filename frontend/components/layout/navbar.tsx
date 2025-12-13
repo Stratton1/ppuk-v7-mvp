@@ -5,17 +5,17 @@ import { GlobalSearch } from './global-search';
 import { AppAvatar } from '@/components/app/AppAvatar';
 
 export const Navbar = async () => {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   const isAuthed = !!user;
 
   return (
-    <header className="border-b border-border/60 bg-card/80 text-card-foreground backdrop-blur">
+    <header className="border-b border-border bg-background text-foreground">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-primary">
-          <span className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/70 via-accent/70 to-primary shadow-glow-xs" />
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-sm">PP</span>
           <span>Property Passport UK</span>
         </Link>
 

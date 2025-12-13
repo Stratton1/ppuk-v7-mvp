@@ -18,7 +18,7 @@ type InvitationsListProps = {
 export function InvitationsList({ invitations, emptyMessage = 'No invitations found.' }: InvitationsListProps) {
   if (!invitations.length) {
     return (
-      <div className="rounded-2xl border border-dashed border-border/70 bg-card/50 p-4 text-sm text-muted-foreground">
+      <div className="rounded-xl border border-dashed border-border bg-muted/30 p-4 text-sm text-muted-foreground">
         {emptyMessage}
       </div>
     );
@@ -30,7 +30,7 @@ export function InvitationsList({ invitations, emptyMessage = 'No invitations fo
         <div
           key={`${invite.email}-${idx}`}
           className={cn(
-            'flex flex-col gap-2 rounded-xl border border-border/60 bg-background/60 p-3 text-sm shadow-xs',
+            'flex flex-col gap-2 rounded-xl border border-border bg-card p-3 text-sm',
             'sm:flex-row sm:items-center sm:justify-between'
           )}
         >
@@ -48,7 +48,7 @@ export function InvitationsList({ invitations, emptyMessage = 'No invitations fo
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            {invite.status === 'pending' && <span className="text-amber-600 dark:text-amber-400">Awaiting accept</span>}
+            {invite.status === 'pending' && <span className="text-warning">Awaiting accept</span>}
             {invite.status === 'expired' && <span className="text-destructive">Expired</span>}
           </div>
         </div>

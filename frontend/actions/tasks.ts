@@ -10,7 +10,7 @@ export type TaskInsertWithoutUser = Omit<
 >;
 
 export async function createTaskAction(task: TaskInsertWithoutUser): Promise<void> {
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Authentication required');
 

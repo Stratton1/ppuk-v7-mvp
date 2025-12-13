@@ -22,7 +22,7 @@ export function PropertyOverviewCard({ property, media }: PropertyOverviewCardPr
   return (
     <div className="space-y-4">
       <Card className="overflow-hidden">
-        <CardHeader className="border-b border-border/40 bg-muted/20">
+        <CardHeader className="border-b border-border bg-muted/50">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <CardTitle className="text-xl leading-snug" data-testid="property-title">

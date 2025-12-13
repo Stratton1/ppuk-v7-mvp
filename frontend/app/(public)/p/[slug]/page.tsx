@@ -1,11 +1,14 @@
 import { use } from 'react';
 import { notFound } from 'next/navigation';
 import type { Database } from '@/types/supabase';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { createPublicClient } from '@/lib/supabase/server-public';
+import { getServerUser } from '@/lib/auth/server-user';
 import { PublicHero } from '@/components/public-passport/public-hero';
 import { PublicMetadata } from '@/components/public-passport/public-metadata';
 import { PublicGallery } from '@/components/public-passport/public-gallery';
 import { PublicDocuments } from '@/components/public-passport/public-documents';
+import { PublicAccessCta } from '@/components/public-passport/public-access-cta';
 import { PLACEHOLDER_IMAGE } from '@/lib/signed-url';
 
 type PropertyRow = Database['public']['Tables']['properties']['Row'];
@@ -19,7 +22,7 @@ type DocumentRow = Pick<
 >;
 
 async function getSignedUrl(
-  supabase: ReturnType<typeof createServerClient>,
+  supabase: SupabaseClient<Database>,
   bucket: string,
   path: string | null | undefined
 ) {
@@ -31,7 +34,8 @@ async function getSignedUrl(
 
 export default async function PublicPassportPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const supabase = createServerClient();
+  const supabase = await createPublicClient();
+  const user = await getServerUser();
 
   const { data: property, error: propertyError } = await supabase
     .from('properties')
@@ -102,6 +106,9 @@ export default async function PublicPassportPage({ params }: { params: Promise<{
       <section data-testid="public-passport-docs">
         <PublicDocuments documents={documents} />
       </section>
+      <div data-testid="public-passport-access-cta">
+        <PublicAccessCta propertyId={publicProperty.id} isLoggedIn={!!user} />
+      </div>
     </div>
   );
 }

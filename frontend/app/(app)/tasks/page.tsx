@@ -17,7 +17,7 @@ export default function TasksPage() {
         breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Tasks' }]}
       />
       <AppSection title="Coming soon" description="View consolidated tasks across all properties.">
-        <div className="rounded-xl border border-dashed border-border/60 bg-muted/30 p-6 text-sm text-muted-foreground">
+        <div className="rounded-xl border border-dashed border-border bg-muted/30 p-6 text-sm text-muted-foreground">
           Cross-property tasks are managed inside each property today. Navigate to a property to create or update tasks.
         </div>
         <div className="mt-4">

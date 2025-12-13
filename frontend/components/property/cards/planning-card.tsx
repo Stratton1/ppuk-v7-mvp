@@ -12,7 +12,7 @@ type PlanningCardProps = {
 export function PlanningCard({ data, loading, error }: PlanningCardProps) {
   if (loading) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-planning">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-planning">
         <CardHeader>
           <CardTitle className="text-base">Planning</CardTitle>
           <Skeleton className="h-5 w-28" />
@@ -28,7 +28,7 @@ export function PlanningCard({ data, loading, error }: PlanningCardProps) {
 
   if (error) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-planning">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-planning">
         <CardHeader>
           <CardTitle className="text-base">Planning</CardTitle>
           <Badge variant="outline" className="border-destructive/60 text-destructive">
@@ -42,7 +42,7 @@ export function PlanningCard({ data, loading, error }: PlanningCardProps) {
 
   if (!data) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-planning">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-planning">
         <CardHeader>
           <CardTitle className="text-base">Planning</CardTitle>
           <Badge variant="outline">Not connected</Badge>
@@ -55,7 +55,7 @@ export function PlanningCard({ data, loading, error }: PlanningCardProps) {
   }
 
   return (
-    <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-planning">
+    <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-planning">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="text-base">Planning</CardTitle>
         <Badge variant="outline">{data.status ?? 'Mixed'}</Badge>

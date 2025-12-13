@@ -137,11 +137,20 @@ function StatCard({
   title,
   value,
   description,
+  variant = 'default',
 }: {
   title: string;
   value: number;
   description: string;
+  variant?: 'default' | 'warning' | 'success';
 }) {
+  const valueColor =
+    variant === 'warning'
+      ? 'text-warning'
+      : variant === 'success'
+      ? 'text-success'
+      : 'text-foreground';
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -150,7 +159,9 @@ function StatCard({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value.toLocaleString()}</div>
+        <div className={`text-2xl font-bold ${valueColor}`}>
+          {value.toLocaleString()}
+        </div>
         <p className="text-xs text-muted-foreground mt-1">{description}</p>
       </CardContent>
     </Card>

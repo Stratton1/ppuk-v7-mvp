@@ -15,7 +15,7 @@ interface UpdateProfileInput {
 export async function updateProfileAction(
   input: UpdateProfileInput
 ): Promise<ActionResult> {
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },

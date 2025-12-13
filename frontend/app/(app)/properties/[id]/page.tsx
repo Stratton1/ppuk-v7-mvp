@@ -1,5 +1,7 @@
 import { use } from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { FileText, Image as ImageIcon, Home } from 'lucide-react';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { AppSection } from '@/components/app/AppSection';
 import { PropertyOverviewCard } from '@/components/property/property-overview-card';
@@ -11,6 +13,8 @@ import { PropertyTasksSection } from '@/components/property/property-tasks-secti
 import { DocumentCard } from '@/components/documents/DocumentCard';
 import { DocumentList } from '@/components/documents/DocumentList';
 import { MediaGrid } from '@/components/media/MediaGrid';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Button } from '@/components/ui/button';
 import { docRowToUidDocument, type UidDocument } from '@/lib/documents/types';
 import { mediaRowToUidMedia, type UidMedia } from '@/lib/media/types';
 import { propertyRowToSearchResult, type SearchResult } from '@/lib/search/types';
@@ -22,7 +26,7 @@ interface PropertyDetailPageProps {
 
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
   const { id } = use(params);
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const { data: property, error: propertyError } = await supabase
     .from('properties')
@@ -83,22 +87,46 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
       <PropertyOverviewCard property={propertyTyped} media={allMedia || []} />
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-3" data-testid="property-overview-key-docs">
-          <p className="text-sm font-medium">Key documents</p>
+          <p className="text-sm font-medium text-foreground">Key documents</p>
           {documentPreview.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No documents yet.</p>
+            <EmptyState
+              icon={<FileText className="h-5 w-5" />}
+              title="No documents yet"
+              description="Upload documents to build your passport."
+              variant="muted"
+              action={
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/properties/${propertyTyped.id}/documents/upload`}>
+                    Upload document
+                  </Link>
+                </Button>
+              }
+            />
           ) : (
             documentPreview.map((doc) => <DocumentCard key={doc.id} document={doc} />)
           )}
         </div>
         <div className="space-y-3" data-testid="property-overview-media-preview">
-          <p className="text-sm font-medium">Recent media</p>
+          <p className="text-sm font-medium text-foreground">Recent media</p>
           {mediaPreview.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No media yet.</p>
+            <EmptyState
+              icon={<ImageIcon className="h-5 w-5" />}
+              title="No media yet"
+              description="Add photos to showcase your property."
+              variant="muted"
+              action={
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/properties/${propertyTyped.id}/media/upload`}>
+                    Upload photo
+                  </Link>
+                </Button>
+              }
+            />
           ) : (
             <MediaGrid media={mediaPreview.slice(0, 3)} />
           )}
         </div>
-        </div>
+      </div>
       </AppSection>
 
       <AppSection
@@ -108,22 +136,29 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
         dataTestId="related-properties-section"
       >
         {related.length === 0 ? (
-          <p className="text-sm text-muted-foreground" data-testid="related-properties-empty">
-            No related properties available.
-          </p>
+          <EmptyState
+            icon={<Home className="h-5 w-5" />}
+            title="No related properties"
+            description="Related properties will appear here."
+            variant="muted"
+            dataTestId="related-properties-empty"
+          />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-testid="related-properties">
             {related.map((item) => (
-              <div
+              <Link
                 key={item.id}
-                className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm"
+                href={`/properties/${item.id}`}
+                className="block rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50"
                 data-testid={`related-properties-${item.id}`}
               >
-                <p className="font-medium leading-snug text-foreground">{item.address}</p>
+                <p className="text-sm font-medium leading-snug text-foreground">
+                  {item.address}
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Updated {new Date(item.updatedAt).toLocaleDateString('en-GB')}
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
         )}
@@ -143,7 +178,19 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
         description="Surveys, certificates, legal documents and more."
       >
         {documentPreview.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No documents yet. View all in the Documents tab.</p>
+          <EmptyState
+            icon={<FileText className="h-5 w-5" />}
+            title="No documents yet"
+            description="View all in the Documents tab or upload new documents."
+            variant="muted"
+            action={
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/properties/${propertyTyped.id}/documents`}>
+                  Go to Documents
+                </Link>
+              </Button>
+            }
+          />
         ) : (
           <DocumentList documents={documentPreview} />
         )}

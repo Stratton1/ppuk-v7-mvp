@@ -34,7 +34,7 @@ export function AppShellSidebar({ items, variant = 'desktop' }: AppShellSidebarP
               data-testid={`nav-${item.slug}`}
               className={cn(
                 'inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition',
-                active ? 'border-primary/60 bg-primary/10 text-primary' : 'border-border/60 bg-card hover:bg-muted'
+                active ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-card hover:bg-muted'
               )}
             >
               <Icon name={item.icon} className="h-4 w-4" />
@@ -47,7 +47,7 @@ export function AppShellSidebar({ items, variant = 'desktop' }: AppShellSidebarP
   }
 
   return (
-    <aside className="hidden w-64 flex-shrink-0 border-r border-border/60 bg-muted/30 lg:flex lg:flex-col">
+    <aside className="hidden w-64 flex-shrink-0 border-r border-border bg-muted/30 lg:flex lg:flex-col">
       <div className="px-5 py-6">
         <div className="text-lg font-semibold tracking-tight text-primary">Property Passport</div>
         <p className="text-xs text-muted-foreground">Manage your passports</p>

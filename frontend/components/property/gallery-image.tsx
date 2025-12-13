@@ -31,7 +31,7 @@ export function GalleryImage({ media, signedUrl, propertyId, canDelete = false }
   });
 
   return (
-    <Card className="group relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm">
+    <Card className="group relative overflow-hidden border-border transition-colors hover:border-primary/50">
       {/* Image */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
         <Image

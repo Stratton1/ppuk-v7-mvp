@@ -12,7 +12,7 @@ type TitleCardProps = {
 export function TitleCard({ data, loading, error }: TitleCardProps) {
   if (loading) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-title">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-title">
         <CardHeader>
           <CardTitle className="text-base">Title / Land Registry</CardTitle>
           <Skeleton className="h-5 w-32" />
@@ -28,7 +28,7 @@ export function TitleCard({ data, loading, error }: TitleCardProps) {
 
   if (error) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-title">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-title">
         <CardHeader>
           <CardTitle className="text-base">Title / Land Registry</CardTitle>
           <Badge variant="outline" className="border-destructive/60 text-destructive">
@@ -42,7 +42,7 @@ export function TitleCard({ data, loading, error }: TitleCardProps) {
 
   if (!data) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-title">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-title">
         <CardHeader>
           <CardTitle className="text-base">Title / Land Registry</CardTitle>
           <Badge variant="outline">Not connected</Badge>
@@ -55,7 +55,7 @@ export function TitleCard({ data, loading, error }: TitleCardProps) {
   }
 
   return (
-    <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-title">
+    <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-title">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="text-base">Title / Land Registry</CardTitle>
         <Badge variant="outline">{data.tenure ?? 'Unknown tenure'}</Badge>

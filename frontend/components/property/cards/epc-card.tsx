@@ -12,7 +12,7 @@ type EpcCardProps = {
 export function EpcCard({ data, loading, error }: EpcCardProps) {
   if (loading) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-epc">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-epc">
         <CardHeader>
           <CardTitle className="text-base">EPC</CardTitle>
           <Skeleton className="h-5 w-24" />
@@ -28,7 +28,7 @@ export function EpcCard({ data, loading, error }: EpcCardProps) {
 
   if (error) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-epc">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-epc">
         <CardHeader>
           <CardTitle className="text-base">EPC</CardTitle>
           <Badge variant="outline" className="border-destructive/60 text-destructive">
@@ -42,7 +42,7 @@ export function EpcCard({ data, loading, error }: EpcCardProps) {
 
   if (!data) {
     return (
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-epc">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-epc">
         <CardHeader>
           <CardTitle className="text-base">EPC</CardTitle>
           <Badge variant="outline">Not connected</Badge>
@@ -55,7 +55,7 @@ export function EpcCard({ data, loading, error }: EpcCardProps) {
   }
 
   return (
-    <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm" data-testid="keyfacts-epc">
+    <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-epc">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="text-base">EPC</CardTitle>
         <Badge variant="outline">{data.rating}</Badge>

@@ -293,8 +293,20 @@
     line-height: var(--leading-relaxed);
   }
 
+  /* Improved focus states for accessibility */
   :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    @apply outline-none ring-2 ring-ring/70 ring-offset-2 ring-offset-background;
+    transition: box-shadow 0.15s ease-out;
+  }
+
+  /* Focus within for container elements */
+  .focus-within-ring:focus-within {
+    @apply ring-2 ring-ring/50 ring-offset-2 ring-offset-background;
+  }
+
+  /* Skip to content link for accessibility */
+  .skip-link {
+    @apply absolute left-4 top-4 z-50 -translate-y-16 rounded-md bg-primary px-4 py-2 text-primary-foreground transition-transform focus:translate-y-0;
   }
 }
 
@@ -361,55 +373,81 @@
 }
 
 @layer utilities {
-  .animate-fade-in {
-    animation: fade-in var(--duration-slowest) var(--ease-out) forwards;
+  /* Animation delay utilities for staggered reveals */
+  .delay-0 { animation-delay: 0ms; }
+  .delay-75 { animation-delay: 75ms; }
+  .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+
+  /* Stagger children utility - apply to parent, children get staggered delays */
+  .stagger-children > * {
+    @apply opacity-0;
+    animation: fade-in-up 0.4s ease-out forwards;
+  }
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+  .stagger-children > *:nth-child(n+7) { animation-delay: 300ms; }
+
+  /* Subtle hover lift - institutional feel */
+  .hover-lift {
+    @apply transition-all duration-200 ease-out;
+  }
+  .hover-lift:hover {
+    @apply -translate-y-0.5 shadow-md;
   }
 
-  .animate-fade-in-up {
-    animation: fade-in-up var(--duration-slowest) var(--ease-out) forwards;
+  /* Interactive surface - for clickable cards */
+  .interactive-surface {
+    @apply transition-all duration-200 ease-out;
+  }
+  .interactive-surface:hover {
+    @apply bg-muted/30;
+  }
+  .interactive-surface:active {
+    @apply scale-[0.99];
   }
 
-  .animate-slide-in-right {
-    animation: slide-in-right var(--duration-slower) var(--ease-out) forwards;
+  /* Focus ring utility - consistent focus states */
+  .focus-ring {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
-  .animate-scale-in {
-    animation: scale-in var(--duration-slow) var(--ease-out) forwards;
-  }
-
-  .animate-hover-lift {
-    transition: transform var(--duration-slow) var(--ease-out), box-shadow var(--duration-slow) var(--ease-out);
-  }
-
-  .animate-hover-lift:hover {
-    @apply -translate-y-1 shadow-lg;
-  }
-
+  /* Skeleton shimmer - improved loading state */
   .skeleton-shimmer {
     @apply relative overflow-hidden bg-muted;
   }
-
   .skeleton-shimmer::after {
     content: '';
     @apply absolute inset-0;
-    background: linear-gradient(90deg, transparent, hsl(var(--muted-foreground) / 0.06), transparent);
-    animation: shimmer 2s var(--ease-in-out) infinite;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--muted-foreground) / 0.04) 50%,
+      transparent 100%
+    );
+    animation: shimmer 2s ease-in-out infinite;
   }
 
-  .interactive {
-    transition: all var(--duration-normal) var(--ease-out);
-  }
-
-  .interactive:hover {
-    @apply bg-secondary;
-  }
-
-  .interactive:active {
-    @apply scale-[0.98];
-  }
-
-  .hero-title-chip {
-    animation: hero-entrance var(--duration-slow) var(--ease-out) forwards;
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .stagger-children > *,
+    .animate-fade-in,
+    .animate-fade-in-up,
+    .animate-scale-in {
+      animation: none;
+      opacity: 1;
+    }
+    .hover-lift:hover {
+      transform: none;
+    }
   }
 }
 

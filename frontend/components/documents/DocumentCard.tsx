@@ -9,7 +9,7 @@ type DocumentCardProps = {
 export function DocumentCard({ document }: DocumentCardProps) {
   return (
     <Card
-      className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm"
+      className="border-border transition-colors hover:border-primary/50"
       data-testid={`doc-card-${document.id}`}
     >
       <CardHeader className="flex flex-row items-start justify-between gap-3 pb-3">

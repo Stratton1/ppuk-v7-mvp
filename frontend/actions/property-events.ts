@@ -14,7 +14,7 @@ interface CreateEventInput {
 export async function createPropertyEventAction(
   input: CreateEventInput
 ): Promise<ActionResult & { eventId?: string }> {
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },
@@ -63,7 +63,7 @@ export async function createPropertyEventAction(
 export async function getPropertyEventsAction(
   propertyId: string
 ): Promise<ActionResult & { events?: unknown[] }> {
-  const supabase = createServerClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },

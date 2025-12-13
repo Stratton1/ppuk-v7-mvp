@@ -47,7 +47,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             name="q"
             defaultValue={text}
             placeholder="Search address, postcode, or UPRN"
-            className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-0"
+            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm transition-colors focus:border-primary focus:outline-none"
             data-testid="search-page-input"
           />
         </form>

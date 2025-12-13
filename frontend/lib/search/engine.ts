@@ -37,18 +37,31 @@ export async function runSearch(query: SearchQuery): Promise<SearchResult[]> {
   }
 
   // UI-side filtering
+  // Note: Extended property fields may come from RPC results or future schema additions
+  type ExtendedRow = PropertyRow & {
+    bedrooms?: number | null;
+    bathrooms?: number | null;
+    property_type?: string | null;
+    tenure?: string | null;
+    price?: number | null;
+    epc_rating?: string | null;
+    documents_count?: number;
+    media_count?: number;
+    flagged_issue_count?: number;
+  };
   const filtered = rows.filter((row) => {
-    if (filters.bedrooms && (row.bedrooms ?? 0) < filters.bedrooms) return false;
-    if (filters.bathrooms && (row.bathrooms ?? 0) < filters.bathrooms) return false;
-    if (filters.propertyType && row.property_type && row.property_type !== filters.propertyType) return false;
-    if (filters.tenure && row.tenure && row.tenure !== filters.tenure) return false;
-    if (filters.minPrice && (row.price ?? 0) < filters.minPrice) return false;
-    if (filters.maxPrice && (row.price ?? 0) > filters.maxPrice) return false;
-    if (filters.minEPC && row.epc_rating && row.epc_rating < filters.minEPC) return false;
-    if (filters.maxEPC && row.epc_rating && row.epc_rating > filters.maxEPC) return false;
-    if (filters.hasDocuments && !(row as { documents_count?: number }).documents_count) return false;
-    if (filters.hasMedia && !(row as { media_count?: number }).media_count) return false;
-    if (filters.hasIssues && !(row as { flagged_issue_count?: number }).flagged_issue_count) return false;
+    const r = row as ExtendedRow;
+    if (filters.bedrooms && (r.bedrooms ?? 0) < filters.bedrooms) return false;
+    if (filters.bathrooms && (r.bathrooms ?? 0) < filters.bathrooms) return false;
+    if (filters.propertyType && r.property_type && r.property_type !== filters.propertyType) return false;
+    if (filters.tenure && r.tenure && r.tenure !== filters.tenure) return false;
+    if (filters.minPrice && (r.price ?? 0) < filters.minPrice) return false;
+    if (filters.maxPrice && (r.price ?? 0) > filters.maxPrice) return false;
+    if (filters.minEPC && r.epc_rating && r.epc_rating < filters.minEPC) return false;
+    if (filters.maxEPC && r.epc_rating && r.epc_rating > filters.maxEPC) return false;
+    if (filters.hasDocuments && !r.documents_count) return false;
+    if (filters.hasMedia && !r.media_count) return false;
+    if (filters.hasIssues && !r.flagged_issue_count) return false;
     return true;
   });
 

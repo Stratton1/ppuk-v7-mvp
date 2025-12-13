@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ImageOff } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { UidMedia } from '@/lib/media/types';
 
@@ -9,8 +10,14 @@ type MediaGridProps = {
 export function MediaGrid({ media }: MediaGridProps) {
   if (!media || media.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border/60 bg-muted/30 p-8 text-center text-sm text-muted-foreground">
-        No media available.
+      <div className="rounded-xl border border-dashed border-border bg-muted/30 p-10 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+          <ImageOff className="h-6 w-6 text-muted-foreground" />
+        </div>
+        <h3 className="mt-4 text-sm font-medium text-foreground">No media available</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Upload photos, floorplans, or videos to get started.
+        </p>
       </div>
     );
   }
@@ -20,7 +27,7 @@ export function MediaGrid({ media }: MediaGridProps) {
       {media.map((item) => (
         <Card
           key={item.id}
-          className="group overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow-sm"
+          className="group overflow-hidden border-border transition-colors hover:border-primary/50"
           data-testid={`media-item-${item.id}`}
         >
           <CardHeader className="pb-2">
@@ -37,7 +44,7 @@ export function MediaGrid({ media }: MediaGridProps) {
                 />
               </div>
             ) : (
-              <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/30 text-xs text-muted-foreground">
+              <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 text-xs text-muted-foreground">
                 No preview
               </div>
             )}

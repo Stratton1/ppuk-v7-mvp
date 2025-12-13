@@ -17,7 +17,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 flex-shrink-0 border-r border-border/60 bg-muted/30 md:flex md:flex-col">
+    <aside className="hidden w-64 flex-shrink-0 border-r border-border bg-muted/30 md:flex md:flex-col">
       <div className="px-4 py-5">
         <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-primary">
           Property Passport

@@ -1,432 +1,235 @@
-PROPERTY PASSPORT UK v7 — DESIGN SYSTEM
+# PROPERTY PASSPORT UK v7 — DESIGN SYSTEM
 
-Version: 1.0
+Version: 2.0  
+Status: Authoritative  
+Audience: Engineering, Product, Design, AI Agents (Claude Code)  
+Scope: Entire PPUK platform — app, public passport, marketing, admin
 
-Audience: Engineering, Product, AI Agents
+---
 
-Scope: Complete visual, interaction, layout, and UX system across PPUK.
+## 0. Design Contract (Non-Negotiable)
 
-1. Design Philosophy
+This document defines the **single source of truth** for UI, UX, layout, motion, and visual hierarchy across Property Passport UK.
 
-PPUK's design system is built for:
+Any automated UI change (including Claude Code) MUST:
+- Follow this system
+- Improve clarity, trust, and perceived quality
+- Never alter business logic, auth, permissions, or data flow
+- Never introduce visual inconsistency between roles or pages
 
-Clarity → users must instantly understand property status and progress
+---
 
-Trust → legal/security-focused flows must appear credible and robust
+## 1. Design Philosophy
 
-Speed → users complete transactions faster with predictable patterns
+PPUK UI must feel:
 
-Consistency → all roles (owners, buyers, agents, conveyancers, surveyors) see the same UI rules
+**Professional** — credible for legal, financial, and property use  
+**Calm** — low cognitive load, no visual noise  
+**Modern** — subtle motion, clean spacing, soft depth  
+**Trustworthy** — predictable patterns, stable layouts  
+**Data-first** — information is always scannable
 
-Accessibility → AA-level accessibility required
+Avoid:
+- Flashy effects
+- Excessive gradients
+- Over-animation
+- Marketing gimmicks inside the app
 
-Data-first → timelines, events, documents, tasks must be scannable
+---
 
-2. Core Principles
+## 2. Core Principles
 
-2.1 Hierarchy
+### 2.1 Hierarchy
+- Page title → section → card → row → metadata
+- Never flatten hierarchy
+- Important data must stand out without colour abuse
 
-Use layout to guide the eye:
+### 2.2 Predictability
+- Same action = same location everywhere
+- Editing = drawers/modals only
+- Navigation = left sidebar (desktop), top menu (mobile)
 
-Large, bold page titles
+### 2.3 Domain Language (Strict)
+Use **only** approved terms:
+- Property Passport
+- Completion Score
+- Stakeholder
+- Owner / Buyer / Tenant
+- Viewer / Editor
+- Task / Document / Media / Flag / Watchlist
 
-Iconography for document types
+Never invent synonyms.
 
-Consistent section headings
+---
 
-Summary cards → detail panels → data tables
+## 3. Layout System
 
-2.2 Domain Language
+### 3.1 Global Structure
 
-Must use PPUK terms consistently:
+Top Navigation
+└─ Sidebar (desktop)
+└─ Main Content
+├─ Page Header
+├─ Sections
+└─ Cards / Tables
+Footer (minimal)
 
-Property Passport
+### 3.2 Spacing Scale
+| Token | Value |
+|-----|------|
+| xs | 4px |
+| sm | 8px |
+| md | 16px |
+| lg | 24px |
+| xl | 32px |
+| 2xl | 48px |
 
-Completion Score
+Never invent new spacing values.
 
-Stakeholder
+---
 
-Viewer/Editor
+## 4. Typography
 
-Owner/Buyer/Tenant
+### Font
+System UI stack (Inter preferred)
 
-Task
+### Usage
+| Purpose | Class |
+|------|------|
+| Page Title | text-3xl font-semibold |
+| Section Title | text-xl font-medium |
+| Card Title | text-lg font-medium |
+| Body | text-base |
+| Meta | text-sm text-muted |
+| Caption | text-xs text-muted |
 
-Document
+---
 
-Media
+## 5. Colour System
 
-Flags
+### Primary
+- Blue 600 → primary action
+- Blue 700 → hover/focus
+- Blue 900 → titles
 
-Watchlist
+### Semantic
+- Success → Green 600
+- Warning → Amber 600
+- Error → Red 600
+- Info → Blue 500
 
-2.3 Predictability
-
-Every UI pattern must match user expectations:
-
-Documents always open in a side panel
-
-Editing always occurs in drawers or modals
-
-Navigation always appears in the left sidebar
-
-Action buttons always appear top-right of a section
-
-Error messages always appear inline and non-blocking
-
-3. Layout System
-
-3.1 Global Layout Anatomy
-
-┌──────────────────────────────────────────────┐
-
-│  Top Nav (branding, profile menu, breadcrumbs)
-
-├──────────────────────────────────────────────┤
-
-│  Sidebar Navigation (permanent on desktop)   │
-
-│                                              │
-
-│  Property Passport / Dashboard Content (main)│
-
-│                                              │
-
-├──────────────────────────────────────────────┤
-
-│  Footer (links, policies, developer routes)  │
-
-└──────────────────────────────────────────────┘
-
-3.2 Spacing Tokens
-
-xs: 4px
-
-sm: 8px
-
-md: 16px
-
-lg: 24px
-
-xl: 32px
-
-2xl: 48px
-
-3.3 Breakpoints
-
-sm: 480px
-
-md: 768px
-
-lg: 1024px
-
-xl: 1280px
-
-2xl: 1536px
+### Neutral
+Slate 50–900
 
 Rules:
+- Colour = state, not decoration
+- Never rely on colour alone for meaning
 
-Sidebar collapses at < 1024px
+---
 
-Data tables become cards at < 768px
+## 6. Elevation & Motion (Very Important)
 
-Forms become single-column below 640px
+### Elevation Tokens
+- Base: `shadow-sm`
+- Interactive hover: `hover:shadow-glow-sm`
+- Active focus: `ring-2 ring-primary/20`
 
-4. Typography System
+### Motion Rules
+- Transitions only on:
+  - hover
+  - expand/collapse
+  - loading completion
+- Durations:
+  - Fast: 150ms
+  - Standard: 200–300ms
+- Easing:
+  - `ease-out` preferred
 
-4.1 Typeface
+No infinite animations. No bouncing.
 
-System font stack: Inter / San Francisco / Segoe UI
+---
 
-Use semibold headers, regular body, medium labels
+## 7. Components
 
-4.2 Text Styles
+### Cards
+Must include:
+- Title
+- Optional description
+- Content
+- Optional action area
 
-Purpose	Style
+Always:
+- `rounded-xl`
+- `border-border/60`
+- `bg-card/80`
 
-Page titles	text-3xl font-semibold
-
-Section titles	text-xl font-medium
-
-Card titles	text-lg font-medium
-
-Labels	text-sm font-medium text-muted
-
-Body text	text-base
-
-Captions	text-xs text-muted
-
-5. Colour System
-
-Primary Palette
-
-Blue 600 → Primary action
-
-Blue 700 → Hover / focus
-
-Blue 900 → Titles
-
-Semantic Colours
-
-Success → Green 600
-
-Warning → Amber 600
-
-Error → Red 600
-
-Info → Blue 500
-
-Neutral Palette
-
-Slate 50–900 for backgrounds, borders, text
-
-Rules:
-
-Avoid excessive colour
-
-Use colour to signal state, not decoration
-
-6. Components
-
-6.1 Buttons
-
+### Buttons
 Variants:
-
-primary
-
-secondary
-
-outline
-
-ghost
-
-destructive
-
-Sizes:
-
-sm
-
-md
-
-lg
+- primary
+- secondary
+- outline
+- ghost
+- destructive
 
 Icons:
+- Lucide only
+- One icon max per button
 
-Left or right only
+---
 
-Use Lucide icons
+## 8. Loading & Empty States
 
-Do not nest multiple icons
+### Loading
+- Skeletons preferred over spinners
+- Skeleton shape must match final content
+- No layout shift
 
-6.2 Cards
+### Empty States
+- Calm tone
+- Clear explanation
+- Optional next action
 
-Card layouts must include:
+Never show “blank” areas.
 
-Title
+---
 
-Description or supporting text
+## 9. Public vs App UI
 
-Action region (top-right or footer)
+### App UI
+- Dense, data-forward
+- Minimal imagery
+- Focus on progress & status
 
-Optional metadata
+### Public / Marketing
+- More whitespace
+- Hero imagery allowed
+- Still restrained and professional
 
-Consistent padding (p-4 minimum)
+---
 
-Examples:
+## 10. Accessibility (Required)
 
-Property Summary Card
+- WCAG AA contrast
+- Keyboard navigation
+- Focus rings always visible
+- Semantic headings
+- ARIA where required
 
-Completion Score Card
+---
 
-Document Summary Card
+## 11. AI Agent Rules (Claude Code)
 
-Task Overview Card
+Claude Code MAY:
+- Improve spacing, typography, hierarchy
+- Add subtle motion per this spec
+- Improve empty/loading states
+- Align components visually
 
-6.3 Tables
+Claude Code MUST NOT:
+- Change routes
+- Change auth
+- Change permissions
+- Introduce new UI paradigms
+- Redesign without reference to this file
 
-Tables must support:
-
-Sorting
-
-Filtering
-
-Density controls (comfortable/compact)
-
-Sticky headers
-
-Mobile collapse into cards
-
-6.4 Forms
-
-Standards:
-
-Zod validation on the server
-
-Fieldsets for grouped info
-
-Destructive actions → confirmation modals
-
-Required fields marked with *
-
-Inline error messages
-
-6.5 Navigation
-
-Left Sidebar:
-
-Dashboard
-
-Properties
-
-Tasks
-
-Documents
-
-Flags
-
-Settings
-
-Admin Sidebar:
-
-Users
-
-Invitations
-
-System Activity
-
-Analytics
-
-Footer Links:
-
-Accessibility
-
-Developer Routes
-
-Test Login
-
-Admin Login
-
-7. Interaction Patterns
-
-Drawers
-
-Used for:
-
-Editing property details
-
-Editing documents
-
-Role assignment
-
-Modals
-
-Used for:
-
-Confirmations
-
-Destructive actions
-
-File deletions
-
-Tabs
-
-Used for:
-
-Documents
-
-Media
-
-Tasks
-
-Stakeholders
-
-Events
-
-Toasts
-
-Used for:
-
-Success
-
-Error
-
-Network failure
-
-8. Domain-Specific UX
-
-8.1 Completion Score
-
-Must always reflect:
-
-% documents uploaded
-
-% tasks completed
-
-% flags resolved
-
-% metadata completed
-
-Display:
-
-Circular badge
-
-Tooltip showing breakdown
-
-8.2 Stakeholder UX
-
-Stakeholders must display:
-
-Role badge
-
-Permission badge
-
-Invitation state
-
-Remove/upgrade actions
-
-8.3 Document UX
-
-Each document row includes:
-
-File type icon
-
-File name
-
-Uploaded by
-
-Uploaded at
-
-View / Replace / Delete actions
-
-Viewer → can only view
-
-Editor → can upload/delete
-
-8.4 Events Timeline
-
-Each event must include:
-
-Icon
-
-Summary sentence
-
-User
-
-Timestamp
-
-Group by date
-
-9. Accessibility Requirements
-
-WCAG AA contrast
-
-Focus rings on all interactive elements
-
-Keyboard-accessible dialogs
-
-Semantic headings
-
-Aria attributes for complex controls
-
-✔ END — DESIGN SYSTEM
-
+✔ END — DESIGN SYSTEM v2.0

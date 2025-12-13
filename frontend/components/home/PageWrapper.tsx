@@ -35,14 +35,8 @@ export function Section({
   );
 }
 
-export const GradientBlob = ({ className = '' }: { className?: string }) => (
-  <div className={`pointer-events-none absolute inset-0 opacity-60 blur-3xl ${className}`} aria-hidden>
-    <div className="absolute -left-24 top-10 h-64 w-64 rounded-full bg-gradient-to-br from-primary/30 via-accent/40 to-primary/20" />
-    <div className="absolute right-0 bottom-0 h-64 w-64 rounded-full bg-gradient-to-tr from-success/20 via-accent/20 to-primary/20" />
-  </div>
-);
-
-export const FloatingCard = ({
+/** Clean stat card for landing page - no glows or gradients */
+export const StatCard = ({
   title,
   value,
   hint,
@@ -53,24 +47,20 @@ export const FloatingCard = ({
   hint: string;
   className?: string;
 }) => (
-  <div
-    className={`rounded-2xl border border-border/60 bg-card/80 p-4 shadow-lg shadow-glow-sm backdrop-blur ${className}`}
-  >
-    <p className="text-xs uppercase tracking-wide text-muted-foreground">{title}</p>
-    <p className="mt-2 text-2xl font-semibold text-primary">{value}</p>
+  <div className={`rounded-lg border border-border bg-muted/30 p-3 ${className}`}>
+    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{title}</p>
+    <p className="mt-1 text-lg font-semibold text-foreground">{value}</p>
     <p className="text-xs text-muted-foreground">{hint}</p>
   </div>
 );
 
-export const Dot = () => <span className="mx-2 text-muted-foreground">•</span>;
+/** @deprecated Use StatCard instead */
+export const FloatingCard = StatCard;
+
+export const Dot = () => <span className="mx-2 text-muted-foreground">·</span>;
 
 export function PageWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative overflow-hidden">
-      <GradientBlob />
-      {children}
-    </div>
-  );
+  return <div className="bg-background">{children}</div>;
 }
 
 export default PageWrapper;
