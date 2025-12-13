@@ -1,7 +1,6 @@
 import { use } from 'react';
 import { notFound } from 'next/navigation';
-import { createClient as createServerClient } from '@/lib/supabase/server';
-import { getServerUser } from '@/lib/auth/server-user';
+import { createClient } from '@/lib/supabase/server';
 import { AppPageHeader } from '@/components/app/AppPageHeader';
 import { AppSection } from '@/components/app/AppSection';
 import { IssueCard } from '@/components/issues/IssueCard';
@@ -18,10 +17,23 @@ type PropertyIssuesPageProps = {
   params: Promise<{ id: string }>;
 };
 
+/**
+ * Property Issues Page - Server Component
+ * Auth is enforced by middleware. Do NOT add auth checks here.
+ */
 export default async function PropertyIssuesPage({ params }: PropertyIssuesPageProps) {
   const { id } = use(params);
-  const supabase = await createServerClient();
-  const user = await getServerUser();
+  const supabase = await createClient();
+
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+
+  const { data: userRow } = authUser
+    ? await supabase.from('users').select('primary_role').eq('id', authUser.id).maybeSingle()
+    : { data: null };
+
+  const isAdmin = userRow?.primary_role === 'admin';
 
   const { data: property } = await supabase
     .from('properties')
@@ -51,7 +63,7 @@ export default async function PropertyIssuesPage({ params }: PropertyIssuesPageP
   );
   const openIssues = issues.filter((issue) => issue.status === 'open' || issue.status === 'in_progress');
   const resolvedIssues = issues.filter((issue) => issue.status === 'resolved' || issue.status === 'closed');
-  const allowEdits = Boolean(canEdit || user?.isAdmin);
+  const allowEdits = Boolean(canEdit || isAdmin);
 
   return (
     <div className="space-y-6" data-testid="property-issues-page">

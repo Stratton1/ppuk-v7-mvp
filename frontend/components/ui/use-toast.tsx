@@ -54,10 +54,10 @@ export function Toaster() {
         <div
           key={toast.id}
           className={cn(
-            'rounded-lg border px-4 py-3 shadow-lg backdrop-blur',
-            toast.variant === 'success' && 'border-emerald-200 bg-emerald-50 text-emerald-900',
+            'rounded-xl border px-4 py-3 shadow-lg',
+            toast.variant === 'success' && 'border-success/50 bg-success/10 text-success',
             toast.variant === 'destructive' && 'border-destructive/50 bg-destructive/10 text-destructive',
-            toast.variant === 'default' && 'border-border/80 bg-card text-card-foreground'
+            toast.variant === 'default' && 'border-border bg-card text-card-foreground'
           )}
         >
           {toast.title && <p className="text-sm font-semibold">{toast.title}</p>}

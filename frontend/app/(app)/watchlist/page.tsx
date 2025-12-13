@@ -1,12 +1,10 @@
 /**
  * File: watchlist/page.tsx
  * Purpose: User watchlist page showing saved properties
+ * Auth is enforced by middleware. Do NOT add auth checks here.
  */
 
-import { use } from 'react';
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { getServerUser } from '@/lib/auth/server-user';
 import { getBatchSignedUrls } from '@/lib/signed-url';
 import { AppPageHeader } from '@/components/app/AppPageHeader';
 import { AppSection } from '@/components/app/AppSection';
@@ -28,17 +26,13 @@ type WatchlistEntry = WatchlistRow & {
   alert_on_changes?: boolean | null;
 };
 
-export default async function WatchlistPage({ params }: { params: Promise<Record<string, never>> }) {
-  const resolved = use(params);
-  void resolved;
-
-  const user = await getServerUser();
-  if (!user) {
-    redirect('/auth/login');
-  }
-
+export default async function WatchlistPage() {
   const supabase = await createClient();
-  const userId = user.id;
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+
+  const userId = authUser?.id ?? '';
 
   // Fetch watchlist entries with properties
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

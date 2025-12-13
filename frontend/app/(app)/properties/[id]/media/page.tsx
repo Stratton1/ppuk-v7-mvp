@@ -16,7 +16,7 @@ interface PropertyMediaPageProps {
 
 export default async function PropertyMediaPage({ params }: PropertyMediaPageProps) {
   const { id } = use(params);
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const { data: property, error: propertyError } = await supabase
     .from('properties')

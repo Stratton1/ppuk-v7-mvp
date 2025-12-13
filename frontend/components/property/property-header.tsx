@@ -6,6 +6,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Pencil, Globe, ExternalLink, QrCode, UserPlus, Upload } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getFeaturedMediaUrl, PLACEHOLDER_IMAGE } from '@/lib/signed-url';
@@ -27,8 +28,14 @@ interface PropertyHeaderProps {
   featuredMedia: FeaturedMedia;
 }
 
+const statusVariants: Record<string, 'default' | 'secondary' | 'success' | 'warning'> = {
+  draft: 'secondary',
+  active: 'success',
+  archived: 'warning',
+};
+
 export async function PropertyHeader({ property, featuredMedia }: PropertyHeaderProps) {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const session = await getServerUser();
 
   // Check if user can edit property (owner or admin only)
@@ -46,52 +53,52 @@ export async function PropertyHeader({ property, featuredMedia }: PropertyHeader
   }
 
   const imageUrl = signedUrl || PLACEHOLDER_IMAGE;
-
-  // Determine status badge variant
-  const statusVariant =
-    property.status === 'active'
-      ? 'default'
-      : property.status === 'draft'
-      ? 'secondary'
-      : 'outline';
+  const badgeVariant = statusVariants[property.status ?? ''] ?? 'secondary';
 
   const roleInfo = session?.property_roles?.[property.id];
   const roleBadges = [
     ...(roleInfo?.status ?? []).map((r) => ({ label: getRoleLabel(r), icon: getRoleIcon(r) })),
-    roleInfo?.permission ? { label: getRoleLabel(roleInfo.permission), icon: getRoleIcon(roleInfo.permission) } : null,
+    roleInfo?.permission
+      ? { label: getRoleLabel(roleInfo.permission), icon: getRoleIcon(roleInfo.permission) }
+      : null,
   ].filter(Boolean) as Array<{ label: string; icon: string }>;
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-border/60 bg-card/70 shadow-md shadow-glow-xs">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      {/* Hero image */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted md:aspect-[21/9]">
-        <Image src={imageUrl} alt={property.display_address} fill className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/10 to-transparent" />
-        <div className="absolute right-4 top-4 flex items-center gap-2">
-          <Badge variant={statusVariant} className="capitalize shadow-lg">
+        <Image
+          src={imageUrl}
+          alt={property.display_address}
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+        <div className="absolute right-3 top-3 flex items-center gap-2">
+          <Badge variant={badgeVariant} className="capitalize shadow-sm">
             {property.status}
           </Badge>
           {property.public_visibility && (
-            <Badge variant="secondary" className="shadow-md">
+            <Badge variant="info" className="shadow-sm">
+              <Globe className="mr-1 h-3 w-3" />
               Public
             </Badge>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 p-6 md:flex-row md:items-start md:justify-between">
+      {/* Content */}
+      <div className="space-y-4 p-5">
+        {/* Title and metadata */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-primary md:text-4xl">
+          <h1 className="text-2xl font-semibold leading-tight text-foreground md:text-3xl">
             {property.display_address}
           </h1>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="font-mono">UPRN: {property.uprn}</span>
-            {property.public_slug && (
-              <Badge variant="outline" className="capitalize">
-                Passport ready
-              </Badge>
-            )}
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span className="font-mono text-xs">UPRN: {property.uprn}</span>
             {roleBadges.map((badge) => (
-              <Badge key={badge.label} variant="secondary" className="gap-1 capitalize">
+              <Badge key={badge.label} variant="secondary" className="gap-1 text-xs capitalize">
                 <span>{badge.icon}</span>
                 {badge.label}
               </Badge>
@@ -99,76 +106,77 @@ export async function PropertyHeader({ property, featuredMedia }: PropertyHeader
           </div>
         </div>
 
-        {canEdit && (
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button asChild variant="outline">
-              <Link href={`/properties/${property.id}/edit`}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="mr-2 h-4 w-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                  />
-                </svg>
-                Edit Property
-              </Link>
-            </Button>
-            <form action={setPublicVisibilityAction}>
-              <input type="hidden" name="propertyId" value={property.id} />
-              <input type="hidden" name="visible" value="true" />
-              <Button type="submit" variant="secondary">
-                Generate Public Passport
+        {/* Actions */}
+        <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
+          {/* Primary actions (editor only) */}
+          {canEdit && (
+            <>
+              <Button asChild variant="default" size="sm">
+                <Link href={`/properties/${property.id}/edit`}>
+                  <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                  Edit
+                </Link>
               </Button>
-            </form>
-            {property.public_slug && (
-              <>
-                <Button asChild variant="ghost">
-                  <Link href={`/p/${property.public_slug}`}>View Public URL</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  aria-label="Download property passport QR code"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  <Link
-                    href={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                      `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}/p/${property.public_slug}`
-                    )}`}
-                  >
-                    Download QR Code
-                  </Link>
-                </Button>
-              </>
-            )}
-            <Button asChild variant="outline">
-              <Link href={`/invitations?propertyId=${property.id}`}>Invite</Link>
-            </Button>
-            <Button asChild variant="default">
-              <Link href={`/properties/${property.id}#documents`}>Upload documents</Link>
-            </Button>
-          </div>
-        )}
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {session && (
-            <WatchlistButton propertyId={property.id} variant="outline" size="sm" />
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/properties/${property.id}#documents`}>
+                  <Upload className="mr-1.5 h-3.5 w-3.5" />
+                  Upload
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/invitations?propertyId=${property.id}`}>
+                  <UserPlus className="mr-1.5 h-3.5 w-3.5" />
+                  Invite
+                </Link>
+              </Button>
+              {!property.public_visibility && (
+                <form action={setPublicVisibilityAction}>
+                  <input type="hidden" name="propertyId" value={property.id} />
+                  <input type="hidden" name="visible" value="true" />
+                  <Button type="submit" variant="outline" size="sm">
+                    <Globe className="mr-1.5 h-3.5 w-3.5" />
+                    Make Public
+                  </Button>
+                </form>
+              )}
+            </>
           )}
-          <Button asChild size="sm" variant="ghost">
-            <Link href={`/properties/${property.id}#key-facts`}>Key facts</Link>
-          </Button>
-          <Button asChild size="sm" variant="ghost">
-            <Link href={`/properties/${property.id}#timeline`}>Timeline</Link>
-          </Button>
-          <Button asChild size="sm" variant="ghost">
-            <Link href={`/properties/${property.id}#stakeholders`}>Stakeholders</Link>
-          </Button>
+
+          {/* Public passport links */}
+          {property.public_slug && (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href={`/p/${property.public_slug}`}>
+                  <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                  Public URL
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                aria-label="Download QR code"
+              >
+                <Link
+                  href={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                    `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}/p/${property.public_slug}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <QrCode className="mr-1.5 h-3.5 w-3.5" />
+                  QR
+                </Link>
+              </Button>
+            </>
+          )}
+
+          {/* Watchlist (always available when logged in) */}
+          {session && (
+            <div className="ml-auto">
+              <WatchlistButton propertyId={property.id} variant="ghost" size="sm" />
+            </div>
+          )}
         </div>
       </div>
     </div>

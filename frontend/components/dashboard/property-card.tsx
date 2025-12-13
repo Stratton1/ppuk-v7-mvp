@@ -19,60 +19,94 @@ type DashboardPropertyCardProps = {
   priority?: boolean;
 };
 
-const statusStyles: Record<string, string> = {
-  draft: 'bg-slate-200 text-slate-800',
-  active: 'bg-emerald-100 text-emerald-800',
-  archived: 'bg-amber-100 text-amber-800',
+const statusVariants: Record<string, 'default' | 'secondary' | 'success' | 'warning'> = {
+  draft: 'secondary',
+  active: 'success',
+  archived: 'warning',
 };
 
-const CompletionBar = ({ value }: { value: number }) => (
-  <div className="space-y-1">
-    <div className="flex items-center justify-between text-xs text-muted-foreground">
-      <span>Completion</span>
-      <span>{value}%</span>
-    </div>
-    <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-      <div className="h-full rounded-full bg-primary" style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
-    </div>
-  </div>
-);
-
-export const DashboardPropertyCard = ({ property, completion, imageUrl, priority = false }: DashboardPropertyCardProps) => {
-  const statusClass = statusStyles[property.status ?? ''] ?? 'bg-slate-200 text-slate-800';
+const CompletionBar = ({ value }: { value: number }) => {
+  const clampedValue = Math.min(100, Math.max(0, value));
+  const isComplete = clampedValue >= 100;
+  const isLow = clampedValue < 30;
 
   return (
-    <Card className="overflow-hidden transition hover:shadow-md">
-      <div className="relative h-40 w-full bg-muted">
-        <Image
-          src={imageUrl || '/placeholder.svg'}
-          alt={property.display_address ?? 'Property'}
-          fill
-          className="object-cover"
-          loading={priority ? 'eager' : 'lazy'}
-          priority={priority}
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">Completion Score</span>
+        <span
+          className={cn(
+            'font-medium tabular-nums',
+            isComplete && 'text-success',
+            isLow && 'text-warning',
+            !isComplete && !isLow && 'text-foreground'
+          )}
+        >
+          {clampedValue}%
+        </span>
+      </div>
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className={cn(
+            'h-full rounded-full transition-all duration-500 ease-out',
+            isComplete && 'bg-success',
+            isLow && 'bg-warning',
+            !isComplete && !isLow && 'bg-primary'
+          )}
+          style={{ width: `${clampedValue}%` }}
         />
       </div>
-      <CardHeader>
-        <CardTitle className="text-base">{property.display_address}</CardTitle>
-        <div className="flex items-center gap-2">
-          <Badge className={cn(statusClass, 'capitalize')}>{property.status}</Badge>
+    </div>
+  );
+};
+
+export const DashboardPropertyCard = ({
+  property,
+  completion,
+  imageUrl,
+  priority = false,
+}: DashboardPropertyCardProps) => {
+  const badgeVariant = statusVariants[property.status ?? ''] ?? 'secondary';
+
+  return (
+    <Card className="group overflow-hidden border-border bg-card transition-colors hover:border-primary/50">
+      <Link href={`/properties/${property.id}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-t-xl">
+        <div className="relative h-36 w-full overflow-hidden bg-muted">
+          <Image
+            src={imageUrl || '/placeholder.svg'}
+            alt={property.display_address ?? 'Property'}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            loading={priority ? 'eager' : 'lazy'}
+            priority={priority}
+          />
+          <div className="absolute right-2 top-2">
+            <Badge variant={badgeVariant} className="capitalize text-[10px] shadow-sm">
+              {property.status}
+            </Badge>
+          </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <CompletionBar value={completion} />
-      </CardContent>
-      <CardFooter className="grid gap-2 md:grid-cols-2">
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/properties/${property.id}`}>View Passport</Link>
+        <CardHeader className="pb-2 pt-3">
+          <CardTitle className="line-clamp-2 text-sm font-medium leading-snug">
+            {property.display_address}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pb-3 pt-0">
+          <CompletionBar value={completion} />
+        </CardContent>
+      </Link>
+      <CardFooter className="flex gap-2 border-t border-border bg-muted/30 px-3 py-2">
+        <Button asChild variant="default" size="sm" className="flex-1 text-xs">
+          <Link href={`/properties/${property.id}`}>View</Link>
         </Button>
-        <Button asChild variant="ghost" size="sm" data-testid="property-edit-button">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="flex-1 text-xs"
+          data-testid="property-edit-button"
+        >
           <Link href={`/properties/${property.id}/edit`}>Edit</Link>
-        </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href={`/properties/${property.id}/documents/upload`}>Upload Doc</Link>
-        </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href={`/properties/${property.id}/media/upload`}>Upload Photo</Link>
         </Button>
       </CardFooter>
     </Card>

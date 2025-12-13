@@ -86,7 +86,7 @@ export function TasksList({ tasks, onCreate, onUpdate }: TasksListProps) {
         {grouped.map((group) => (
           <div
             key={group.status}
-            className="rounded-2xl border border-border/60 bg-card/70 p-4 shadow-sm shadow-glow-xs backdrop-blur"
+            className="rounded-xl border border-border bg-card p-4"
           >
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm font-medium">
@@ -95,7 +95,7 @@ export function TasksList({ tasks, onCreate, onUpdate }: TasksListProps) {
                   {group.items.length}
                 </Badge>
               </div>
-              <div className="h-px flex-1 bg-border/60" />
+              <div className="h-px flex-1 bg-border" />
             </div>
             {group.items.length === 0 ? (
               <p className="text-sm text-muted-foreground">No tasks in this state.</p>
@@ -105,8 +105,8 @@ export function TasksList({ tasks, onCreate, onUpdate }: TasksListProps) {
                   <div
                     key={task.id}
                     className={cn(
-                      'w-full rounded-xl border border-border/60 bg-background/50 p-3 text-left text-sm transition',
-                      'hover:-translate-y-0.5 hover:shadow-glow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                      'w-full rounded-xl border border-border bg-card p-3 text-left text-sm transition-colors',
+                      'hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                     )}
                     data-testid="task-item"
                   >

@@ -1,12 +1,13 @@
-import { use, type ReactNode } from 'react';
-import { headers } from 'next/headers';
+import { type ReactNode } from 'react';
 import { AppShell } from '@/components/app/AppShell';
-import { getSessionOrRedirect } from '@/lib/auth/server-user';
 
-export default async function AppLayout({ children }: { children: ReactNode }) {
-  // Enforce authentication for all protected app routes
-  const hdrs = use(headers());
-  const currentPath = hdrs.get('x-pathname') ?? hdrs.get('next-url') ?? '/dashboard';
-  await getSessionOrRedirect({ redirectTo: currentPath ?? '/dashboard' });
+/**
+ * App Layout for authenticated routes.
+ *
+ * IMPORTANT: Authentication is enforced by middleware (proxy.ts) BEFORE
+ * this layout renders. Do NOT add auth checks, cookies(), or headers()
+ * here - the middleware is the single source of truth for auth.
+ */
+export default function AppLayout({ children }: { children: ReactNode }) {
   return <AppShell>{children}</AppShell>;
 }

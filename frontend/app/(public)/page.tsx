@@ -1,7 +1,6 @@
 import CTASection from '@/components/home/CTASection';
 import FAQ from '@/components/home/FAQ';
 import HeroSection from '@/components/home/HeroSection';
-import LogoCloud from '@/components/home/LogoCloud';
 import Personas from '@/components/home/Personas';
 import ProductPreview from '@/components/home/ProductPreview';
 import StatsStrip from '@/components/home/StatsStrip';
@@ -15,7 +14,6 @@ export default function Home() {
     <PageWrapper>
       <HeroSection />
       <StatsStrip />
-      <LogoCloud />
       <WhyUKNeedsPassports />
       <BeforeAfter />
       <HowItWorks />
@@ -23,7 +21,6 @@ export default function Home() {
       <ProductPreview />
       <FAQ />
       <CTASection />
-      <p className="pb-10 text-center text-xs text-muted-foreground">Homepage complete. Ready for you to copy into Cursor.</p>
     </PageWrapper>
   );
 }

@@ -25,7 +25,7 @@ export type GrantRoleResult = { success: true } | { success: false; error: strin
 
 export async function grantPropertyRole(propertyId: string, formData: FormData): Promise<GrantRoleResult> {
   try {
-  const supabase = createActionClient();
+    const supabase = await createActionClient();
 
     const {
       data: { user },

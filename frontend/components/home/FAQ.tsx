@@ -1,4 +1,4 @@
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { HelpCircle } from 'lucide-react';
 import { Container, Section } from './PageWrapper';
 
 const faqItems = [
@@ -23,19 +23,24 @@ const faqItems = [
 export function FAQ() {
   return (
     <Section dataTestId="public-faq">
-      <Container className="space-y-6" dataTestId="public-faq-container">
-        <div className="space-y-2">
-          <h2 className="text-3xl font-semibold tracking-tight text-primary">FAQ</h2>
-          <p className="text-muted-foreground">What founders, conveyancers, and agents ask first.</p>
+      <Container className="space-y-8" dataTestId="public-faq-container">
+        <div className="space-y-2 max-w-2xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">Frequently asked questions</h2>
+          <p className="text-muted-foreground">Common questions from property professionals and homeowners.</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {faqItems.map((q) => (
-            <Card key={q.title} className="border-border/70">
-              <CardHeader>
-                <CardTitle className="text-lg">{q.title}</CardTitle>
-                <CardDescription>{q.desc}</CardDescription>
-              </CardHeader>
-            </Card>
+            <div key={q.title} className="rounded-xl border border-border bg-card p-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                  <HelpCircle className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground">{q.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{q.desc}</p>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </Container>

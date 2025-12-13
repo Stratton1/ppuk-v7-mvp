@@ -12,10 +12,10 @@ type FloodCardProps = {
 export function FloodCard({ data, loading, error }: FloodCardProps) {
   if (loading) {
     return (
-      <Card data-testid="keyfacts-flood">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-flood">
         <CardHeader>
           <CardTitle className="text-base">Flood risk</CardTitle>
-          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-5 w-28" />
         </CardHeader>
         <CardContent className="space-y-3">
           <Skeleton className="h-4 w-3/4" />
@@ -28,7 +28,7 @@ export function FloodCard({ data, loading, error }: FloodCardProps) {
 
   if (error) {
     return (
-      <Card data-testid="keyfacts-flood">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-flood">
         <CardHeader>
           <CardTitle className="text-base">Flood risk</CardTitle>
           <Badge variant="outline" className="border-destructive/60 text-destructive">
@@ -42,7 +42,7 @@ export function FloodCard({ data, loading, error }: FloodCardProps) {
 
   if (!data) {
     return (
-      <Card data-testid="keyfacts-flood">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-flood">
         <CardHeader>
           <CardTitle className="text-base">Flood risk</CardTitle>
           <Badge variant="outline">Not connected</Badge>
@@ -55,19 +55,17 @@ export function FloodCard({ data, loading, error }: FloodCardProps) {
   }
 
   return (
-    <Card data-testid="keyfacts-flood">
+    <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-flood">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="text-base">Flood risk</CardTitle>
         <Badge variant="outline">{data.riskLevel}</Badge>
       </CardHeader>
-      <CardContent className="space-y-2 text-sm">
-        <div className="flex items-center justify-between">
+      <CardContent className="space-y-3 text-sm">
+        <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
           <span className="text-muted-foreground">Zone</span>
-          <span className="font-medium">{data.zone ?? '—'}</span>
+          <span className="font-medium text-foreground">{data.zone ?? '—'}</span>
         </div>
-        <div className="text-muted-foreground">
-          <p>{data.summary}</p>
-        </div>
+        <p className="text-muted-foreground">{data.summary}</p>
       </CardContent>
     </Card>
   );

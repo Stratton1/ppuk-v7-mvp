@@ -1,4 +1,8 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+/**
+ * @deprecated Use AppKPI from '@/components/app/AppKPI' instead.
+ * This re-export exists for backwards compatibility.
+ */
+import { AppKPI } from '@/components/app/AppKPI';
 
 type KpiCardProps = {
   title: string;
@@ -7,15 +11,5 @@ type KpiCardProps = {
 };
 
 export const KpiCard = ({ title, value, description }: KpiCardProps) => (
-  <Card>
-    <CardHeader className="pb-2">
-      <CardDescription>{title}</CardDescription>
-      <CardTitle className="text-3xl">{value}</CardTitle>
-    </CardHeader>
-    {description ? (
-      <CardContent>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </CardContent>
-    ) : null}
-  </Card>
+  <AppKPI label={title} value={value} hint={description} />
 );

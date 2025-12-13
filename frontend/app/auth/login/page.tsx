@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { LogIn } from "lucide-react";
+import { createPublicClient } from "@/lib/supabase/server-public";
 import { redirect } from "next/navigation";
 import LoginForm from "@/components/auth/LoginForm";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
@@ -8,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
-  const supabase = createClient();
+  const supabase = await createPublicClient();
 
   const {
     data: { user },
@@ -26,8 +27,11 @@ export default async function LoginPage() {
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Sign in" }]}
       />
 
-      <Card className="w-full max-w-md">
-        <CardHeader>
+      <Card className="w-full max-w-md border-border">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <LogIn className="h-6 w-6 text-primary" />
+          </div>
           <CardTitle>Welcome back</CardTitle>
           <CardDescription>
             Enter your credentials to access your dashboard.

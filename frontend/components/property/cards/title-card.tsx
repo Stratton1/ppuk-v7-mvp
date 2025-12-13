@@ -12,10 +12,10 @@ type TitleCardProps = {
 export function TitleCard({ data, loading, error }: TitleCardProps) {
   if (loading) {
     return (
-      <Card data-testid="keyfacts-title">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-title">
         <CardHeader>
           <CardTitle className="text-base">Title / Land Registry</CardTitle>
-          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-5 w-32" />
         </CardHeader>
         <CardContent className="space-y-3">
           <Skeleton className="h-4 w-3/4" />
@@ -28,7 +28,7 @@ export function TitleCard({ data, loading, error }: TitleCardProps) {
 
   if (error) {
     return (
-      <Card data-testid="keyfacts-title">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-title">
         <CardHeader>
           <CardTitle className="text-base">Title / Land Registry</CardTitle>
           <Badge variant="outline" className="border-destructive/60 text-destructive">
@@ -42,7 +42,7 @@ export function TitleCard({ data, loading, error }: TitleCardProps) {
 
   if (!data) {
     return (
-      <Card data-testid="keyfacts-title">
+      <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-title">
         <CardHeader>
           <CardTitle className="text-base">Title / Land Registry</CardTitle>
           <Badge variant="outline">Not connected</Badge>
@@ -55,23 +55,21 @@ export function TitleCard({ data, loading, error }: TitleCardProps) {
   }
 
   return (
-    <Card data-testid="keyfacts-title">
+    <Card className="border-border transition-colors hover:border-primary/50" data-testid="keyfacts-title">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="text-base">Title / Land Registry</CardTitle>
         <Badge variant="outline">{data.tenure ?? 'Unknown tenure'}</Badge>
       </CardHeader>
-      <CardContent className="space-y-2 text-sm">
-        <div className="flex items-center justify-between">
+      <CardContent className="space-y-3 text-sm">
+        <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
           <span className="text-muted-foreground">Title number</span>
-          <span className="font-medium">{data.titleNumber ?? '—'}</span>
+          <span className="font-medium text-foreground">{data.titleNumber ?? '—'}</span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
           <span className="text-muted-foreground">Last updated</span>
-          <span className="font-medium">{data.updatedAt ?? '—'}</span>
+          <span className="font-medium text-foreground">{data.updatedAt ?? '—'}</span>
         </div>
-        <div className="text-muted-foreground">
-          <p>{data.summary}</p>
-        </div>
+        <p className="text-muted-foreground">{data.summary}</p>
       </CardContent>
     </Card>
   );

@@ -1,12 +1,11 @@
 /**
  * File: compare/page.tsx
  * Purpose: Property comparison page for side-by-side property comparison
+ * Auth is enforced by middleware. Do NOT add auth checks here.
  */
 
 import { use } from 'react';
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { getServerUser } from '@/lib/auth/server-user';
 import { getBatchSignedUrls } from '@/lib/signed-url';
 import { AppPageHeader } from '@/components/app/AppPageHeader';
 import { AppSection } from '@/components/app/AppSection';
@@ -26,11 +25,6 @@ interface ComparePageProps {
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
   const resolvedSearchParams = use(searchParams);
-  const user = await getServerUser();
-  if (!user) {
-    redirect('/auth/login');
-  }
-
   const supabase = await createClient();
   const propertyIds = resolvedSearchParams.ids?.split(',').filter(Boolean) || [];
 

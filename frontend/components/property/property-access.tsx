@@ -29,7 +29,7 @@ interface PropertyAccessProps {
 
 export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
   const session = await getServerUser();
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const { data: roles, error: rolesError } = await supabase
     .from('property_stakeholders')
@@ -211,14 +211,14 @@ export async function PropertyAccess({ propertyId }: PropertyAccessProps) {
                       {formatExpiryDate(roleAssignment.expires_at)}
                     </span>
                   ) : (
-                    <span className="font-medium text-green-600 dark:text-green-400">Permanent access</span>
+                    <span className="font-medium text-success">Permanent access</span>
                   )}
                 </div>
               </div>
 
               <div className="flex flex-col items-end gap-1">
                 {days !== null && days >= 0 && days <= 7 && (
-                  <span className="text-xs font-medium text-orange-600 dark:text-orange-400">
+                  <span className="text-xs font-medium text-warning">
                     {days} {days === 1 ? 'day' : 'days'} left
                   </span>
                 )}

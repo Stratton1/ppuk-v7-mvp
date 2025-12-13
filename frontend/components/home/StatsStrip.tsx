@@ -1,21 +1,28 @@
 import { Container, Section } from './PageWrapper';
 
 const stats = [
-  { label: 'UK completions today', value: '150–180 days', sub: 'Current average transaction time' },
-  { label: 'With a property passport', value: '21 days possible', sub: 'Pre-verified data, ready on day one' },
-  { label: 'Failed sales each year', value: '300k+', sub: '1 in 3 collapse from missing or late data' },
+  { label: 'Current UK average', value: '150–180 days', sub: 'Average property transaction time', variant: 'warning' as const },
+  { label: 'With Property Passport', value: '21 days', sub: 'Pre-verified data ready on day one', variant: 'success' as const },
+  { label: 'Failed sales yearly', value: '300,000+', sub: '1 in 3 collapse from missing data', variant: 'destructive' as const },
 ];
 
 export function StatsStrip() {
   return (
-    <Section className="py-8" dataTestId="public-stats-strip">
+    <Section className="py-6 bg-muted/30" dataTestId="public-stats-strip">
       <Container dataTestId="public-stats-strip-container">
-        <div className="grid gap-4 rounded-2xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3">
           {stats.map((s) => (
-            <div key={s.label} className="rounded-xl bg-background/70 p-4 shadow-xs">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">{s.label}</p>
-              <p className="mt-2 text-2xl font-semibold text-primary">{s.value}</p>
-              {s.sub && <p className="text-sm text-muted-foreground">{s.sub}</p>}
+            <div key={s.label} className="rounded-xl border border-border bg-card p-5 shadow-sm">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{s.label}</p>
+              <p className={`mt-2 text-2xl font-bold tabular-nums ${
+                s.variant === 'success' ? 'text-success' :
+                s.variant === 'warning' ? 'text-warning' :
+                s.variant === 'destructive' ? 'text-destructive' :
+                'text-foreground'
+              }`}>
+                {s.value}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">{s.sub}</p>
             </div>
           ))}
         </div>

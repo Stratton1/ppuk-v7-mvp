@@ -29,7 +29,7 @@ export async function sendPropertyInvitationAction({
   }
 
   const input = parsed.data;
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },
@@ -66,7 +66,7 @@ export async function removeStakeholderAction(
   userIdOrInvitationId: string,
   propertyId: string
 ): Promise<ActionResult> {
-  const supabase = createServerClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },
@@ -104,7 +104,7 @@ export async function removeStakeholderAction(
 export async function resendInvitationAction(
   invitationId: string
 ): Promise<ActionResult> {
-  const supabase = createServerClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },
@@ -156,7 +156,7 @@ export async function cancelInvitationAction(
   invitationId: string,
   propertyId: string
 ): Promise<ActionResult> {
-  const supabase = createServerClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },

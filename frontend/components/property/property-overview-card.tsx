@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Database } from '@/types/supabase';
 import { PropertyMeta } from './property-meta';
@@ -12,24 +12,35 @@ type PropertyOverviewCardProps = {
   media: MediaRow[];
 };
 
+const statusVariants: Record<string, 'default' | 'secondary' | 'outline'> = {
+  active: 'default',
+  draft: 'secondary',
+  archived: 'outline',
+};
+
 export function PropertyOverviewCard({ property, media }: PropertyOverviewCardProps) {
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <CardTitle className="text-xl" data-testid="property-title">
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-border bg-muted/50">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <CardTitle className="text-xl leading-snug" data-testid="property-title">
                 {property.display_address}
               </CardTitle>
-              <p className="text-sm text-muted-foreground">UPRN: {property.uprn}</p>
+              <CardDescription className="font-mono text-xs">
+                UPRN: {property.uprn}
+              </CardDescription>
             </div>
-            <Badge variant={property.status === 'active' ? 'default' : property.status === 'draft' ? 'secondary' : 'outline'}>
+            <Badge
+              variant={statusVariants[property.status ?? ''] ?? 'outline'}
+              className="shrink-0 capitalize"
+            >
               {property.status}
             </Badge>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <PropertyMeta property={property} />
         </CardContent>
       </Card>
@@ -37,7 +48,7 @@ export function PropertyOverviewCard({ property, media }: PropertyOverviewCardPr
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Gallery</CardTitle>
-          <p className="text-sm text-muted-foreground">Key photos for this property.</p>
+          <CardDescription>Key photos for this property.</CardDescription>
         </CardHeader>
         <CardContent>
           <PropertyGallery propertyId={property.id} media={media} />

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Globe } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { PLACEHOLDER_IMAGE } from '@/lib/signed-url';
 
@@ -8,27 +9,42 @@ type PublicHeroProps = {
   imageUrl?: string | null;
 };
 
-const statusStyles: Record<string, string> = {
-  draft: 'bg-slate-200 text-slate-800',
-  active: 'bg-emerald-100 text-emerald-800',
-  archived: 'bg-amber-100 text-amber-800',
+const statusVariants: Record<string, 'default' | 'secondary' | 'success' | 'warning'> = {
+  draft: 'secondary',
+  active: 'success',
+  archived: 'warning',
 };
 
 export const PublicHero = ({ address, status, imageUrl }: PublicHeroProps) => {
-  const statusClass = statusStyles[status] ?? 'bg-slate-200 text-slate-800';
+  const badgeVariant = statusVariants[status] ?? 'secondary';
 
   return (
-    <section className="overflow-hidden rounded-lg border bg-card shadow-sm">
-      <div className="relative h-72 w-full bg-muted">
-        <Image src={imageUrl || PLACEHOLDER_IMAGE} alt={address} fill className="object-cover" />
-        <div className="absolute right-4 top-4">
-          <Badge className={statusClass}>{status}</Badge>
+    <section className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="relative h-64 w-full overflow-hidden bg-muted md:h-72">
+        <Image
+          src={imageUrl || PLACEHOLDER_IMAGE}
+          alt={address}
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+        <div className="absolute right-3 top-3 flex items-center gap-2">
+          <Badge variant={badgeVariant} className="capitalize shadow-sm">
+            {status}
+          </Badge>
+          <Badge variant="info" className="shadow-sm">
+            <Globe className="mr-1 h-3 w-3" />
+            Public
+          </Badge>
         </div>
       </div>
-      <div className="p-6">
-        <h1 className="text-3xl font-semibold text-primary">{address}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Public property passport — limited, safe fields only.
+      <div className="space-y-2 p-5 md:p-6">
+        <h1 className="text-2xl font-semibold leading-tight text-foreground md:text-3xl">
+          {address}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Public Property Passport — verified, safe information only.
         </p>
       </div>
     </section>

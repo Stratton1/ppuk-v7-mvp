@@ -9,7 +9,7 @@ export async function AppTopbar() {
   const session = await getServerUser();
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border/60 bg-white/90 px-4 backdrop-blur">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background px-4">
       <div className="hidden text-sm font-semibold text-muted-foreground sm:block">Property Passport</div>
       <div className="flex flex-1 items-center justify-end gap-4">
         <div className="hidden md:block">

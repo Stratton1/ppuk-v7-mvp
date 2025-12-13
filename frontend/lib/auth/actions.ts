@@ -10,7 +10,7 @@ export async function loginAction(_prevState: ActionResult, formData: FormData):
   const password = formData.get('password')?.toString() ?? '';
   const redirectTo = formData.get('redirectTo')?.toString() || '/dashboard';
 
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
   // #region agent log
   fetch('http://127.0.0.1:7242/ingest/213ad833-5127-434d-abea-fccdfab15098', {
     method: 'POST',
@@ -64,7 +64,7 @@ export async function registerAction(_prevState: ActionResult, formData: FormDat
   const password = formData.get('password')?.toString() ?? '';
   const primaryRole = (formData.get('primaryRole')?.toString() as RoleType | undefined) ?? 'consumer';
 
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error || !data.user) {
     return { error: error?.message ?? 'Unable to register' };
@@ -92,7 +92,7 @@ export async function registerAction(_prevState: ActionResult, formData: FormDat
 }
 
 export async function logoutAction(): Promise<void> {
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
   await supabase.auth.signOut();
   redirect('/auth/login');
 }
@@ -104,7 +104,7 @@ export async function forgotPasswordAction(_prevState: ActionResult, formData: F
     return { error: 'Email is required' };
   }
 
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/reset-password`,
   });
@@ -128,7 +128,7 @@ export async function resetPasswordAction(_prevState: ActionResult, formData: Fo
     return { error: 'Passwords do not match' };
   }
 
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
   const { error } = await supabase.auth.updateUser({ password });
 
   if (error) {
@@ -152,7 +152,7 @@ export async function updatePasswordAction(_prevState: ActionResult, formData: F
     return { error: 'Passwords do not match' };
   }
 
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
   const {
     data: { user },
     error: authError,
@@ -188,7 +188,7 @@ export async function updateProfileAction(_prevState: ActionResult, formData: Fo
   const phone = formData.get('phone')?.toString() ?? null;
   const bio = formData.get('bio')?.toString() ?? null;
 
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
   const {
     data: { user },
     error: authError,

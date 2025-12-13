@@ -11,7 +11,7 @@ interface PropertyHistoryPageProps {
 
 export default async function PropertyHistoryPage({ params }: PropertyHistoryPageProps) {
   const { id } = use(params);
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const { data: property, error: propertyError } = await supabase
     .from('properties')

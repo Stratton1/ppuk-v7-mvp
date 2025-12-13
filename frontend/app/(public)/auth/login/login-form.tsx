@@ -1,12 +1,11 @@
 'use client';
 
-'use client';
-
 /* eslint-disable ppuk/no-sync-dynamic-api */
 
 import * as React from 'react';
 import { useFormStatus } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
+import { LogIn, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -67,22 +66,27 @@ export function LoginForm({ action }: LoginFormProps) {
   }, [pending, redirectTo]);
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
+    <Card className="w-full max-w-md border-border">
+      <CardHeader className="text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <LogIn className="h-6 w-6 text-primary" />
+        </div>
         <CardTitle>Sign in</CardTitle>
-        <CardDescription>Access your dashboard with Supabase-backed authentication.</CardDescription>
+        <CardDescription>
+          Enter your credentials to access your dashboard.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" action={formAction} data-testid="login-form" onSubmit={handleSubmit}>
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email address</Label>
             <Input
               id="email"
               name="email"
               type="email"
               required
-              placeholder="admin@ppuk.test"
+              placeholder="you@example.com"
               data-testid="login-email"
             />
           </div>
@@ -93,13 +97,24 @@ export function LoginForm({ action }: LoginFormProps) {
               name="password"
               type="password"
               required
-              placeholder="••••••••"
+              placeholder="Enter your password"
               data-testid="login-password"
             />
           </div>
-          {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
+          {state?.error && (
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+              {state.error}
+            </div>
+          )}
           <Button type="submit" className="w-full" disabled={pending} data-testid="login-submit">
-            {pending ? 'Signing in…' : 'Sign in'}
+            {pending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              'Sign in'
+            )}
           </Button>
         </form>
       </CardContent>

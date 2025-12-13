@@ -28,15 +28,15 @@ export const typography = {
 };
 
 export const elevations = {
-  card: 'shadow-sm shadow-glow-xs',
-  cardHover: 'shadow-glow-sm',
+  card: '',
+  cardHover: 'hover:border-primary/50',
 };
 
 export const colors = {
   primary: 'text-primary',
   muted: 'text-muted-foreground',
-  border: 'border-border/60',
-  bgCard: 'bg-card/80',
+  border: 'border-border',
+  bgCard: 'bg-card',
 };
 
 export const layout = {

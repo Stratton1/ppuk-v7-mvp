@@ -22,7 +22,7 @@ export async function revokePropertyRole(
       return { success: false, error: 'Missing status or permission to revoke' };
     }
 
-  const supabase = createActionClient();
+    const supabase = await createActionClient();
     const {
       data: { user },
       error: authError,

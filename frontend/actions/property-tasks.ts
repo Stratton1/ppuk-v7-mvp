@@ -15,7 +15,7 @@ interface CreateTaskInput {
 export async function createPropertyTaskAction(
   input: CreateTaskInput
 ): Promise<ActionResult & { taskId?: string }> {
-  const supabase = createActionClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },
@@ -52,7 +52,7 @@ export async function toggleTaskCompletionAction(
   taskId: string,
   propertyId: string
 ): Promise<ActionResult & { status?: string }> {
-  const supabase = createServerClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },
@@ -100,7 +100,7 @@ export async function updateTaskAction(
     dueDate?: string | null;
   }
 ): Promise<ActionResult> {
-  const supabase = createServerClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },
@@ -134,7 +134,7 @@ export async function deleteTaskAction(
   taskId: string,
   propertyId: string
 ): Promise<ActionResult> {
-  const supabase = createServerClient();
+  const supabase = await createActionClient();
 
   const {
     data: { user },

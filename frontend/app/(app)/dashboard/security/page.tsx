@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { updatePasswordAction } from '@/lib/auth/actions';
 import { SecurityForm } from './security-form';
@@ -6,16 +5,20 @@ import { AppPageHeader } from '@/components/app/AppPageHeader';
 import { AppSection } from '@/components/app/AppSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+/**
+ * Security Page - Server Component
+ * Auth is enforced by middleware. Do NOT add auth checks here.
+ */
 export default async function SecurityPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
-    error: authError,
   } = await supabase.auth.getUser();
 
-  if (authError || !user) {
-    redirect('/auth/login');
+  // Middleware guarantees auth - user will exist. Fallback for type safety only.
+  if (!user) {
+    return <div>Loading...</div>;
   }
 
   return (

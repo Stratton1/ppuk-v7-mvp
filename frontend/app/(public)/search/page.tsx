@@ -41,13 +41,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       />
 
       <AppSection title="Filters" description="Refine results by attributes.">
-        <form action="/search" className="space-y-3">
+        <form action="/search" className="space-y-4">
           <input
             type="search"
             name="q"
             defaultValue={text}
             placeholder="Search address, postcode, or UPRN"
-            className="w-full rounded-md border px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm transition-colors focus:border-primary focus:outline-none"
             data-testid="search-page-input"
           />
         </form>

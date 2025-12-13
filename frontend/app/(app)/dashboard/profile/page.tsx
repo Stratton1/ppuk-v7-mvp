@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { updateProfileAction } from '@/lib/auth/actions';
 import { ProfileForm } from './profile-form';
@@ -9,16 +8,20 @@ import type { Database } from '@/types/supabase';
 type UserRow = Database['public']['Tables']['users']['Row'];
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 
+/**
+ * Profile Page - Server Component
+ * Auth is enforced by middleware. Do NOT add auth checks here.
+ */
 export default async function ProfilePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
-    error: authError,
   } = await supabase.auth.getUser();
 
-  if (authError || !user) {
-    redirect('/auth/login');
+  // Middleware guarantees auth - user will exist. Fallback for type safety only.
+  if (!user) {
+    return <div>Loading...</div>;
   }
 
   const { data: userData } = await supabase

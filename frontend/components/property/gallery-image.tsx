@@ -31,16 +31,16 @@ export function GalleryImage({ media, signedUrl, propertyId, canDelete = false }
   });
 
   return (
-    <Card className="group relative overflow-hidden transition-shadow hover:shadow-lg">
+    <Card className="group relative overflow-hidden border-border transition-colors hover:border-primary/50">
       {/* Image */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
         <Image
           src={imageUrl}
           alt={media.title || 'Property image'}
           fill
-          className="object-cover transition-transform group-hover:scale-105"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        
+
         {/* Media Type Badge */}
         <div className="absolute left-2 top-2">
           <Badge variant="secondary" className="capitalize shadow-sm">
@@ -62,7 +62,7 @@ export function GalleryImage({ media, signedUrl, propertyId, canDelete = false }
       {/* Caption */}
       <div className="p-3">
         {media.title && (
-          <p className="line-clamp-1 text-sm font-medium">{media.title}</p>
+          <p className="line-clamp-1 text-sm font-medium text-foreground">{media.title}</p>
         )}
         <p className="mt-1 text-xs text-muted-foreground">
           Uploaded {uploadedDate}
